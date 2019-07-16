@@ -125,6 +125,7 @@ def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
     return u, p
 
 
+#To-do add Pratt handling of zero-ranked data
 def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zero='wilcox'):
     """This test can be found in scipy.stats as wilcoxon"""
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \

@@ -8,14 +8,49 @@ def _hypergeom_distribution(a, b, c, d):
            (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))
 
 
+def _check_table(table):
+    if isinstance(table, list):
+        assert all(isinstance(item, int) for row in table for item in row), \
+            "Cannot do perform statistical test with with non-integer counts"
+    elif isinstance(table, (np.ndarray, np.generic)):
+        assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
+    table = np.array(table)
+    assert np.all(table > 0), "Cannot have negative counts"
+    return table
+
+
+def chi_squared_test(cont_table):
+    """Found in scipy as chi2_contingency"""
+    cont_table = _check_table(cont_table)
+    df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
+    X = 0
+    col_sum, row_sum = np.sum(cont_table, axis=0), np.sum(cont_table, axis=1)
+    for row in range(cont_table.shape[0]):
+        for col in range(cont_table.shape[1]):
+            expected = col_sum[col] * row_sum[row] / np.sum(row_sum)
+            X += pow((cont_table[row, col] - expected), 2) / expected
+    p = chi2.sf(X, df)
+    return X, p
+
+
+def goodness_of_fit_test(observed, expected=None):
+    """Found in scipy as chisquare"""
+    observed = _check_table(observed)
+    if not expected:
+        expected = np.array([np.mean(observed)] * len(observed))
+    else:
+        expected = _check_table(expected)
+    df = len(observed) - 1
+    X = np.sum(np.power(observed - expected, 2) / expected)
+    p = chi2.sf(X, df)
+    return X, df
+
+
 def fisher_test(cont_table, alternative='two-sided'):
     """Found in scipy as fisher_exact"""
-    assert all(isinstance(item, int) for row in cont_table for item in row), \
-        "Cannot do Fisher's Exact Test with non-integer counts"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
-    cont_table = np.array(cont_table)
-    assert all(sum(cont_table >= 0) == np.array([2, 2])), "Cannot have negative counts"
+    cont_table = _check_table(cont_table)
     assert cont_table.shape == (2, 2), \
         "Fisher's Exact Test is meant for a 2x2 contingency table, use Freeman-Halton Test for {}x{} table".format(
             cont_table.shape[0], cont_table.shape[1])
@@ -32,7 +67,7 @@ def fisher_test(cont_table, alternative='two-sided'):
         if alternative.casefold() == 'two-sided':
             p *= 2
     else:
-        num_steps = min(b, c)
+        num_steps = min(b, c) + 1
         for i in range(num_steps):
             p += _hypergeom_distribution(a, b, c, d)
             a += 1
@@ -48,10 +83,7 @@ def fisher_test(cont_table, alternative='two-sided'):
 
 def mcnemar_test(cont_table):
     """Found in statsmodels as mcnemar"""
-    assert all(isinstance(item, int) for row in cont_table for item in row), \
-        "Cannot do McNemar's Test with non-integer counts"
-    cont_table = np.array(cont_table)
-    assert all(sum(cont_table >= 0) == np.array([2, 2])), "Cannot have negative counts"
+    cont_table = _check_table(cont_table)
     assert cont_table.shape == (2, 2), \
         "McNemar's Test is meant for a 2x2 contingency table, use cmh_test for {}x{} table".format(
             cont_table.shape[0], cont_table.shape[1])
