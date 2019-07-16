@@ -33,7 +33,7 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
         "Cannot determine method for alternative hypothesis"
     data_1, data_2 = np.array(data_1), np.array(data_2)
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
-    data_1_std, data_2_std = np.std(data_2, ddof=1), np.std(data_2, ddof=1)
+    data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
     z_score = (data_1_mean - data_2_mean) / sqrt(_standard_error(data_1_std, len(data_1)) + _standard_error(data_2_std,
                                                                                                             len(data_2)))
     if alternative.casefold() == 'two-sided':
