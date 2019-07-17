@@ -2,19 +2,33 @@ import numpy as np
 from numbers import Number
 from math import sqrt
 from scipy.stats import t, rankdata, norm
-
-
-def _standard_error(std, n):
-    return std / sqrt(n)
+from src.utils import _standard_error, _check_table
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
-    """This test can be found in statsmodels as ztest"""
+    """This test can be found in statsmodels as ztest
+
+    Parameters
+    ----------
+    sample_data: list or numpy array
+        Our observation data
+    pop_mean: number
+        The mean of our population, or what we expect the mean of our sample data to be
+    alternative: str
+        What our alternative hypothesis is. It can be two-sided, less or greater
+
+    Return
+    ------
+    z_score: number
+        The Z-score of our data
+    p: float
+        The likelihood that our observed data differs from our population mean due to chance
+    """
     assert isinstance(pop_mean, Number), "Data is not of numeric type"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     assert len(sample_data) > 30, "Too few observations for z-test to be reliable, using t-test instead"
-    sample_data = np.array(sample_data)
+    sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     sample_std = np.std(sample_data, ddof=1)
     z_score = sample_mean - pop_mean / _standard_error(sample_std, len(sample_data))
@@ -28,10 +42,27 @@ def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
 
 
 def two_sample_z_test(data_1, data_2, alternative='two-sided'):
-    """This test can be found in statsmodels as ztest_ind"""
+    """This test can be found in statsmodels as ztest_ind
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array
+        The observed dataset we are comparing to data_1
+    alternative: str
+        What our alternative hypothesis is. It can be two-sided, less or greater
+
+    Return
+    ------
+    z_score: number
+        The Z-score of our observed differences
+    p: float
+        The likelihood that the observed differences from data_1 to data_2 are due to chance
+    """
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
-    data_1, data_2 = np.array(data_1), np.array(data_2)
+    data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
     z_score = (data_1_mean - data_2_mean) / sqrt(_standard_error(data_1_std, len(data_1)) + _standard_error(data_2_std,
@@ -46,11 +77,28 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
 
 
 def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
-    """This test can be found in Scipy.stats as ttest_1samp"""
+    """This test can be found in Scipy.stats as ttest_1samp
+
+    Parameters
+    ----------
+    sample_data: list or numpy array
+        The observed dataset we are comparing to the population mean
+    pop_mean: number
+        The mean of our population, or what we expect the mean of our sample data to be
+    alternative: str
+        Waht our alternative hypothesis is. It can be two-sided, less or greater
+
+    Return
+    ------
+    t_value: number
+        The t statistic of our dataset
+    p: float
+        The likelihood that our observed data differs from the population mean due to chance
+    """
     assert isinstance(pop_mean, Number), "Data is not of numeric type"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
-    sample_data = np.array(sample_data)
+    sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     n_observations = len(sample_data)
     df = n_observations - 1
@@ -64,6 +112,26 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
 
 
 def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
+    """
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array
+        The observed dataset we are comparing to data_1
+    alternative: str
+        Our alternative hypothesis. It can be two-sided, less or greater
+    paired: bool
+        Whether or not data_1 and data_2 are paired observations
+
+    Return
+    ------
+    t_value: number
+        The t statistic for our observed differences
+    p: float
+        The likelihood that the observed differences are due to chance
+    """
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     data_1, data_2 = np.array(data_1), np.array(data_2)
@@ -94,7 +162,24 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
 
 
 def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
-    """This test can be found in scipy.stats as mannwhitneyu"""
+    """This test can be found in scipy.stats as mannwhitneyu
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array
+        The observed dataset we are comparing to data_1
+    alternative: str
+        Our alternative hypothesis. It can be two-sided, greater or less
+
+    Return
+    ------
+    u: number
+        The U statistic for our observed differences
+    p: float
+        The likelihood that the observed differences are due to chance
+    """
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     data_1, data_2 = np.array(data_1), np.array(data_2)
@@ -127,7 +212,26 @@ def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
 
 #To-do add Pratt handling of zero-ranked data
 def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zero='wilcox'):
-    """This test can be found in scipy.stats as wilcoxon"""
+    """This test can be found in scipy.stats as wilcoxon
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array
+        The observed dataset we are comparing to data_1
+    alternative: str
+        Our alternative hypothesis. It can be two-sided, greater or less
+    handle_zero: str
+        How we treat differences of zero. It can be either wilcox (ignore) or pratt
+
+    Return
+    ------
+    w_value: number
+        The W statistic for our observed differences
+    p: float
+        The likelihood that the observed differences are due to chance
+    """
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     assert handle_zero.casefold() in ['wilcox', 'pratt'], "Cannot determine how to handle differences of zero"

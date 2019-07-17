@@ -1,26 +1,22 @@
 import numpy as np
-from math import factorial
 from scipy.stats import chi2, binom
-
-
-def _hypergeom_distribution(a, b, c, d):
-    return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / \
-           (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))
-
-
-def _check_table(table):
-    if isinstance(table, list):
-        assert all(isinstance(item, int) for row in table for item in row), \
-            "Cannot do perform statistical test with with non-integer counts"
-    elif isinstance(table, (np.ndarray, np.generic)):
-        assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
-    table = np.array(table)
-    assert np.all(table > 0), "Cannot have negative counts"
-    return table
+from src.utils import _check_table, _hypergeom_distribution
 
 
 def chi_squared_test(cont_table):
-    """Found in scipy as chi2_contingency"""
+    """Found in scipy as chi2_contingency
+
+    Parameters
+    ----------
+    cont_table: list or numpy array
+        A contingency table to perform our chi_squared test
+
+    Return
+    ------
+    X: float
+        The Chi statistic
+    p: float
+        The likelihood that our observed differences are due to chance"""
     cont_table = _check_table(cont_table)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
     X = 0
@@ -34,7 +30,21 @@ def chi_squared_test(cont_table):
 
 
 def goodness_of_fit_test(observed, expected=None):
-    """Found in scipy as chisquare"""
+    """Found in scipy as chisquare
+
+    Parameters
+    ----------
+    observed: list or numpy array
+        Our observed data
+    expected: (Optional) list or numpy array
+        What we expected the results to be. If none given, then we expect all data points to be equally likely
+
+    Return
+    ------
+    X: float
+        The Chi statistic
+    p: float
+        The likelihood that our observed differences are due to chance"""
     observed = _check_table(observed)
     if not expected:
         expected = np.array([np.mean(observed)] * len(observed))
@@ -47,7 +57,20 @@ def goodness_of_fit_test(observed, expected=None):
 
 
 def fisher_test(cont_table, alternative='two-sided'):
-    """Found in scipy as fisher_exact"""
+    """Found in scipy as fisher_exact
+
+    Parameters
+    ----------
+    cont_table: list or numpy array
+        A contingency table to perform our fisher test
+    alternative: str
+         What our alternative hypothesis is. It can be two-sided, less or greater
+
+    Return
+    ------
+    p: float
+        The probability that our observed differences are due to chance
+    """
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     cont_table = _check_table(cont_table)
@@ -82,7 +105,18 @@ def fisher_test(cont_table, alternative='two-sided'):
 
 
 def mcnemar_test(cont_table):
-    """Found in statsmodels as mcnemar"""
+    """Found in statsmodels as mcnemar
+
+    Parameters
+    ----------
+    cont_table: list or numpy array
+
+    Return
+    ------
+    chi_squared: float
+        Our chi-squared statistic
+    p: float
+        The probabiltiy that our observed differences were due to chance"""
     cont_table = _check_table(cont_table)
     assert cont_table.shape == (2, 2), \
         "McNemar's Test is meant for a 2x2 contingency table, use cmh_test for {}x{} table".format(
