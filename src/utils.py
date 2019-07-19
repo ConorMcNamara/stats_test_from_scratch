@@ -48,7 +48,7 @@ def _hypergeom_distribution(a, b, c, d):
            (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))
 
 
-def _check_table(table, only_count=True):
+def _check_table(table, only_count=False):
     """Performs checks on our table to ensure that it is suitable for our statistical tests
 
     Parameters
@@ -64,18 +64,24 @@ def _check_table(table, only_count=True):
         The dataset, convered to a numpy array
     """
     if isinstance(table, list):
-        if only_count:
-            assert all(isinstance(item, int) for row in table for item in row), \
-                "Cannot perform statistical test with with non-integer counts"
-        else:
-            assert all(isinstance(item, Number) for row in table for item in row), \
-                "Cannot perform statistical test with non-numeric values"
         table = np.array(table)
     elif isinstance(table, (np.ndarray, np.generic)):
-        if only_count:
-            assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
-        else:
-            assert np.issubdtype(table.dtype, Number), "Cannot perform statistical test with non-numeric values"
+        pass
+    else:
+        raise Exception("Data type {} is not supported".format(type(table)))
+    if only_count:
+        assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
+    else:
+        assert np.issubdtype(table.dtype, Number), "Cannot perform statistical test with non-numeric values"
     if only_count:
         assert np.all(table > 0), "Cannot have negative counts"
     return table
+
+
+def _sse(sum_data, square_data, n_data):
+    sum_data, n_data = _check_table(sum_data, False), _check_table(n_data, False)
+    cm = np.power(np.sum(sum_data), 2) / sum(n_data)
+    sst = np.sum(square_data) - cm
+    ssr = np.sum(np.power(sum_data, 2) / n_data) - cm
+    sse = sst - ssr
+    return sse
