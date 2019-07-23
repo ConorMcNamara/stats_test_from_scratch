@@ -1,5 +1,5 @@
-from src.utils import _check_table
-from scipy.stats import rankdata, norm
+from StatsTest.utils import _check_table
+from scipy.stats import rankdata, norm, chi2
 import numpy as np
 from math import sqrt
 
@@ -98,3 +98,26 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
     else:
         p = norm.cdf(z_score)
     return w_value, p
+
+
+def friedman_test(*args):
+    """This can be found in scipy.stats as friedmanchisquare"""
+    k = len(args)
+    assert k >= 3, "Friedman Test not appropriate for {} levels".format(k)
+    df = k - 1
+    all_data = np.vstack(args).T
+    n = len(all_data)
+    rank = np.apply_along_axis(rankdata, 1, all_data)
+    r_bar = np.mean(rank, axis=0)
+    scalar = (12 * n) / (k * (k + 1))
+    q = scalar * np.sum(np.power(r_bar - ((k + 1) / 2) , 2))
+    return q, 1 - chi2.cdf(q, df)
+
+
+def page_test(*args):
+    k = len(args)
+    assert k >= 3, "Page Test not appropriate for {} levels".format(k)
+
+
+
+

@@ -72,7 +72,12 @@ def _check_table(table, only_count=False):
     if only_count:
         assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
     else:
-        assert np.issubdtype(table.dtype, Number), "Cannot perform statistical test with non-numeric values"
+        if np.issubdtype(table.dtype, np.integer):
+            pass
+        elif np.issubdtype(table.dtype, np.float):
+            pass
+        else:
+            raise Exception("Cannot perform statistical test with non-numeric values")
     if only_count:
         assert np.all(table > 0), "Cannot have negative counts"
     return table

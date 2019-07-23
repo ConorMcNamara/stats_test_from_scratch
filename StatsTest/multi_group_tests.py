@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import _check_table, _sse
+from StatsTest.utils import _check_table, _sse
 from scipy.stats import f, chi2
 from statsmodels.stats.libqsturng import psturng
 from math import sqrt
@@ -84,10 +84,10 @@ def one_way_f_test(*args):
     k = len(args)
     assert k >= 2, "Need at least two groups to perform a one-way F Test"
     n_i, y_bar, all_y_ij, y_bar_condensed = [], [], [], []
+    all_y_ij = np.hstack(args)
     for obs in args:
         obs = _check_table(obs, False)
         n_i = np.append(n_i, len(obs))
-        all_y_ij = np.append(all_y_ij, obs)
         obs_mean = np.mean(obs)
         y_bar_condensed = np.append(y_bar_condensed, obs_mean)
         y_bar = np.append(y_bar, np.repeat(obs_mean, len(obs)))
@@ -169,3 +169,31 @@ def tukey_range_test(*args):
             p = psturng(q, k, df)
             results.append(['group {} - group {}'.format(group, next_group), q, p])
     return results
+
+
+def cochran_test(*args):
+    """Found in statsmodels as chochrans_q
+
+    Parameters
+    ----------
+    args: list or numpy arrays
+        The observed measurements for each group, organized into lists or numpy arrays
+
+    Return
+    ------
+    T: float
+        Our T statistic
+    p: float
+        The likelihood that our observed differences are due to chance
+    """
+    k = len(args)
+    assert k > 2, "Need at least 3 groups to perform Cochran's Q Test"
+    assert np.array_equal(args, _check_table(args).astype(bool)), "Cochran's Q Test only works with binary variables"
+    df = k - 1
+    N = np.mean(args)
+    all_data = np.vstack(_check_table(args, False)).T
+    col_sum, row_sum = np.sum(all_data, axis=1), np.sum(all_data, axis=0)
+    scalar = k * (k - 1)
+    T = scalar * np.sum(np.power(row_sum - (N / k)), 2) / np.sum(col_sum - (k - col_sum))
+    p = 1 - chi2.cdf(T, df)
+    return T, p

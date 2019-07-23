@@ -2,7 +2,7 @@ import numpy as np
 from numbers import Number
 from math import sqrt
 from scipy.stats import t, norm
-from src.utils import _standard_error, _check_table
+from StatsTest.utils import _standard_error, _check_table
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
@@ -25,9 +25,10 @@ def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
         The likelihood that our observed data differs from our population mean due to chance
     """
     assert isinstance(pop_mean, Number), "Data is not of numeric type"
+    assert isinstance(alternative, str), "Cannot have non-string for alternative hypothesis"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
-    assert len(sample_data) > 30, "Too few observations for z-test to be reliable, using t-test instead"
+    assert len(sample_data) >= 30, "Too few observations for z-test to be reliable, using t-test instead"
     sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     sample_std = np.std(sample_data, ddof=1)
@@ -60,8 +61,11 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
     p: float
         The likelihood that the observed differences from data_1 to data_2 are due to chance
     """
+    assert isinstance(alternative, str), "Cannot have non-string for alternative hypothesis"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
+    if len(data_1) < 30 or len(data_2) < 30:
+        raise Exception("Data has less than 30 observations, use Student's T-Test")
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
@@ -96,6 +100,7 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
         The likelihood that our observed data differs from the population mean due to chance
     """
     assert isinstance(pop_mean, Number), "Data is not of numeric type"
+    assert isinstance(alternative, str), "Cannot have non-string for alternative hypothesis"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     sample_data = _check_table(sample_data, False)
@@ -132,6 +137,7 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
     p: float
         The likelihood that the observed differences are due to chance
     """
+    assert isinstance(alternative, str), "Cannot have non-string for alternative hypothesis"
     assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
         "Cannot determine method for alternative hypothesis"
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
