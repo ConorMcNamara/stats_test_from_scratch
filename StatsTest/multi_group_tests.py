@@ -20,7 +20,8 @@ def levene_test(*args):
     p: float
     """
     k = len(args)
-    assert k >= 2, "Need at least two groups to perform a Levene Test"
+    if k < 2:
+        raise AttributeError("Need at least two groups to perform a Levene Test")
     n_i, z_bar, all_z_ij, z_bar_condensed = [], [], [], []
     for obs in args:
         obs = _check_table(obs, False)
@@ -51,7 +52,8 @@ def brown_forsythe_test(*args):
         The likelihood that our observed differences occur due to chance
     """
     k = len(args)
-    assert k >= 2, "Need at least two groups to perform a Brown-Forsythe Test"
+    if k < 2:
+        raise AttributeError( "Need at least two groups to perform a Brown-Forsythe Test")
     n_i, z_bar, all_z_ij, z_bar_condensed = [], [], [], []
     for obs in args:
         obs = _check_table(obs, False)
@@ -82,7 +84,8 @@ def one_way_f_test(*args):
         The likelihood that our observed differences occur due to chance
     """
     k = len(args)
-    assert k >= 2, "Need at least two groups to perform a one-way F Test"
+    if k < 2:
+        raise AttributeError("Need at least two groups to perform a one-way F Test")
     n_i, y_bar, all_y_ij, y_bar_condensed = [], [], [], []
     all_y_ij = np.hstack(args)
     for obs in args:
@@ -114,7 +117,8 @@ def bartlett_test(*args):
         The likelihood that our observed differences occur due to chance
     """
     k = len(args)
-    assert k >= 2, "Need at least two groups to perform the Bartlett Test"
+    if k < 2:
+        raise AttributeError("Need at least two groups to perform the Bartlett Test")
     n_i, var_i = [], []
     for obs in args:
         obs = _check_table(obs)
@@ -145,7 +149,8 @@ def tukey_range_test(*args):
             3) p, or the likelihood our observed differences are due to chance
     """
     k = len(args)
-    assert k >= 2, "Need at least two groups to perform Tukey Range Test"
+    if k < 2:
+        raise AttributeError("Need at least two groups to perform Tukey Range Test")
     mean_i, groups, n_i, sum_data, square_data, results = [], [], [], [], [], []
     i = 0
     for obs in args:
@@ -187,8 +192,10 @@ def cochran_test(*args):
         The likelihood that our observed differences are due to chance
     """
     k = len(args)
-    assert k > 2, "Need at least 3 groups to perform Cochran's Q Test"
-    assert np.array_equal(args, _check_table(args).astype(bool)), "Cochran's Q Test only works with binary variables"
+    if k < 3:
+        raise AttributeError("Need at least 3 groups to perform Cochran's Q Test")
+    if len(np.unique(args)) > 2:
+        raise AttributeError("Cochran's Q Test only works with binary variables")
     df = k - 1
     N = np.mean(args)
     all_data = np.vstack(_check_table(args, False)).T

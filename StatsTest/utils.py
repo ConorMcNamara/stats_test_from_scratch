@@ -17,9 +17,12 @@ def _standard_error(std, n):
     ------
     The standard error, or our standard deviation divided by the square root of n.
     """
-    assert isinstance(std, Number), "Cannot calculate standard error with std as type {}".format(type(std))
-    assert isinstance(n, int), "Cannot calculate standard error with n as type {}".format(type(n))
-    assert n > 0, "Cannot have non-positive length"
+    if not isinstance(std, Number):
+        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(n)))
+    if not isinstance(n, int):
+        raise TypeError("Cannot calculate standard error with n of type{}".format(type(n)))
+    if n <= 0:
+        raise ValueError("Cannot calculate standard error with n less than or equal to zero")
     return std / sqrt(n)
 
 
@@ -40,10 +43,8 @@ def _hypergeom_distribution(a, b, c, d):
     Return
     ------
     The hyper-geometric distribution given a, b, c and d"""
-    assert isinstance(a, int), "Cannot compute factorial with type {}".format(type(a))
-    assert isinstance(b, int), "Cannot compute factorial with type {}".format(type(b))
-    assert isinstance(c, int), "Cannot compute factorial with type {}".format(type(c))
-    assert isinstance(d, int), "Cannot compute factorial with type {}".format(type(d))
+    if not isinstance(a, int) or not isinstance(b, int) or not isinstance(c, int) or not isinstance(d, int):
+        raise TypeError("Cannot compute factorials for non-integer values")
     return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / \
            (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))
 
@@ -68,23 +69,29 @@ def _check_table(table, only_count=False):
     elif isinstance(table, (np.ndarray, np.generic)):
         pass
     else:
-        raise Exception("Data type {} is not supported".format(type(table)))
+        raise TypeError("Data type {} is not supported".format(type(table)))
     if only_count:
-        assert np.issubdtype(table.dtype, np.integer), "Cannot perform statistical test with non-integer counts"
+        if not np.issubdtype(table.dtype, np.integer):
+            raise TypeError("Cannot perform statistical test with non-integer counts")
     else:
         if np.issubdtype(table.dtype, np.integer):
             pass
         elif np.issubdtype(table.dtype, np.float):
             pass
         else:
-            raise Exception("Cannot perform statistical test with non-numeric values")
+            raise TypeError("Cannot perform statistical test with non-numeric values")
     if only_count:
-        assert np.all(table > 0), "Cannot have negative counts"
+        if not np.all(table > 0):
+            raise ValueError("Cannot have negative counts")
     return table
 
 
 def _sse(sum_data, square_data, n_data):
-    sum_data, n_data = _check_table(sum_data, False), _check_table(n_data, False)
+    sum_data, square_data, n_data = _check_table(sum_data, False), _check_table(square_data, False), _check_table(n_data, False)
+    if not np.all(square_data >= 0):
+        raise ValueError("Cannot have negative square of numbers")
+    if not np.all(n_data > 0):
+        raise ValueError("Cannot have negative lengths")
     cm = np.power(np.sum(sum_data), 2) / sum(n_data)
     sst = np.sum(square_data) - cm
     ssr = np.sum(np.power(sum_data, 2) / n_data) - cm

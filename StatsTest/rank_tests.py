@@ -23,8 +23,8 @@ def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
     p: float
         The likelihood that the observed differences are due to chance
     """
-    assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
-        "Cannot determine method for alternative hypothesis"
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     combined_data = rankdata(np.concatenate([data_1, data_2]))
     combined_data_len = len(combined_data)
@@ -75,10 +75,12 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
     p: float
         The likelihood that the observed differences are due to chance
     """
-    assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
-        "Cannot determine method for alternative hypothesis"
-    assert handle_zero.casefold() in ['wilcox', 'pratt'], "Cannot determine how to handle differences of zero"
-    assert len(data_1) == len(data_2), "Cannot perform signed wilcoxon test on unpaired data"
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    if handle_zero.casefold() not in ['wilcox', 'pratt']:
+        raise ValueError("Cannot determine how to handle differences of zero")
+    if len(data_1) != len(data_2):
+        raise AttributeError("Cannot perform signed wilcoxon test on unpaired data")
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     diff = data_1 - data_2
     if handle_zero.casefold() == 'wilcox':
@@ -103,20 +105,22 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
 def friedman_test(*args):
     """This can be found in scipy.stats as friedmanchisquare"""
     k = len(args)
-    assert k >= 3, "Friedman Test not appropriate for {} levels".format(k)
+    if k < 3:
+        raise AttributeError("Friedman Test not appropriate for {} levels".format(k))
     df = k - 1
     all_data = np.vstack(args).T
     n = len(all_data)
     rank = np.apply_along_axis(rankdata, 1, all_data)
     r_bar = np.mean(rank, axis=0)
     scalar = (12 * n) / (k * (k + 1))
-    q = scalar * np.sum(np.power(r_bar - ((k + 1) / 2) , 2))
+    q = scalar * np.sum(np.power(r_bar - ((k + 1) / 2), 2))
     return q, 1 - chi2.cdf(q, df)
 
 
-def page_test(*args):
-    k = len(args)
-    assert k >= 3, "Page Test not appropriate for {} levels".format(k)
+# def page_test(*args):
+#     k = len(args)
+#     if k < 3:
+#         raise AttributeError("Page Test not appropriate for {} levels".format(k))
 
 
 

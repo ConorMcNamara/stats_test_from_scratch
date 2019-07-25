@@ -129,12 +129,11 @@ def fisher_test(cont_table, alternative='two-sided'):
     p: float
         The probability that our observed differences are due to chance
     """
-    assert alternative.casefold() in ['two-sided', 'greater', 'less'], \
-        "Cannot determine method for alternative hypothesis"
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    if cont_table.shape != (2, 2):
+        raise AttributeError("Fisher's Exact Test is meant for a 2x2 contingency table")
     cont_table = _check_table(cont_table, True)
-    assert cont_table.shape == (2, 2), \
-        "Fisher's Exact Test is meant for a 2x2 contingency table, use Freeman-Halton Test for {}x{} table".format(
-            cont_table.shape[0], cont_table.shape[1])
     a, b, c, d = cont_table[0, 0], cont_table[0, 1], cont_table[1, 0], cont_table[1, 1]
     p = 0
     if alternative.casefold() in ['two-sided', 'less']:
@@ -176,9 +175,8 @@ def mcnemar_test(cont_table):
     p: float
         The probabiltiy that our observed differences were due to chance"""
     cont_table = _check_table(cont_table, True)
-    assert cont_table.shape == (2, 2), \
-        "McNemar's Test is meant for a 2x2 contingency table, use cmh_test for {}x{} table".format(
-            cont_table.shape[0], cont_table.shape[1])
+    if cont_table.shape != (2, 2):
+        raise AttributeError("McNemar's Test is meant for a 2x2 contingency table")
     b, c = cont_table[0, 1], cont_table[1, 0]
     if b + c > 25:
         chi_squared = pow(abs(b - c) - 1, 2) / (b + c)
