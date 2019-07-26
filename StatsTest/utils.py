@@ -43,7 +43,9 @@ def _hypergeom_distribution(a, b, c, d):
     Return
     ------
     The hyper-geometric distribution given a, b, c and d"""
-    if not isinstance(a, int) or not isinstance(b, int) or not isinstance(c, int) or not isinstance(d, int):
+    if isinstance(a, int) and isinstance(b, int) and isinstance(c, int) and isinstance(d, int):
+        pass
+    elif not isinstance(a, np.integer) or not isinstance(b, np.integer) or not isinstance(c, np.integer) or not isinstance(d, np.integer):
         raise TypeError("Cannot compute factorials for non-integer values")
     return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / \
            (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))

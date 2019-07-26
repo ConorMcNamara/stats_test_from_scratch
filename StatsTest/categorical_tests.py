@@ -83,7 +83,7 @@ def chi_goodness_of_fit_test(observed, expected=None):
     df = len(observed) - 1
     X = np.sum(np.power(observed - expected, 2) / expected)
     p = 1 - chi2.cdf(X, df)
-    return X, df
+    return X, p
 
 
 def g_goodness_of_fit_test(observed, expected=None):
@@ -111,7 +111,7 @@ def g_goodness_of_fit_test(observed, expected=None):
     df = len(observed) - 1
     g = 2 * np.sum(observed * np.log(observed / expected))
     p = 1 - chi2.cdf(g, df)
-    return g, df
+    return g, p
 
 
 def fisher_test(cont_table, alternative='two-sided'):
@@ -131,30 +131,44 @@ def fisher_test(cont_table, alternative='two-sided'):
     """
     if alternative.casefold() not in ['two-sided', 'greater', 'less']:
         raise ValueError("Cannot determine method for alternative hypothesis")
+    cont_table = _check_table(cont_table, True)
     if cont_table.shape != (2, 2):
         raise AttributeError("Fisher's Exact Test is meant for a 2x2 contingency table")
-    cont_table = _check_table(cont_table, True)
     a, b, c, d = cont_table[0, 0], cont_table[0, 1], cont_table[1, 0], cont_table[1, 1]
-    p = 0
-    if alternative.casefold() in ['two-sided', 'less']:
-        num_steps = min(a, d) + 1
+    p = _hypergeom_distribution(a, b, c, d)
+
+    # left side
+    def left_side(a, b, c, d):
+        num_steps = min(a, d)
+        p_val = []
         for i in range(num_steps):
-            p += _hypergeom_distribution(a, b, c, d)
             a -= 1
             b += 1
             c += 1
             d -= 1
-        if alternative.casefold() == 'two-sided':
-            p *= 2
-    else:
-        num_steps = min(b, c) + 1
+            p_val.append(_hypergeom_distribution(a, b, c, d))
+        return p_val
+
+    # right side
+    def right_side(a, b, c, d):
+        num_steps = min(b, c)
+        p_val = []
         for i in range(num_steps):
-            p += _hypergeom_distribution(a, b, c, d)
             a += 1
             b -= 1
             c -= 1
             d += 1
-    return p
+            p_val.append(_hypergeom_distribution(a, b, c, d))
+        return p_val
+
+    left_p_val, right_p_val = left_side(a, b, c, d), right_side(a, b, c, d)
+    if alternative.casefold() == 'greater':
+        return p + np.sum(right_p_val)
+    elif alternative.casefold() == 'less':
+        return p + np.sum(left_p_val)
+    else:
+        all_p = right_p_val + left_p_val
+        return p + np.sum([i for i in all_p if i <= p])
 
 
 #def cmh_test(cont_table, alternative='two-sided'):

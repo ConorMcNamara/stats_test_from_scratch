@@ -72,3 +72,7 @@ class TestRankTest(unittest.TestCase):
         x3 = [34, 31, 3, 23, 30, 6]
         x, p = friedman_test(x1, x2, x3)
         assert pytest.approx(2.333, 0.01) == x
+
+
+if __name__ == '__main__':
+    unittest.main()
