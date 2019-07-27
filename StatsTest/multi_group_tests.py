@@ -53,7 +53,7 @@ def brown_forsythe_test(*args):
     """
     k = len(args)
     if k < 2:
-        raise AttributeError( "Need at least two groups to perform a Brown-Forsythe Test")
+        raise AttributeError("Need at least two groups to perform a Brown-Forsythe Test")
     n_i, z_bar, all_z_ij, z_bar_condensed = [], [], [], []
     for obs in args:
         obs = _check_table(obs, False)
@@ -182,7 +182,8 @@ def cochran_test(*args):
     Parameters
     ----------
     args: list or numpy arrays
-        The observed measurements for each group, organized into lists or numpy arrays
+        Each array corresponds to all observations from a single treatment. That is, each array corresponds to a
+        column in our table
 
     Return
     ------
@@ -193,14 +194,14 @@ def cochran_test(*args):
     """
     k = len(args)
     if k < 3:
-        raise AttributeError("Need at least 3 groups to perform Cochran's Q Test")
+        raise AttributeError("Cannot run Cochran's Q Test with less than 3 treatments")
     if len(np.unique(args)) > 2:
         raise AttributeError("Cochran's Q Test only works with binary variables")
     df = k - 1
-    N = np.mean(args)
-    all_data = np.vstack(_check_table(args, False)).T
-    col_sum, row_sum = np.sum(all_data, axis=1), np.sum(all_data, axis=0)
+    N = np.sum(args)
+    all_data = np.vstack(args).T
+    row_sum, col_sum = np.sum(all_data, axis=1), np.sum(all_data, axis=0)
     scalar = k * (k - 1)
-    T = scalar * np.sum(np.power(row_sum - (N / k)), 2) / np.sum(col_sum - (k - col_sum))
+    T = scalar * np.sum(np.power(col_sum - (N / k), 2)) / np.sum(row_sum * (k - row_sum))
     p = 1 - chi2.cdf(T, df)
     return T, p
