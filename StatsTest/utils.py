@@ -42,7 +42,8 @@ def _hypergeom_distribution(a, b, c, d):
 
     Return
     ------
-    The hyper-geometric distribution given a, b, c and d"""
+    The hyper-geometric distribution given a, b, c and d
+    """
     if isinstance(a, int) and isinstance(b, int) and isinstance(c, int) and isinstance(d, int):
         pass
     elif not isinstance(a, np.integer) or not isinstance(b, np.integer) or not isinstance(c, np.integer) or not isinstance(d, np.integer):
@@ -64,7 +65,7 @@ def _check_table(table, only_count=False):
     Return
     ------
     table: numpy array
-        The dataset, convered to a numpy array
+        The dataset, converted to a numpy array
     """
     if isinstance(table, list):
         table = np.array(table)
@@ -89,6 +90,22 @@ def _check_table(table, only_count=False):
 
 
 def _sse(sum_data, square_data, n_data):
+    """Calculates the sum of squares for the errors
+
+    Parameters
+    ----------
+    sum_data: list or numpy array
+        An array containing the sum of each group of data.
+    square_data: list or numpy array
+        An array containing the sum of the squared differences of each group of data
+    n_data: list or numpy array
+        An array containing the length of each group of data
+
+    Return
+    ------
+    sse: float
+        The sum of squares of the errors
+    """
     sum_data, square_data, n_data = _check_table(sum_data, False), _check_table(square_data, False), _check_table(n_data, False)
     if not np.all(square_data >= 0):
         raise ValueError("Cannot have negative square of numbers")

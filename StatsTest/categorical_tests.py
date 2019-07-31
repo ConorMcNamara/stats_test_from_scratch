@@ -4,19 +4,24 @@ from StatsTest.utils import _check_table, _hypergeom_distribution
 
 
 def chi_squared_test(cont_table):
-    """Found in scipy.stats as chi2_contingency
+    """Found in scipy.stats as chi2_contingency.
+    Determines the difference between what we expect the count of a group to be versus what what was observed in our
+    contingency table. Assuming our data follows a chi distribution (i.e., observations are independent), if the observed
+    variances are found to be very high given the number of observations, then we reject our null hypothesis and
+    conclude that this difference could not occur due to chance.
 
     Parameters
     ----------
     cont_table: list or numpy array
-        A contingency table to perform our chi_squared test
+        A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
+        confusion matrix for predicting a binary variable.
 
     Return
     ------
     X: float
-        The Chi statistic
-    p: float
-        The likelihood that our observed differences are due to chance
+        The Chi test statistic, or the variance of the difference of our observed results versus expected results.
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe our X value given the number of observations we had.
     """
     cont_table = _check_table(cont_table, True)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
@@ -32,17 +37,20 @@ def chi_squared_test(cont_table):
 
 def g_test(cont_table):
     """Found in scipy.stats as chi2_contingency(lambda_="log-likelihood")
+    A likelihood ratio test used for determine if the difference between our observed results and expected results in
+    our contingency table are likely to happen due to chance.
 
     Parameters
     ----------
     cont_table: list or numpy array
-        A contingency table to perform our G Test
+        A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
+        confusion matrix for predicting a binary variable.
 
     Return
     ------
     g: float
-        The G statistic
-    p: float
+        The G statistic, or the likelihood ratio of the difference between observed and expected
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     cont_table = _check_table(cont_table, True)
@@ -60,6 +68,8 @@ def g_test(cont_table):
 
 def chi_goodness_of_fit_test(observed, expected=None):
     """Found in scipy.stats as chisquare
+    Used when we cannot divide the data cleanly into a contingency table or when we have actual expected results to
+    compare to.
 
     Parameters
     ----------
@@ -71,9 +81,9 @@ def chi_goodness_of_fit_test(observed, expected=None):
     Return
     ------
     X: float
-        The Chi statistic
-    p: float
-        The likelihood that our observed differences are due to chance
+        The Chi statistic, or the sum of squared differences between observed and expected
+    p: float, 0 <= p <= 1
+        The likelihood that our observed differences, given the amount of data, can be attributed to chance
     """
     observed = _check_table(observed, False)
     if not expected:
@@ -88,6 +98,8 @@ def chi_goodness_of_fit_test(observed, expected=None):
 
 def g_goodness_of_fit_test(observed, expected=None):
     """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
+    Similar to chi_goodness_of_fit_test, used when we cannot divide the data cleanly into a contingency table or when we
+    have actual expected results to compare to.
 
     Parameters
     ----------
@@ -99,8 +111,8 @@ def g_goodness_of_fit_test(observed, expected=None):
     Return
     ------
     g: float
-        The G statistic
-    p: float
+        The G statistic, or the likelihood ratio of the difference between observed and expected
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     observed = _check_table(observed, False)
@@ -116,18 +128,20 @@ def g_goodness_of_fit_test(observed, expected=None):
 
 def fisher_test(cont_table, alternative='two-sided'):
     """Found in scipy.stats as fisher_exact
+    Used to determine the exact likelihood that we would observe a measurement in our 2x2 contingency table that
+    is just as extreme, if not moreso, than our observed results.
 
     Parameters
     ----------
     cont_table: list or numpy array
-        A contingency table to perform our fisher test
-    alternative: str
+        A 2x2 contingency table
+    alternative: str, default is two-sided
          What our alternative hypothesis is. It can be two-sided, less or greater
 
     Return
     ------
-    p: float
-        The probability that our observed differences are due to chance
+    p: float, 0 <= p <= 1
+        The exact likelihood of finding a more extreme measurement than our observed data
     """
     if alternative.casefold() not in ['two-sided', 'greater', 'less']:
         raise ValueError("Cannot determine method for alternative hypothesis")
@@ -161,12 +175,14 @@ def fisher_test(cont_table, alternative='two-sided'):
             p_val.append(_hypergeom_distribution(a, b, c, d))
         return p_val
 
-    left_p_val, right_p_val = left_side(a, b, c, d), right_side(a, b, c, d)
     if alternative.casefold() == 'greater':
+        right_p_val = right_side(a, b, c, d)
         return p + np.sum(right_p_val)
     elif alternative.casefold() == 'less':
+        left_p_val = left_side(a, b, c, d)
         return p + np.sum(left_p_val)
     else:
+        left_p_val, right_p_val = left_side(a, b, c, d), right_side(a, b, c, d)
         all_p = right_p_val + left_p_val
         return p + np.sum([i for i in all_p if i <= p])
 
@@ -177,17 +193,22 @@ def fisher_test(cont_table, alternative='two-sided'):
 
 def mcnemar_test(cont_table):
     """Found in statsmodels as mcnemar
+    Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
+    assumption that the marginal column and row probabilities are equal, i.e., that the probability that b and c
+    are equivalent.
 
     Parameters
     ----------
     cont_table: list or numpy array
+        A 2x2 contingency table
 
     Return
     ------
     chi_squared: float
-        Our chi-squared statistic
-    p: float
-        The probabiltiy that our observed differences were due to chance"""
+        Our Chi statistic, or the sum of differences between b and c
+    p: float, 0 <= p <= 1
+        The probability that b and c aren't equivalent due to chance
+    """
     cont_table = _check_table(cont_table, True)
     if cont_table.shape != (2, 2):
         raise AttributeError("McNemar's Test is meant for a 2x2 contingency table")

@@ -38,13 +38,13 @@ class TestMultiGroupTests(unittest.TestCase):
     def test_cochranTest_kLessThree_Error(self):
         sample_data = [0, 1, 0, 1]
         with pytest.raises(AttributeError, match="Cannot run Cochran's Q Test with less than 3 treatments"):
-            cochran_test(sample_data, sample_data)
+            cochran_q_test(sample_data, sample_data)
 
     def test_cochranTest_nonBinary_Error(self):
         sample_data = [1, 2, 3, 4]
         sample_data2 = [0, 1, 0, 1]
         with pytest.raises(AttributeError, match="Cochran's Q Test only works with binary variables"):
-            cochran_test(sample_data, sample_data2, sample_data2)
+            cochran_q_test(sample_data, sample_data2, sample_data2)
 
     def test_leveneTest_pResult(self):
         data_1 = randint(0, 100, 10)
@@ -133,7 +133,7 @@ class TestMultiGroupTests(unittest.TestCase):
         x2 = [1, 1, 1, 1, 1]
         x3 = [0, 0, 0, 0, 0]
         x4 = [0, 1, 0, 1, 0]
-        t1, p1 = cochran_test(x1, x2, x3, x4)
+        t1, p1 = cochran_q_test(x1, x2, x3, x4)
         t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(p1) == p2
 
@@ -142,7 +142,7 @@ class TestMultiGroupTests(unittest.TestCase):
         x2 = [1, 1, 1, 1, 1]
         x3 = [0, 0, 0, 0, 0]
         x4 = [0, 1, 0, 1, 0]
-        t1, p1 = cochran_test(x1, x2, x3, x4)
+        t1, p1 = cochran_q_test(x1, x2, x3, x4)
         t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(t1) == t2
 

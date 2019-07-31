@@ -1,28 +1,31 @@
 import numpy as np
 from numbers import Number
 from math import sqrt
-from scipy.stats import t, norm
+from scipy.stats import t, norm, f
 from StatsTest.utils import _standard_error, _check_table
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
     """This test can be found in statsmodels as ztest
+    Determines the likelihood that our sample mean differs from our population mean, assuming that the data follows a
+    normal distribution.
 
     Parameters
     ----------
     sample_data: list or numpy array
-        Our observation data
+        Our observational data
     pop_mean: number
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: str
+    alternative: str, default is two-sided
         What our alternative hypothesis is. It can be two-sided, less or greater
 
     Return
     ------
     z_score: number
         The Z-score of our data
-    p: float
-        The likelihood that our observed data differs from our population mean due to chance
+    p: float, 0 <= p <= 1
+        The likelihood that our observed data differs from our population mean, assuming a normal distribution, due to
+        chance
     """
     if not isinstance(pop_mean, Number):
         raise TypeError("Population mean is not of numeric type")
@@ -47,6 +50,8 @@ def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
 
 def two_sample_z_test(data_1, data_2, alternative='two-sided'):
     """This test can be found in statsmodels as ztest_ind
+    Determines the likelihood that the distribution of two data points is significantly different, assuming that both
+    data points are derived from a normal distribution.
 
     Parameters
     ----------
@@ -54,14 +59,14 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
         The observed dataset we are comparing to data_2
     data_2: list or numpy array
         The observed dataset we are comparing to data_1
-    alternative: str
+    alternative: str, default is two-sided
         What our alternative hypothesis is. It can be two-sided, less or greater
 
     Return
     ------
     z_score: number
         The Z-score of our observed differences
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that the observed differences from data_1 to data_2 are due to chance
     """
     if not isinstance(alternative, str):
@@ -85,7 +90,9 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
 
 
 def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
-    """This test can be found in Scipy.stats as ttest_1samp
+    """This test can be found in scipy.stats as ttest_1samp
+    Used when we want to compare our sample mean to that of an expected population mean, and while we assume that the
+    data follows a normal distribution, our sample size is too small to reliably use the z-test.
 
     Parameters
     ----------
@@ -93,14 +100,14 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
         The observed dataset we are comparing to the population mean
     pop_mean: number
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: str
-        Waht our alternative hypothesis is. It can be two-sided, less or greater
+    alternative: str, default is two-sided
+        What our alternative hypothesis is. It can be two-sided, less or greater
 
     Return
     ------
     t_value: number
-        The t statistic of our dataset
-    p: float
+        The t statistic for the differences between the sample mean and population
+    p: float, 0 <= p <= 1
         The likelihood that our observed data differs from the population mean due to chance
     """
     if not isinstance(pop_mean, Number):
@@ -122,7 +129,9 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
 
 
 def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
-    """
+    """This test can be found in scipy.stats as either ttest_rel or ttest_ind
+    Used when we want to compare the distributions of two samples, and while we assume that they both follow a normal
+    distribution, their sample size is too small to reliably use a z-test.
 
     Parameters
     ----------
@@ -130,16 +139,16 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
         The observed dataset we are comparing to data_2
     data_2: list or numpy array
         The observed dataset we are comparing to data_1
-    alternative: str
+    alternative: str, default is two-sided
         Our alternative hypothesis. It can be two-sided, less or greater
-    paired: bool
+    paired: bool, default is False
         Whether or not data_1 and data_2 are paired observations
 
     Return
     ------
     t_value: number
-        The t statistic for our observed differences
-    p: float
+        The t statistic for the difference between our datasets
+    p: float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
     """
     if not isinstance(alternative, str):
@@ -149,7 +158,7 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     if paired:
-        """This test can be found in Scipy.stats as ttest_rel"""
+        """This test can be found in scipy.stats as ttest_rel"""
         assert len(data_1) == len(data_2), "The data types are not paired"
         n = len(data_1)
         df = n - 1
@@ -160,7 +169,7 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
 
     else:
         # We perform the Welch T-Test due to assumption that variances are not equal
-        """This test can be found in Scipy.stats as ttest.ind"""
+        """This test can be found in scipy.stats as ttest_ind"""
         data_1_var, data_2_var = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
         data_1_n, data_2_n = len(data_1), len(data_2)
         df = np.power((data_1_var / data_1_n) + (data_2_var / data_2_n), 2) /\
@@ -175,6 +184,27 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
 
 
 def one_sample_proportion_z_test(sample_data, pop_mean, alternative='two-sided'):
+    """Found in statsmodels as proportions_ztest
+    Used when comparing whether our observed proportion mean is difference to the population mean, assuming that the
+    proportion mean is normally distributed.
+
+    Parameters
+    ----------
+    sample_data: list or numpy array, must be binary
+        An array containing all observations, marked as a 0 for failure and a 1 for success
+    pop_mean: float
+        Our expected proportion of success
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
+
+    Return
+    ------
+    z_score: float
+        Our z-statistic to analyze the likelihood that our observed difference is due to chance
+    p: float, 0 <= p <= 1
+        The probability that the observed proportion differs from our population proportion, assuming a normal
+        distribution, due to chance
+    """
     if not isinstance(pop_mean, float):
         raise TypeError("Population mean is not of float type")
     if pop_mean > 1 or pop_mean < 0:
@@ -203,6 +233,28 @@ def one_sample_proportion_z_test(sample_data, pop_mean, alternative='two-sided')
 
 
 def two_sample_proportion_z_test(data_1, data_2, alternative='two-sided'):
+    """Found in statsmodels as proportions_ztest
+    Used when we are comparing whether or not two proportion means are the same, given that both of them come from a
+    normal distribution.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, must be binary
+        An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
+        data_2
+    data_2: list or numpy array, must be binary
+        An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
+        data_1
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
+
+    Return
+    ------
+    z_score: float
+        Our z-statistic to analyze the likelihood that our observed difference is due to chance
+    p: float, 0 <= p <= 1
+        The probability that the differences between two samples, assuming a normal distribution, is due to chance
+    """
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
     if not np.array_equal(data_1, data_1.astype(bool)):
         raise AttributeError("Cannot perform a proportion test on non-binary data for data_1")
@@ -225,3 +277,39 @@ def two_sample_proportion_z_test(data_1, data_2, alternative='two-sided'):
     else:
         p = norm.cdf(z_score)
     return z_score, p
+
+# To-do: add unit tests for two_sample_f_test
+def two_sample_f_test(data_1, data_2, alternative='two-sided'):
+    """No method in scipy or statsmodels to immediately calculate this.
+    Used to determine if two populations/samples have the same variance. Note that, due to this being a ratio between
+    data_1 and data_2, a large p-value is just as significant as a small p-value. Also note that this test is extremely
+    sensitive to data that is non-normal, so only use this test if the samples have been verified to come from a normal
+    distribution.
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        The observed measurements for our first sample
+    data_2: list or numpy array
+        The observed measurements for our second sample
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
+
+    Return
+    ------
+    f_statistic: float
+        A ratio of the variance of data_1 to data_2
+    p: float
+        The likelihood that this ratio could occur from two two samples with equal variances, due to chance
+    """
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    df_1, df_2 = len(data_1) - 1, len(data_2) - 1
+    var_1, var_2 = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
+    f_statistic = var_1 / var_2
+    if alternative.casefold() == 'two-sided':
+        p = 2 * (1 - f.cdf(abs(f_statistic), df_1, df_2))
+    elif alternative.casefold() == 'greater':
+        p = 1 - norm.cdf(f_statistic, df_1, df_2)
+    else:
+        p = norm.cdf(f_statistic, df_1, df_2)
+    return f_statistic, p

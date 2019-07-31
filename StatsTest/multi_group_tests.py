@@ -7,17 +7,20 @@ from math import sqrt
 
 def levene_test(*args):
     """Found in scipy.stats as levene(center='mean')
+    Used to determine if a variable/observation in multiple groups has equal variances across all groups.
 
     Parameters
     ----------
     args: list or numpy arrays
-        The observed measurements for each group, organized into lists or numpy array
+        The observed variable/observations for each group, organized into lists or numpy array
 
     Return
     ------
     w: float
-        The W statistic
-    p: float
+        The W statistic, our measure of difference in variability, which is approximately F-distributed.
+    p: float, 0 <= p <= 1
+        The probability that our observed differences in variances could occur due to random sampling from a population
+        of equal variance.
     """
     k = len(args)
     if k < 2:
@@ -38,18 +41,20 @@ def levene_test(*args):
 
 def brown_forsythe_test(*args):
     """Found in scipy.stats as levene(center='median')
+    Used instead of general levene test if we believe our data to be non-normal.
 
     Parameters
     ----------
     args: list or numpy arrays
-        The observed measurements for each group, organized into lists or numpy array
+        The observed variable/observations for each group, organized into lists or numpy array
 
     Return
     ------
     w: float
-        The W statistic
-    p: float
-        The likelihood that our observed differences occur due to chance
+        The W statistic, our measure of difference in variability, which is approximately F-distributed.
+    p: float, 0 <= p <= 1
+        The probability that our observed differences in variances could occur due to random sampling from a population
+        of equal variance.
     """
     k = len(args)
     if k < 2:
@@ -70,6 +75,8 @@ def brown_forsythe_test(*args):
 
 def one_way_f_test(*args):
     """Found in scipy.stats as f_oneway
+    Used to measure if multiple normal populations have the same mean. Note that this test is very sensitive to
+    non-normal data, meaning that it should not be used unless we can verify that the data is normally distributed.
 
     Parameters
     ----------
@@ -79,8 +86,8 @@ def one_way_f_test(*args):
     Return
     ------
     f_statistics: float
-        The F statistic
-    p: float
+        The F statistic, or a measure of the ratio of data explained by the mean versus that unexplained by the mean
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences occur due to chance
     """
     k = len(args)
@@ -103,6 +110,8 @@ def one_way_f_test(*args):
 
 def bartlett_test(*args):
     """Found in scipy.stats as bartlett
+    This test is used to determine if multiple samples are from a population of equal variances. Note that this test
+    is much more sensitive to data that is non-normal compared to Levene or Brown-Forsythe.
 
     Parameters
     ----------
@@ -112,9 +121,10 @@ def bartlett_test(*args):
     Return
     ------
     X: float
-        The Chi statistic
-    p: float
-        The likelihood that our observed differences occur due to chance
+        The Chi statistic, or a measure of the observed difference in variances
+    p: float, 0 <= p <= 1
+        The probability that our observed differences in variances could occur due to random sampling from a population
+        of equal variance.
     """
     k = len(args)
     if k < 2:
@@ -134,6 +144,7 @@ def bartlett_test(*args):
 
 def tukey_range_test(*args):
     """Found in statsmodels as pairwise_tukeyhsd
+    This test compares all possible pairs of means and determines if there are any differences in these pairs.
 
     Parameters
     ----------
@@ -176,8 +187,42 @@ def tukey_range_test(*args):
     return results
 
 
-def cochran_test(*args):
+# def hartley_test(*args):
+#     """Not found in either scipy or statsmodels
+#     Used to determine if the variances between multiple groups are equal. Note that this test is very sensitive to data
+#     that is non-normal and should only be used in instances where we can verify that all data points are normally
+#     distributed.
+#
+#     Parameters
+#     ----------
+#     args: list or numpy arrays
+#         The observed measurements for each group, organized into lists or numpy arrays
+#
+#     Return
+#     ------
+#     f_statistic: float
+#         Our f_statistic, or the ratio of group with the highest variance with the group with the lowest variance
+#     p: float
+#         The likelihood that this ratio could occur from randomly sampling a population of equal variances.
+#     """
+#     k = len(args)
+#     if k < 2:
+#         raise AttributeError("Need at least two groups to perform Hartley's Test")
+#     lengths = np.unique([len(arg) for arg in args])
+#     if len(lengths) != 1:
+#         raise AttributeError("Hartley's Test requires that all groups have the same number of observations")
+#     variances = [np.var(arg, ddof=1) for arg in args]
+#     max_var, min_var = np.max(variances), np.min(variances)
+#     df = lengths[0] - 1
+#     f_statistic = max_var / min_var
+#     p = 1 - f.cdf(f_statistic, df, k)
+#     return f_statistic, p
+
+
+def cochran_q_test(*args):
     """Found in statsmodels as chochrans_q
+    Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
+    requires that there be only two variables encoded: a 1 for success and a 0 for failure.
 
     Parameters
     ----------
@@ -189,7 +234,7 @@ def cochran_test(*args):
     ------
     T: float
         Our T statistic
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     k = len(args)

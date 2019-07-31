@@ -46,7 +46,7 @@ class TestRankTest(unittest.TestCase):
         u_2, p_2 = mannwhitneyu(sample_data, sample_data, alternative='two-sided')
         assert pytest.approx(0.0, 0.01) == u_1 - u_2
 
-    def test_twoSampleWilcoxonTest_pResult(self):
+    def test_twoSampleWilcoxonTest_Wilcox_pResult(self):
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
         w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='wilcox')
@@ -58,6 +58,19 @@ class TestRankTest(unittest.TestCase):
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
         w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='wilcox')
         assert pytest.approx(9) == w
+
+    def test_twoSampleWilcoxonTest_Pratt_pResult(self):
+        x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
+        x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
+        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='pratt')
+        w2, p2 = wilcoxon(x1, x2, zero_method="pratt")
+        assert pytest.approx(p2, 0.01) == p
+
+    def test_twoSampleWilcoxonTest_Pratt_wResult(self):
+        x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
+        x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
+        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='pratt')
+        assert pytest.approx(10) == w
 
     def test_friedmanTest_pResult(self):
         x1 = [27, 2, 4, 18, 7, 9]
