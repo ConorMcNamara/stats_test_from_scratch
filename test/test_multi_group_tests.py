@@ -46,6 +46,27 @@ class TestMultiGroupTests(unittest.TestCase):
         with pytest.raises(AttributeError, match="Cochran's Q Test only works with binary variables"):
             cochran_q_test(sample_data, sample_data2, sample_data2)
 
+    def test_jonckheereTest_uLessTwo_Error(self):
+        sample_data = [1, 2, 3]
+        with pytest.raises(AttributeError, match="Cannot run Jonckheere Test with less than 2 groups"):
+            jonckheere_trend_test(sample_data)
+
+    def test_jonckheereTest_unevenSampleSize_Error(self):
+        sample_data1 = [1, 2, 3]
+        sample_data2 = [3, 4]
+        with pytest.raises(AttributeError, match="Jonckheere Test requires that each group have the same number of observations"):
+            jonckheere_trend_test(sample_data1, sample_data2)
+
+    def test_jonckheereTest_alternativeInt_Error(self):
+        sample_data = [1, 2, 3]
+        with pytest.raises(ValueError, match="Cannot have alternative hypothesis with non-string value"):
+            jonckheere_trend_test(sample_data, sample_data, alternative=10)
+
+    def test_jonckheereTest_alternativeTwoSided_Error(self):
+        sample_data = [1, 2, 3]
+        with pytest.raises(ValueError, match="Cannot discern alternative hypothesis"):
+            jonckheere_trend_test(sample_data, sample_data, alternative="two-sided")
+
     def test_leveneTest_pResult(self):
         data_1 = randint(0, 100, 10)
         data_2 = randint(500, 550, 10)
@@ -119,9 +140,7 @@ class TestMultiGroupTests(unittest.TestCase):
         assert pytest.approx(x2) == x1
 
     def test_tukeyRangeTest_pResult(self):
-        x1 = [1, 2, 3, 4, 5]
-        x2 = [6, 7, 8, 9, 10]
-        x3 = [11, 12, 13, 14, 15]
+        x1, x2, x3 = [1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]
         results = tukey_range_test(x1, x2, x3)
         model = pairwise_tukeyhsd(x1+x2+x3, groups=[0]*5 + [1]*5 + [2]*5)
         p_vals = psturng(np.abs(model.meandiffs / model.std_pairs), len(model.groupsunique), model.df_total)
@@ -129,22 +148,26 @@ class TestMultiGroupTests(unittest.TestCase):
             assert pytest.approx(p_vals[i]) == results[i][2]
 
     def test_cochranTest_pResult(self):
-        x1 = [1, 0, 1, 0, 1]
-        x2 = [1, 1, 1, 1, 1]
-        x3 = [0, 0, 0, 0, 0]
-        x4 = [0, 1, 0, 1, 0]
+        x1, x2, x3, x4 = [1, 0, 1, 0, 1], [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 1, 0, 1, 0]
         t1, p1 = cochran_q_test(x1, x2, x3, x4)
         t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(p1) == p2
 
     def test_cochranTest_tResult(self):
-        x1 = [1, 0, 1, 0, 1]
-        x2 = [1, 1, 1, 1, 1]
-        x3 = [0, 0, 0, 0, 0]
-        x4 = [0, 1, 0, 1, 0]
+        x1, x2, x3, x4 = [1, 0, 1, 0, 1], [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 1, 0, 1, 0]
         t1, p1 = cochran_q_test(x1, x2, x3, x4)
         t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(t1) == t2
+
+    def test_jonckheereTest_pResult(self):
+        data_1, data_2, data_3 = [10, 12, 14, 16], [12, 18, 20, 22], [20, 25, 27, 30]
+        z, p = jonckheere_trend_test(data_1, data_2, data_3)
+        assert pytest.approx(0.0016454416431436192) == p
+
+    def test_jonckheereTest_zResult(self):
+        data_1, data_2, data_3 = [10, 12, 14, 16], [12, 18, 20, 22], [20, 25, 27, 30]
+        z, p = jonckheere_trend_test(data_1, data_2, data_3)
+        assert pytest.approx(2.939, 0.001) == z
 
 
 if __name__ == '__main__':

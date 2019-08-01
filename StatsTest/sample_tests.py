@@ -278,6 +278,7 @@ def two_sample_proportion_z_test(data_1, data_2, alternative='two-sided'):
         p = norm.cdf(z_score)
     return z_score, p
 
+
 # To-do: add unit tests for two_sample_f_test
 def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     """No method in scipy or statsmodels to immediately calculate this.

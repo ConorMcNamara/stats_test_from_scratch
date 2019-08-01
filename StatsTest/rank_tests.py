@@ -123,7 +123,7 @@ def friedman_test(*args):
     ------
     q: float
         Our Q statistic, or a measure of the difference between our expected result and the observed outcomes
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences between each treatment is due to chance
     """
     k = len(args)
@@ -140,11 +140,92 @@ def friedman_test(*args):
     return q, p
 
 
-# def page_test(*args):
-#     k = len(args)
-#     if k < 3:
-#         raise AttributeError("Page Test not appropriate for {} levels".format(k))
+def page_trend_test(*args, **kwargs):
+    """Not found in either scipy or statsmodels
+    Used to evaluate whether or not there is a monotonic trend within each treatment/condition. Note that the default
+    alternative hypothesis is that treatment_1 >= treatment_2 >= treatment_3 >= .... >= treatment_n, with at least
+    one strict inequality.
+
+    Parameters
+    ----------
+    args: list or numpy array
+        Here, each list/array represents a treatment/condition, where within each condition are the results of each
+        subject in response to said treatment.
+    kwargs: str
+        Used to determine whether or not we are evaluating a monotonically increasing trend or a monotonically decreasing
+        trend
+
+    Return
+    ------
+    l: float
+        Our measure of the strength of the trend, based on our alternative hypothesis
+    p: float, 0 <= p <= 1
+        The likelihood that our observed trend would happen if we were to randomly sample from a population of equal
+        tendencies/trends.
+    """
+    n_conditions = len(args)
+    if n_conditions < 3:
+        raise AttributeError("Page Test not appropriate for {} levels".format(n_conditions))
+    lengths = [len(arg) for arg in args]
+    if len(np.unique(lengths)) != 1:
+        raise AttributeError("Page Test requires that each level have the same number of observations")
+    if "alternative" in kwargs:
+        alternative = kwargs.get("alternative")
+        if not isinstance(alternative, str):
+            raise ValueError("Cannot have alternative hypothesis with non-string value")
+        if alternative.casefold() not in ['greater', 'less']:
+            raise ValueError("Cannot discern alternative hypothesis")
+    else:
+        alternative = "greater"
+    k_subjects = lengths[0]
+    if alternative.casefold() == 'greater':
+        n_rank = np.arange(n_conditions, 0, -1)
+    else:
+        n_rank = np.arange(n_conditions) + 1
+    rank_data = []
+    for i in range(k_subjects):
+        rank_data.append(rankdata([arg[i] for arg in args]))
+    x_i = np.sum(rank_data, axis=0)
+    L = np.sum(n_rank * x_i)
+    top = pow(12 * L - (3 * k_subjects * n_conditions * pow(n_conditions + 1, 2)), 2)
+    bottom = k_subjects * pow(n_conditions, 2) * (pow(n_conditions, 2) - 1) * (n_conditions + 1)
+    x = top / bottom
+    p = 1 - chi2.cdf(x, 1)
+    p /= 2
+    return L, p
 
 
+def kruskal_wallis_test(*args):
+    """Found in scipy.stats as kruskal
+    This test is used to determine whether or not two or more samples originate from the same distribution.
+    Note that this requires the samples to be independent of one another, and that it only tells us if there is a
+    difference, not where the difference(s) occur.
 
+    Parameters
+    ----------
+    args: list or numpy arrays
+        Each list/array represents a group or a sample, and within that array contains the measurements for said group
+        or array
 
+    Returns
+    -------
+    H: float
+        The statistic measuring the difference in distribution
+    p: float, 0 <= p <= 1
+        The likelihood that our observed differences could occur if they were randomly sampled from
+        a population with the same distribution
+    """
+    g = len(args)
+    if g < 2:
+        raise AttributeError("Cannot run Kruskal-Wallis Test with less than 2 groups")
+    rank_data = rankdata(args)
+    r_bar = np.mean(rank_data)
+    n_i = [len(arg) for arg in args]
+    n = np.sum(n_i)
+    rank_data_split = np.split(rank_data, np.cumsum(n_i)[0:len(n_i) - 1])
+    rank_data_s_mean = np.mean(rank_data_split, axis=1)
+    top = np.sum(n_i * np.power(rank_data_s_mean - r_bar, 2))
+    bottom = np.sum(np.power(rank_data_split - r_bar, 2))
+    H = (n - 1) * top / bottom
+    p = 1 - chi2.cdf(H, g - 1)
+    return H, p

@@ -1,6 +1,6 @@
 import numpy as np
 from StatsTest.utils import _check_table, _sse
-from scipy.stats import f, chi2
+from scipy.stats import f, chi2, norm
 from statsmodels.stats.libqsturng import psturng
 from math import sqrt
 
@@ -88,7 +88,7 @@ def one_way_f_test(*args):
     f_statistics: float
         The F statistic, or a measure of the ratio of data explained by the mean versus that unexplained by the mean
     p: float, 0 <= p <= 1
-        The likelihood that our observed differences occur due to chance
+        The likelihood that our observed ratio would occur, in a population with the same mean, due to chance
     """
     k = len(args)
     if k < 2:
@@ -222,13 +222,13 @@ def tukey_range_test(*args):
 def cochran_q_test(*args):
     """Found in statsmodels as chochrans_q
     Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
-    requires that there be only two variables encoded: a 1 for success and a 0 for failure.
+    requires that there be only two variables encoded: 1 for success and 0 for failure.
 
     Parameters
     ----------
     args: list or numpy arrays
         Each array corresponds to all observations from a single treatment. That is, each array corresponds to a
-        column in our table
+        column in our table (Treatment_k), if we were to look at https://en.wikipedia.org/wiki/Cochran%27s_Q_test
 
     Return
     ------
@@ -250,3 +250,67 @@ def cochran_q_test(*args):
     T = scalar * np.sum(np.power(col_sum - (N / k), 2)) / np.sum(row_sum * (k - row_sum))
     p = 1 - chi2.cdf(T, df)
     return T, p
+
+
+def jonckheere_trend_test(*args, **kwargs):
+    """This test is not found in scipy or statsmodels
+    This test is used to determine if the population medians for each groups have an a priori ordering.
+    Note that the default alternative hypothesis is that median_1 <= median_2 <= median_3 <= ... <= median_k, with at
+    least one strict inequality.
+
+    Parameters
+    ----------
+    args: list or numpy array
+        List or numpy arrays, where each array constitutes a population/group, and within that group are their responses.
+        For example, based on the numeric example found here: https://en.wikipedia.org/wiki/Jonckheere%27s_trend_test,
+        the first array would be the measurements found in "contacted" and the second array would the measurements found
+        in "bumped" and the third array would be the measurements found in "smashed"
+    kwargs: str
+        Our alternative hypothesis. The two options are "greater" and "less", indicating the a priori ordering. Default
+        is less
+
+    Return
+    ------
+    z_statistic: float
+        A measure of the difference in trends for the median of each group
+    p: float, 0 <= p <= 1
+        The likelihood that our trend could be found if each group were randomly sampled from a population with the same
+        medians.
+    """
+    k = len(args)
+    if k < 2:
+        raise AttributeError("Cannot run Jonckheere Test with less than 2 groups")
+    u = [len(arg) for arg in args]
+    if len(np.unique(u)) != 1:
+        raise AttributeError("Jonckheere Test requires that each group have the same number of observations")
+    if "alternative" in kwargs:
+        alternative = kwargs.get("alternative")
+        if not isinstance(alternative, str):
+            raise ValueError("Cannot have alternative hypothesis with non-string value")
+        if alternative.casefold() not in ['greater', 'less']:
+            raise ValueError("Cannot discern alternative hypothesis")
+    else:
+        alternative = "less"
+    all_data = np.vstack([sorted(arg) for arg in args]).T
+    if alternative.casefold() == "greater":
+        all_data = np.flip(all_data, axis=1)
+    t = np.unique(all_data, return_counts=True)[1]
+    n = all_data.shape[0] * k
+    p, q = 0, 0
+    for col in range(k - 1):
+        for row in range(all_data.shape[0]):
+            val = all_data[row, col]
+            right_side = [False] * (col + 1) + [True] * (k - col - 1)
+            right_data = np.compress(right_side, all_data, axis=1)
+            p += len(np.where(right_data > val)[0])
+            q += len(np.where(right_data < val)[0])
+    s = p - q
+    sum_t_2, sum_t_3 = np.sum(np.power(t, 2)), np.sum(np.power(t, 3))
+    sum_u_2, sum_u_3 = np.sum(np.power(u, 2)), np.sum(np.power(u, 3))
+    part_one = (2 * (pow(n, 3) - sum_t_3 - sum_u_3) + 3 * (pow(n, 2) - sum_t_2 - sum_u_2) + 5 * n) / 18
+    part_two = (sum_t_3 - 3 * sum_t_2 + 2 * n) * (sum_u_3 - 3 * sum_u_2 + 2 * n) / (9 * n * (n - 1) * (n - 2))
+    part_three = (sum_t_2 - n) * (sum_u_2 - n) / (2 * n * (n - 1))
+    var_s = part_one + part_two + part_three
+    z_statistic = s / sqrt(var_s)
+    p = 1 - norm.cdf(z_statistic)
+    return z_statistic, p
