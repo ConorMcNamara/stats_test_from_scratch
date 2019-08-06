@@ -3,6 +3,7 @@ import pytest
 from StatsTest.categorical_tests import *
 from scipy.stats import chisquare, chi2_contingency, power_divergence, fisher_exact
 from statsmodels.stats.contingency_tables import mcnemar
+import statsmodels.api as sm
 
 
 class TestCategoricalTests(unittest.TestCase):
@@ -86,6 +87,43 @@ class TestCategoricalTests(unittest.TestCase):
         result = mcnemar(table, exact=False)
         x2, p2 = result.statistic, result.pvalue
         assert pytest.approx(p2) == p1
+
+    def test_mcnemarTest_xResult(self):
+        table = [[100, 200], [300, 400]]
+        x1, p1 = mcnemar_test(table)
+        result = mcnemar(table, exact=False)
+        x2, p2 = result.statistic, result.pvalue
+        assert pytest.approx(x2) == x1
+
+    def test_cmhTest_pResult(self):
+        data_1 = [[126, 100], [35, 61]]
+        data_2 = [[908, 688], [497, 807]]
+        data_3 = [[913, 747], [336, 598]]
+        data_4 = [[235, 172], [58, 121]]
+        data_5 = [[402, 308], [121, 215]]
+        data_6 = [[182, 156], [72, 98]]
+        data_7 = [[60, 99], [11, 43]]
+        data_8 = [[104, 89], [21, 36]]
+        mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
+        s_table = sm.stats.StratifiedTable(mat)
+        epsilon1, p1 = cmh_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        epsilon2, p2 = s_table.test_null_odds().statistic, s_table.test_null_odds().pvalue
+        assert pytest.approx(p2) == p1
+
+    def test_cmhTest_xResult(self):
+        data_1 = [[126, 100], [35, 61]]
+        data_2 = [[908, 688], [497, 807]]
+        data_3 = [[913, 747], [336, 598]]
+        data_4 = [[235, 172], [58, 121]]
+        data_5 = [[402, 308], [121, 215]]
+        data_6 = [[182, 156], [72, 98]]
+        data_7 = [[60, 99], [11, 43]]
+        data_8 = [[104, 89], [21, 36]]
+        mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
+        s_table = sm.stats.StratifiedTable(mat)
+        epsilon1, p1 = cmh_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        epsilon2, p2 = s_table.test_null_odds().statistic, s_table.test_null_odds().pvalue
+        assert pytest.approx(epsilon2) == epsilon1
 
 
 if __name__ == '__main__':

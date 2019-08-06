@@ -176,7 +176,7 @@ def tukey_range_test(*args):
     sse = _sse(sum_data, square_data, n_i)
     for group in np.unique(groups):
         group = int(group)
-        for next_group in range(group+1, len(np.unique(groups))):
+        for next_group in range(group + 1, len(np.unique(groups))):
             mean_a, mean_b = mean_i[group], mean_i[next_group]
             n_a, n_b = n_i[group], n_i[next_group]
             difference = abs(mean_a - mean_b)

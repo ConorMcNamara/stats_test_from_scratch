@@ -187,10 +187,6 @@ def fisher_test(cont_table, alternative='two-sided'):
         return p + np.sum([i for i in all_p if i <= p])
 
 
-#def cmh_test(cont_table, alternative='two-sided'):
-   # """Found in statsmodels as Stratified Table"""
-
-
 def mcnemar_test(cont_table):
     """Found in statsmodels as mcnemar
     Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
@@ -220,3 +216,40 @@ def mcnemar_test(cont_table):
         chi_squared = min(b, c)
         p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(binom.ppf(0.99, b + c, 0.5), b + c, 0.5)
     return chi_squared, p
+
+
+def cmh_test(*args):
+    """Found in statsmodels as Stratified Table.test_null_odds()
+    Used when we want to evaluate the association between a binary predictor/treatment and a binary outcome variable
+    with data that is stratified or matched. Our null hypothesis is that the common-odds ratio is 1 while our
+    alternative is that the common odds ratio is not equal to one (i.e., a two-tailed test). This test is an
+    extension of the mcnemar test to handle any arbitrary strata size.
+
+    Parameters
+    ----------
+    args: list or numpy array
+        A group of 2x2 contingency tables, where each group represents a strata
+
+    Returns
+    -------
+    epsilon: float
+        Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
+    p: float
+        The likelihood that our common odds ratio would not equal one if we were to randomly sample strata from the same
+        population
+    """
+    a, row_sum, col_sum, total, n_i, m_i = [], [], [], [], [], []
+    for arg in args:
+        arg = _check_table(arg)
+        if arg.shape != (2, 2):
+            raise AttributeError("CMH Test is meant for 2x2 contingency tables")
+        a = np.append(a, arg[0, 0])
+        row_sum = np.append(row_sum, np.sum(arg, axis=1))
+        col_sum = np.append(col_sum, np.sum(arg, axis=0))
+        total = np.append(total, np.sum(np.sum(arg, axis=0)))
+        n_i, m_i = np.append(n_i, np.sum(arg, axis=1)[0]), np.append(m_i, np.sum(arg, axis=0)[0])
+    top = pow(abs(np.sum(a - (n_i * m_i / total))), 2)
+    bottom = np.sum((n_i * (total - n_i) * m_i * (total - m_i)) / (np.power(total, 2) * (total - 1)))
+    epsilon = top / bottom
+    p = 1 - chi2.cdf(epsilon, 1)
+    return epsilon, p
