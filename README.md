@@ -11,8 +11,8 @@ My goal is two fold:
 ## Sample Tests
 1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html).
 2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html)
-3) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html)
-4) Two Sample F Test: Not found in either scipy or statsmodels.
+3) Two Sample F Test: Not found in either scipy or statsmodels.
+4) Binomial Sign Test: Not found in either scipy or statsmodels
 
 ## Rank Tests
 1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
@@ -38,3 +38,8 @@ My goal is two fold:
 5) Tukey Range Test: Statsmodels through [pairwise_tukeyhsd](https://www.statsmodels.org/stable/generated/statsmodels.stats.multicomp.pairwise_tukeyhsd.html)
 6) Cochran's Q Test: Statsmodels through [cochrans_q](https://www.statsmodels.org/devel/generated/statsmodels.stats.contingency_tables.cochrans_q.html)
 7) Jonckheere Trend Test: Not found in either scipy or statsmodels
+8) Mood Median Test: Scipy through [median_test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.median_test.html)
+
+## Proportion Tests
+1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html)
+2) Binomial Test: Scipy through [binom_test](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.binom_test.html)
