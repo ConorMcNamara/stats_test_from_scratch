@@ -1,8 +1,8 @@
 import numpy as np
 from numbers import Number
 from math import sqrt
-from scipy.stats import t, norm, f
-from StatsTest.utils import _standard_error, _check_table
+from scipy.stats import t, norm, f, binom
+from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
@@ -128,7 +128,7 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
     return t_value, p
 
 
-def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
+def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
     """This test can be found in scipy.stats as either ttest_rel or ttest_ind
     Used when we want to compare the distributions of two samples, and while we assume that they both follow a normal
     distribution, their sample size is too small to reliably use a z-test.
@@ -159,7 +159,8 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     if paired:
         """This test can be found in scipy.stats as ttest_rel"""
-        assert len(data_1) == len(data_2), "The data types are not paired"
+        if len(data_1) != len(data_2):
+            raise AttributeError("The data types are not paired")
         n = len(data_1)
         df = n - 1
         squared_difference = sum((data_1 - data_2) ** 2)
@@ -181,102 +182,6 @@ def two_sample_t_test(data_1, data_2, alternative='two_sided', paired=False):
     if alternative.casefold() == 'two-sided':
         p *= 2
     return t_value, p
-
-
-def one_sample_proportion_z_test(sample_data, pop_mean, alternative='two-sided'):
-    """Found in statsmodels as proportions_ztest
-    Used when comparing whether our observed proportion mean is difference to the population mean, assuming that the
-    proportion mean is normally distributed.
-
-    Parameters
-    ----------
-    sample_data: list or numpy array, must be binary
-        An array containing all observations, marked as a 0 for failure and a 1 for success
-    pop_mean: float
-        Our expected proportion of success
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
-
-    Return
-    ------
-    z_score: float
-        Our z-statistic to analyze the likelihood that our observed difference is due to chance
-    p: float, 0 <= p <= 1
-        The probability that the observed proportion differs from our population proportion, assuming a normal
-        distribution, due to chance
-    """
-    if not isinstance(pop_mean, float):
-        raise TypeError("Population mean is not of float type")
-    if pop_mean > 1 or pop_mean < 0:
-        raise ValueError("Population mean must be between 0 and 1")
-    if not isinstance(alternative, str):
-        raise TypeError("Alternative Hypothesis is not of string type")
-    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
-        raise ValueError("Cannot determine method for alternative hypothesis")
-    sample_data = _check_table(sample_data)
-    if not np.array_equal(sample_data, sample_data.astype(bool)):
-        raise AttributeError("Cannot perform a proportion test on non-binary data")
-    if len(np.where(sample_data == 1)[0]) < 10 or len(np.where(sample_data == 0)[0]) < 10:
-        raise AttributeError("Too few instances of success or failure to run proportion test")
-    p = np.mean(sample_data)
-    q = 1 - p
-    n = len(sample_data)
-    std = sqrt((p * q) / n)
-    z_score = (p - pop_mean) / std
-    if alternative.casefold() == 'two-sided':
-        p = 2 * (1 - norm.cdf(abs(z_score)))
-    elif alternative.casefold() == 'greater':
-        p = 1 - norm.cdf(z_score)
-    else:
-        p = norm.cdf(z_score)
-    return z_score, p
-
-
-def two_sample_proportion_z_test(data_1, data_2, alternative='two-sided'):
-    """Found in statsmodels as proportions_ztest
-    Used when we are comparing whether or not two proportion means are the same, given that both of them come from a
-    normal distribution.
-
-    Parameters
-    ----------
-    data_1: list or numpy array, must be binary
-        An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
-        data_2
-    data_2: list or numpy array, must be binary
-        An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
-        data_1
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
-
-    Return
-    ------
-    z_score: float
-        Our z-statistic to analyze the likelihood that our observed difference is due to chance
-    p: float, 0 <= p <= 1
-        The probability that the differences between two samples, assuming a normal distribution, is due to chance
-    """
-    data_1, data_2 = _check_table(data_1), _check_table(data_2)
-    if not np.array_equal(data_1, data_1.astype(bool)):
-        raise AttributeError("Cannot perform a proportion test on non-binary data for data_1")
-    if not np.array_equal(data_2, data_2.astype(bool)):
-        raise AttributeError("Cannot perform a proportion test on non-binary data for data_2")
-    if not isinstance(alternative, str):
-        raise TypeError("Alternative Hypothesis is not of string type")
-    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
-        raise ValueError("Cannot determine method for alternative hypothesis")
-    n_1, n_2 = len(data_1), len(data_2)
-    p_1, p_2 = np.mean(data_1), np.mean(data_2)
-    p = (p_1 * n_1 + p_2 * n_2) / (n_1 + n_2)
-    q = 1 - p
-    se = sqrt((p * q) * ((1 / n_1) + (1 / n_2)))
-    z_score = (p_1 - p_2) / se
-    if alternative.casefold() == 'two-sided':
-        p = 2 * (1 - norm.cdf(abs(z_score)))
-    elif alternative.casefold() == 'greater':
-        p = 1 - norm.cdf(z_score)
-    else:
-        p = norm.cdf(z_score)
-    return z_score, p
 
 
 # To-do: add unit tests for two_sample_f_test
@@ -303,6 +208,10 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     p: float
         The likelihood that this ratio could occur from two two samples with equal variances, due to chance
     """
+    if not isinstance(alternative, str):
+        raise TypeError("Alternative Hypothesis is not of string type")
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
     df_1, df_2 = len(data_1) - 1, len(data_2) - 1
     var_1, var_2 = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
@@ -310,7 +219,53 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     if alternative.casefold() == 'two-sided':
         p = 2 * (1 - f.cdf(abs(f_statistic), df_1, df_2))
     elif alternative.casefold() == 'greater':
-        p = 1 - norm.cdf(f_statistic, df_1, df_2)
+        p = 1 - f.cdf(f_statistic, df_1, df_2)
     else:
-        p = norm.cdf(f_statistic, df_1, df_2)
+        p = f.cdf(f_statistic, df_1, df_2)
     return f_statistic, p
+
+
+def binomial_sign_test(data_1, data_2, alternative='two-sided', success_prob=0.5):
+    """Not found in either scipy or statsmodels.
+    Used to determine whether or not the measured differences between two groups (X and Y) is
+    significantly greater and/or less than each other. For instance, we might use this to determine if the weight loss
+    for users who followed a certain diet is significant or not.
+
+    Parameters
+    ----------
+    data_1: list or numpy array
+        A list of all observations for group X.
+    data_2: list or numpy array, or int
+        A list of all observations for group Y.
+    alternative: str
+        Our alternative hypothesis. Options are 'two-sided', 'greater' or 'less'. Default is 'two-sided'
+    success_prob: float, 0 <= success_prob <= 1
+        The probability of success. Default is 0.5
+
+    Returns
+    -------
+    p: float, 0 <= p <= 1
+        The probability that our observed differences would happen under a binomial distribution, assuming the given
+        success probability.
+    """
+    if not isinstance(alternative, str):
+        raise TypeError("Alternative Hypothesis is not of string type")
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    if len(data_1) != len(data_2):
+        raise AttributeError("The two data sets are not paired data sets")
+    if not isinstance(success_prob, float):
+        raise TypeError("Probability of success needs to be a decimal value")
+    if success_prob > 1 or success_prob < 0:
+        raise ValueError("Cannot calculate probability of success, needs to be between 0 and 1")
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    diff = data_1 - data_2
+    pos_diff, neg_diff = np.sum(diff > 0), np.sum(diff < 0)
+    total = pos_diff + neg_diff
+    if alternative.casefold() == 'greater':
+        p = _right_extreme(pos_diff, total, success_prob)
+    elif alternative.casefold() == 'less':
+        p = _left_extreme(pos_diff, total, success_prob)
+    else:
+        p = _left_extreme(neg_diff, total, success_prob) + _right_extreme(pos_diff, total, success_prob)
+    return p

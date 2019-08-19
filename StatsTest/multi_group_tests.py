@@ -187,38 +187,6 @@ def tukey_range_test(*args):
     return results
 
 
-# def hartley_test(*args):
-#     """Not found in either scipy or statsmodels
-#     Used to determine if the variances between multiple groups are equal. Note that this test is very sensitive to data
-#     that is non-normal and should only be used in instances where we can verify that all data points are normally
-#     distributed.
-#
-#     Parameters
-#     ----------
-#     args: list or numpy arrays
-#         The observed measurements for each group, organized into lists or numpy arrays
-#
-#     Return
-#     ------
-#     f_statistic: float
-#         Our f_statistic, or the ratio of group with the highest variance with the group with the lowest variance
-#     p: float
-#         The likelihood that this ratio could occur from randomly sampling a population of equal variances.
-#     """
-#     k = len(args)
-#     if k < 2:
-#         raise AttributeError("Need at least two groups to perform Hartley's Test")
-#     lengths = np.unique([len(arg) for arg in args])
-#     if len(lengths) != 1:
-#         raise AttributeError("Hartley's Test requires that all groups have the same number of observations")
-#     variances = [np.var(arg, ddof=1) for arg in args]
-#     max_var, min_var = np.max(variances), np.min(variances)
-#     df = lengths[0] - 1
-#     f_statistic = max_var / min_var
-#     p = 1 - f.cdf(f_statistic, df, k)
-#     return f_statistic, p
-
-
 def cochran_q_test(*args):
     """Found in statsmodels as chochrans_q
     Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
@@ -286,7 +254,7 @@ def jonckheere_trend_test(*args, **kwargs):
     if "alternative" in kwargs:
         alternative = kwargs.get("alternative")
         if not isinstance(alternative, str):
-            raise ValueError("Cannot have alternative hypothesis with non-string value")
+            raise TypeError("Cannot have alternative hypothesis with non-string value")
         if alternative.casefold() not in ['greater', 'less']:
             raise ValueError("Cannot discern alternative hypothesis")
     else:
@@ -314,3 +282,74 @@ def jonckheere_trend_test(*args, **kwargs):
     z_statistic = s / sqrt(var_s)
     p = 1 - norm.cdf(z_statistic)
     return z_statistic, p
+
+
+def mood_median_test(*args, **kwargs):
+    """Found in scipy.stats as median_test
+    This test is used to determine if two or more samples/observations come from a population with the same median.
+
+    Parameters
+    ----------
+    args: list or numpy arrays
+       List or numpy arrays, where each array constitutes a number of observations in a population/group.
+    kwargs: str
+        "alternative": Our alternative hypothesis. The three options are "greater", "less" or "two-sided', used to determine
+        whether or not we expect our data to favor being greater, less than or different from the median.
+        Default is two-sided.
+
+        "handle_med": How we handle the median value. The three options are "greater", "less' or "ignore". If greater,
+        median value is added to values above median. If less, median value is added to values below median. If ignore,
+        median value is not added at all. Default is "less".
+
+    Returns
+    -------
+    X: float
+        Our Chi Statistic measuring the difference of our groups compared to the median
+    p: float
+        The likelihood that our observed differences in medians are due to chance
+    """
+    if len(args) < 2:
+        raise AttributeError("Cannot run Median Test with less than 2 groups")
+    all_data = np.concatenate(args)
+    med = np.median(all_data)
+    if "alternative" in kwargs:
+        alternative = kwargs.get("alternative").casefold()
+        if alternative not in ['greater', 'less', 'two-sided']:
+            raise ValueError("Cannot discern alternative hypothesis")
+    else:
+        alternative = "two-sided"
+    if "handle_med" in kwargs:
+        handle_med = kwargs.get("handle_med").casefold()
+        if handle_med not in ['greater', 'less', 'ignore']:
+            raise ValueError("Cannot discern how to handle median value")
+    else:
+        handle_med = "less"
+    above_med, below_med = [], []
+    # To-do: see if I can simplify this logic by using vectorized functions and eliminate the for-loop
+    if handle_med == "less":
+        for arg in args:
+            arg = _check_table(arg, only_count=True)
+            above_med.append(np.sum(arg > med))
+            below_med.append(np.sum(arg <= med))
+    elif handle_med == "greater":
+        for arg in args:
+            arg = _check_table(arg, only_count=True)
+            above_med.append(np.sum(arg >= med))
+            below_med.append(np.sum(arg < med))
+    else:
+        for arg in args:
+            arg = _check_table(arg, only_count=True)
+            above_med.append(np.sum(arg > med))
+            below_med.append(np.sum(arg < med))
+    cont_table = np.vstack([above_med, below_med])
+    row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
+    expected = col_sum
+    X = np.sum(pow(cont_table - expected, 2) / expected)
+    df = len(args) - 1
+    if alternative == "two-sided":
+        p = 2 * (1 - chi2.cdf(X, df))
+    elif alternative == "less":
+        p = 1 - chi2.cdf(X, df)
+    else:
+        p = chi2.cdf(X, df)
+    return X, p

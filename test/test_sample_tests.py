@@ -2,9 +2,12 @@ from StatsTest.sample_tests import *
 import pytest
 import unittest
 import numpy as np
+from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
 
 
 class TestSampleTest(unittest.TestCase):
+
+    # One Sample Z Test
 
     def test_OneSampleZTest_popMeanString_Error(self):
         sample_data = [10, 20, 30]
@@ -42,6 +45,18 @@ class TestSampleTest(unittest.TestCase):
         with pytest.raises(AttributeError, match="Too few observations for z-test to be reliable, use t-test instead"):
             one_sample_z_test(sample_data, pop_mean)
 
+    def test_OneSampleZTest_pResult(self):
+        sample_data = np.arange(30)
+        pop_mean = 5
+        assert pytest.approx(0.0, 0.01) == one_sample_z_test(sample_data, pop_mean)[1]
+
+    def test_OneSampleZTest_zResult(self):
+        sample_data = np.arange(30)
+        pop_mean = 5
+        assert pytest.approx(11.389, 0.01) == one_sample_z_test(sample_data, pop_mean)[0]
+
+    # Two Sample Z Test
+
     def test_TwoSampleZTest_alternativeInt_Error(self):
         sample_data = [10, 20, 30]
         with pytest.raises(TypeError, match="Alternative Hypothesis is not of string type"):
@@ -56,6 +71,16 @@ class TestSampleTest(unittest.TestCase):
         sample_data = [10, 20, 30]
         with pytest.raises(AttributeError, match="Too few observations for z-test to be reliable, use t-test instead"):
             two_sample_z_test(sample_data, sample_data)
+
+    def test_TwoSampleZTest_pResult(self):
+        sample_data = np.arange(30)
+        assert pytest.approx(1.0, 0.01) == two_sample_z_test(sample_data, sample_data)[1]
+
+    def test_TwoSampleZTest_zResult(self):
+        sample_data = np.arange(30)
+        assert pytest.approx(0.0, 0.01) == two_sample_z_test(sample_data, sample_data)[0]
+
+    # One Sample T Test
 
     def test_OneSampleTTest_popMeanString_Error(self):
         sample_data = [10, 20, 30]
@@ -87,6 +112,22 @@ class TestSampleTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             one_sample_t_test(sample_data, pop_mean, alternative='higher')
 
+    def test_OneSampleTTest_pResult(self):
+        sample_data = np.random.normal(50, 25, 1000)
+        pop_mean = 10
+        t1, p1 = one_sample_t_test(sample_data, pop_mean)
+        t2, p2 = ttest_1samp(sample_data, pop_mean)
+        assert pytest.approx(p2) == p1
+
+    def test_OneSampleTTest_tResult(self):
+        sample_data = np.random.normal(25, 10, 1000)
+        pop_mean = 10
+        t1, p1 = one_sample_t_test(sample_data, pop_mean)
+        t2, p2 = ttest_1samp(sample_data, pop_mean)
+        assert pytest.approx(t2) == t1
+
+    # Two Sample T Test
+
     def test_TwoSampleTTest_alternativeInt_Error(self):
         sample_data = [10, 20, 30]
         with pytest.raises(TypeError, match="Alternative Hypothesis is not of string type"):
@@ -97,83 +138,72 @@ class TestSampleTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             two_sample_t_test(sample_data, sample_data, alternative='more')
 
-    def test_OneSampleZProp_popNotFloat_Error(self):
-        sample_data = [1, 0, 1, 0, 1, 0]
-        pop_mean = 1
-        with pytest.raises(TypeError, match="Population mean is not of float type"):
-            one_sample_proportion_z_test(sample_data, pop_mean)
+    def test_TwoSampleTTest_notPaired_Error(self):
+        data_1 = [10, 20, 30]
+        data_2 = [5, 10]
+        with pytest.raises(AttributeError, match="The data types are not paired"):
+            two_sample_t_test(data_1, data_2, paired=True)
 
-    def test_OneSampleZProp_popLessZero_Error(self):
-        sample_data = [1, 0, 1, 0, 1, 0]
-        pop_mean = -0.5
-        with pytest.raises(ValueError, match="Population mean must be between 0 and 1"):
-            one_sample_proportion_z_test(sample_data, pop_mean)
+    def test_TwoSampleTTest_paired_pResult(self):
+        data_1 = np.random.normal(10, 50, 1000)
+        data_2 = np.random.normal(100, 5, 1000)
+        t1, p1 = two_sample_t_test(data_1, data_2, paired=True)
+        t2, p2 = ttest_rel(data_1, data_2)
+        assert pytest.approx(p2) == p1
 
-    def test_OneSampleZProp_popGreaterOne_Error(self):
-        sample_data = [1, 0, 1, 0, 1, 0]
-        pop_mean = 1.5
-        with pytest.raises(ValueError, match="Population mean must be between 0 and 1"):
-            one_sample_proportion_z_test(sample_data, pop_mean)
+    def test_TwoSampleTTest_paired_tResult(self):
+        data_1 = np.random.normal(20, 30, 1000)
+        data_2 = np.random.normal(50, 25, 1000)
+        t1, p1 = two_sample_t_test(data_1, data_2, paired=True)
+        t2, p2 = ttest_rel(data_1, data_2)
+        assert pytest.approx(t2) == t1
 
-    def test_OneSampleZProp_nonBinary_Error(self):
-        sample_data = [1, 2, 3, 4]
-        pop_mean = 0.5
-        with pytest.raises(AttributeError, match='Cannot perform a proportion test on non-binary data'):
-            one_sample_proportion_z_test(sample_data, pop_mean)
+    def test_TwoSampleTTest_pResult(self):
+        data_1 = np.random.normal(500, 30, 1000)
+        data_2 = np.random.normal(50, 25, 500)
+        t1, p1 = two_sample_t_test(data_1, data_2)
+        t2, p2 = ttest_ind(data_1, data_2, equal_var=False)
+        assert pytest.approx(p2) == p1
 
-    def test_OneSampleZProp_tooFewObs_Error(self):
-        sample_data = [1, 0, 1, 0, 1, 0]
-        pop_mean = 0.5
-        with pytest.raises(AttributeError, match="Too few instances of success or failure to run proportion test"):
-            one_sample_proportion_z_test(sample_data, pop_mean)
+    def test_TwoSampleTTest_tResult(self):
+        data_1 = np.random.normal(20, 30, 1000)
+        data_2 = np.random.normal(65, 37, 250)
+        t1, p1 = two_sample_t_test(data_1, data_2)
+        t2, p2 = ttest_ind(data_1, data_2, equal_var=False)
+        assert pytest.approx(t2) == t1
 
-    def test_TwoSampleZProp_nonBinaryD1_Error(self):
-        sample_data1 = [0, 1, 2]
-        sample_data2 = [0, 1, 0, 1]
-        with pytest.raises(AttributeError, match="Cannot perform a proportion test on non-binary data for data_1"):
-            two_sample_proportion_z_test(sample_data1, sample_data2)
+    # Two Sample F Test
 
-    def test_TwoSampleZProp_nonBinaryD2_Error(self):
-        sample_data1 = [0, 1, 0, 1]
-        sample_data2 = [0, 1, 2]
-        with pytest.raises(AttributeError, match="Cannot perform a proportion test on non-binary data for data_2"):
-            two_sample_proportion_z_test(sample_data1, sample_data2)
+    # Binomial Sign Test
+    def test_BinomialSignTest_alternativeNotString_Error(self):
+        n_success, n_failure, success_prob = [10, 20], [30, 40], 0.5
+        with pytest.raises(TypeError, match="Alternative Hypothesis is not of string type"):
+            binomial_sign_test(n_success, n_failure, alternative=10, success_prob=success_prob)
 
-    def test_OneSampleZTest_pResult(self):
-        sample_data = np.arange(30)
-        pop_mean = 5
-        assert pytest.approx(0.0, 0.01) == one_sample_z_test(sample_data, pop_mean)[1]
+    def test_BinomialSignTest_alternativeWrong_Error(self):
+        n_success, n_failure, success_prob = [10, 20], [30, 40], 0.5
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            binomial_sign_test(n_success, n_failure, alternative='moar', success_prob=success_prob)
 
-    def test_OneSampleZTest_zResult(self):
-        sample_data = np.arange(30)
-        pop_mean = 5
-        assert pytest.approx(11.389, 0.01) == one_sample_z_test(sample_data, pop_mean)[0]
+    def test_BinomialSignTest_successProbNotFloat_Error(self):
+        n_success, n_failure, success_prob = [10, 20], [30, 40], "0.5"
+        with pytest.raises(TypeError, match="Probability of success needs to be a decimal value"):
+            binomial_sign_test(n_success, n_failure, success_prob=success_prob)
 
-    def test_TwoSampleZTest_pResult(self):
-        sample_data = np.arange(30)
-        assert pytest.approx(1.0, 0.01) == two_sample_z_test(sample_data, sample_data)[1]
+    def test_BinomialSignTest_successProbGreaterThanOne_Error(self):
+        n_success, n_failure, success_prob = [10, 20], [30, 40], 1.5
+        with pytest.raises(ValueError, match="Cannot calculate probability of success, needs to be between 0 and 1"):
+            binomial_sign_test(n_success, n_failure, success_prob=success_prob)
 
-    def test_TwoSampleZTest_zResult(self):
-        sample_data = np.arange(30)
-        assert pytest.approx(0.0, 0.01) == two_sample_z_test(sample_data, sample_data)[0]
+    def test_BinomialSignTest_successProbLessThanZero_Error(self):
+        n_success, n_failure, success_prob = [10, 20], [30, 40], -0.5
+        with pytest.raises(ValueError, match="Cannot calculate probability of success, needs to be between 0 and 1"):
+            binomial_sign_test(n_success, n_failure, success_prob=success_prob)
 
-    def test_OneSampleZProp_pResult(self):
-        sample_data = [0, 1] * 15
-        pop_mean = 0.5
-        assert pytest.approx(1.0, 0.01) == one_sample_proportion_z_test(sample_data, pop_mean)[1]
-
-    def test_OneSampleZProp_zResult(self):
-        sample_data = [0, 1] * 15
-        pop_mean = 0.5
-        assert pytest.approx(0.0, 0.01) == one_sample_proportion_z_test(sample_data, pop_mean)[0]
-
-    def test_TwoSampleZProp_pResult(self):
-        sample_data = [0, 1] * 15
-        assert pytest.approx(1.0, 0.01) == two_sample_proportion_z_test(sample_data, sample_data)[1]
-
-    def test_TwoSampleZProp_zResult(self):
-        sample_data = [0, 1] * 15
-        assert pytest.approx(0.0, 0.01) == two_sample_proportion_z_test(sample_data, sample_data)[0]
+    def test_BinomialSignTest_pResult(self):
+        deer_hind = [142, 140, 144, 144, 142, 146, 149, 150, 142, 148]
+        deer_fore = [138, 136, 147, 139, 143, 141, 143, 145, 136, 146]
+        assert pytest.approx(0.109375) == binomial_sign_test(deer_hind, deer_fore)
 
 
 if __name__ == '__main__':

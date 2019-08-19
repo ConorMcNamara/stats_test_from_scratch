@@ -8,6 +8,8 @@ import statsmodels.api as sm
 
 class TestCategoricalTests(unittest.TestCase):
 
+    # Fisher Test
+
     def test_fisherTest_wrongAlternative_Error(self):
         table = [[1, 2], [3, 4]]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
@@ -18,10 +20,34 @@ class TestCategoricalTests(unittest.TestCase):
         with pytest.raises(AttributeError, match="Fisher's Exact Test is meant for a 2x2 contingency table"):
             fisher_test(table)
 
+    def test_fisherTest_pResult(self):
+        table = [[8, 2], [1, 5]]
+        p1 = fisher_test(table, alternative='two-sided')
+        odds_ratio, p2 = fisher_exact(table, alternative='two-sided')
+        assert pytest.approx(p2) == p1
+
+    # McNemar Test
+
     def test_mcnemarTest_notContTable_Error(self):
         table = [1, 2, 3, 4]
         with pytest.raises(AttributeError, match="McNemar's Test is meant for a 2x2 contingency table"):
             mcnemar_test(table)
+
+    def test_mcnemarTest_pResult(self):
+        table = [[100, 200], [300, 400]]
+        x1, p1 = mcnemar_test(table)
+        result = mcnemar(table, exact=False)
+        x2, p2 = result.statistic, result.pvalue
+        assert pytest.approx(p2) == p1
+
+    def test_mcnemarTest_xResult(self):
+        table = [[100, 200], [300, 400]]
+        x1, p1 = mcnemar_test(table)
+        result = mcnemar(table, exact=False)
+        x2, p2 = result.statistic, result.pvalue
+        assert pytest.approx(x2) == x1
+
+    # Chi Square Test for Contingency Tables
 
     def test_chiSquareTest_pResult(self):
         table = [[100, 200], [300, 400]]
@@ -35,6 +61,8 @@ class TestCategoricalTests(unittest.TestCase):
         x2, p2, dof, expected = chi2_contingency(table, correction=False)
         assert pytest.approx(x1, 0.01) == x2
 
+    # G Test for Contingency Tables
+
     def test_gTest_pResult(self):
         table = [[100, 200], [300, 400]]
         x1, p1 = g_test(table)
@@ -46,6 +74,8 @@ class TestCategoricalTests(unittest.TestCase):
         x1, p1 = g_test(table)
         x2, p2, dof, expected = chi2_contingency(table, correction=False, lambda_="log-likelihood")
         assert pytest.approx(x2) == x1
+
+    # Chi Square Test for Goodness of Fit
 
     def test_chiGoodnessOfFit_pResult(self):
         observed = [10, 20, 30, 40]
@@ -61,6 +91,8 @@ class TestCategoricalTests(unittest.TestCase):
         x2, p2 = chisquare(observed, expected)
         assert pytest.approx(x2) == x1
 
+    # G Test for Goodness of Fit
+
     def test_gGoodnessOfFit_pResult(self):
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
@@ -75,25 +107,18 @@ class TestCategoricalTests(unittest.TestCase):
         x2, p2 = power_divergence(observed, expected, lambda_='log-likelihood')
         assert pytest.approx(x2) == x1
 
-    def test_fisherTest_pResult(self):
-        table = [[8, 2], [1, 5]]
-        p1 = fisher_test(table, alternative='two-sided')
-        odds_ratio, p2 = fisher_exact(table, alternative='two-sided')
-        assert pytest.approx(p2) == p1
+    # CMH Test
 
-    def test_mcnemarTest_pResult(self):
-        table = [[100, 200], [300, 400]]
-        x1, p1 = mcnemar_test(table)
-        result = mcnemar(table, exact=False)
-        x2, p2 = result.statistic, result.pvalue
-        assert pytest.approx(p2) == p1
+    def test_cmhTest_TooFewObs_Error(self):
+        data_1 = [[222, 1234], [35, 61]]
+        with pytest.raises(AttributeError, match="Cannot perform CMH Test on less than 2 groups"):
+            cmh_test(data_1)
 
-    def test_mcnemarTest_xResult(self):
-        table = [[100, 200], [300, 400]]
-        x1, p1 = mcnemar_test(table)
-        result = mcnemar(table, exact=False)
-        x2, p2 = result.statistic, result.pvalue
-        assert pytest.approx(x2) == x1
+    def test_cmhTest_NotContingency_Error(self):
+        data_1 = [123, 124, 125, 126]
+        data_2 = [[222, 1234], [35, 61]]
+        with pytest.raises(AttributeError, match="CMH Test is meant for 2x2 contingency tables"):
+            cmh_test(data_1, data_2)
 
     def test_cmhTest_pResult(self):
         data_1 = [[126, 100], [35, 61]]

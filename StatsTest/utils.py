@@ -1,6 +1,7 @@
 from numbers import Number
 from math import sqrt, factorial
 import numpy as np
+from scipy.stats import binom
 
 
 def _standard_error(std, n):
@@ -116,3 +117,15 @@ def _sse(sum_data, square_data, n_data):
     ssr = np.sum(np.power(sum_data, 2) / n_data) - cm
     sse = sst - ssr
     return sse
+
+
+def _right_extreme(n_instances, n_total, prob):
+    counter = np.arange(n_instances, n_total + 1)
+    p = np.sum(binom.pmf(counter, n_total, prob))
+    return p
+
+
+def _left_extreme(n_instances, n_total, prob):
+    counter = np.arange(n_instances+1)
+    p = np.sum(binom.pmf(counter, n_total, prob))
+    return p

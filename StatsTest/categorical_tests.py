@@ -23,14 +23,11 @@ def chi_squared_test(cont_table):
     p: float, 0 <= p <= 1
         The likelihood that we would observe our X value given the number of observations we had.
     """
-    cont_table = _check_table(cont_table, True)
+    cont_table = _check_table(cont_table, only_count=True)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
-    X = 0
-    col_sum, row_sum = np.sum(cont_table, axis=0), np.sum(cont_table, axis=1)
-    for row in range(cont_table.shape[0]):
-        for col in range(cont_table.shape[1]):
-            expected = col_sum[col] * row_sum[row] / np.sum(row_sum)
-            X += pow((cont_table[row, col] - expected), 2) / expected
+    row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
+    expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
+    X = np.sum(pow(cont_table - expected, 2) / expected)
     p = 1 - chi2.cdf(X, df)
     return X, p
 
@@ -238,16 +235,19 @@ def cmh_test(*args):
         The likelihood that our common odds ratio would not equal one if we were to randomly sample strata from the same
         population
     """
+    if len(args) < 2:
+        raise AttributeError("Cannot perform CMH Test on less than 2 groups")
     a, row_sum, col_sum, total, n_i, m_i = [], [], [], [], [], []
     for arg in args:
         arg = _check_table(arg)
         if arg.shape != (2, 2):
             raise AttributeError("CMH Test is meant for 2x2 contingency tables")
         a = np.append(a, arg[0, 0])
-        row_sum = np.append(row_sum, np.sum(arg, axis=1))
-        col_sum = np.append(col_sum, np.sum(arg, axis=0))
-        total = np.append(total, np.sum(np.sum(arg, axis=0)))
-        n_i, m_i = np.append(n_i, np.sum(arg, axis=1)[0]), np.append(m_i, np.sum(arg, axis=0)[0])
+        n, m = np.sum(arg, axis=1), np.sum(arg, axis=0)
+        row_sum = np.append(row_sum, n)
+        col_sum = np.append(col_sum, m)
+        total = np.append(total, np.sum(n))
+        n_i, m_i = np.append(n_i, n[0]), np.append(m_i, m[0])
     top = pow(abs(np.sum(a - (n_i * m_i / total))), 2)
     bottom = np.sum((n_i * (total - n_i) * m_i * (total - m_i)) / (np.power(total, 2) * (total - 1)))
     epsilon = top / bottom
