@@ -46,5 +46,5 @@ My goal is two fold:
 1) Chi Goodness of Fit Test: Scipy through [chisquare](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html)
 2) G Goodness of Fit Test: Scipy through [power_divergence(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.power_divergence.html)
 3) Jarque-Bera Test: Statsmodels through [jarque_bera](https://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.jarque_bera.html)
-4) Ljung-Box Test: Statsmodels through [acorr_ljung(boxpierce=False](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
-5) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce_True](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
+4) Ljung-Box Test: Statsmodels through [acorr_ljung(boxpierce=False)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
+5) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce_True)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
