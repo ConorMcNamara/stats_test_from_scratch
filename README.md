@@ -24,11 +24,9 @@ My goal is two fold:
 ## Categorical Tests
 1) Chi Square Test: Scipy through [chi2_contingency](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html)
 2) G Test: Scipy through [chi2_contingency(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html)
-3) Chi Goodness of Fit Test: Scipy through [chisquare](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html)
-4) G Goodness of Fit Test: Scipy through [power_divergence(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.power_divergence.html)
-5) Fisher Test: Scipy through [fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html)
-6) McNemar Test: Statsmodels through [mcnemar](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
-7) Cochran–Mantel–Haenszel Test: Statsmodels through [StratifiedTable.test_null_odds](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds)
+3) Fisher Test: Scipy through [fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html)
+4) McNemar Test: Statsmodels through [mcnemar](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
+5) Cochran–Mantel–Haenszel Test: Statsmodels through [StratifiedTable.test_null_odds](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds)
 
 ## Multi-Group Tests
 1) Levene Test: Scipy through [levene(center='mean')](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.levene.html)
@@ -43,3 +41,10 @@ My goal is two fold:
 ## Proportion Tests
 1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html)
 2) Binomial Test: Scipy through [binom_test](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.binom_test.html)
+
+## Goodness of Fit Tests
+1) Chi Goodness of Fit Test: Scipy through [chisquare](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html)
+2) G Goodness of Fit Test: Scipy through [power_divergence(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.power_divergence.html)
+3) Jarque-Bera Test: Statsmodels through [jarque_bera](https://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.jarque_bera.html)
+4) Ljung-Box Test: Statsmodels through [acorr_ljung(boxpierce=False](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
+5) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce_True](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
