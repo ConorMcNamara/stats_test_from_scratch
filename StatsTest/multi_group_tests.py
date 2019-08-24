@@ -305,7 +305,7 @@ def mood_median_test(*args, **kwargs):
     -------
     X: float
         Our Chi Statistic measuring the difference of our groups compared to the median
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that our observed differences in medians are due to chance
     """
     if len(args) < 2:
@@ -328,22 +328,22 @@ def mood_median_test(*args, **kwargs):
     # To-do: see if I can simplify this logic by using vectorized functions and eliminate the for-loop
     if handle_med == "less":
         for arg in args:
-            arg = _check_table(arg, only_count=True)
+            arg = _check_table(arg, only_count=False)
             above_med.append(np.sum(arg > med))
             below_med.append(np.sum(arg <= med))
     elif handle_med == "greater":
         for arg in args:
-            arg = _check_table(arg, only_count=True)
+            arg = _check_table(arg, only_count=False)
             above_med.append(np.sum(arg >= med))
             below_med.append(np.sum(arg < med))
     else:
         for arg in args:
-            arg = _check_table(arg, only_count=True)
+            arg = _check_table(arg, only_count=False)
             above_med.append(np.sum(arg > med))
             below_med.append(np.sum(arg < med))
     cont_table = np.vstack([above_med, below_med])
     row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
-    expected = col_sum
+    expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     X = np.sum(pow(cont_table - expected, 2) / expected)
     df = len(args) - 1
     if alternative == "two-sided":

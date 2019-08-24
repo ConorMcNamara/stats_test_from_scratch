@@ -52,73 +52,9 @@ def g_test(cont_table):
     """
     cont_table = _check_table(cont_table, True)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
-    g = 0
-    col_sum, row_sum = np.sum(cont_table, axis=0), np.sum(cont_table, axis=1)
-    for row in range(cont_table.shape[0]):
-        for col in range(cont_table.shape[1]):
-            expected = col_sum[col] * row_sum[row] / np.sum(row_sum)
-            g += cont_table[row, col] * np.log(cont_table[row, col] / expected)
-    g *= 2
-    p = 1 - chi2.cdf(g, df)
-    return g, p
-
-
-def chi_goodness_of_fit_test(observed, expected=None):
-    """Found in scipy.stats as chisquare
-    Used when we cannot divide the data cleanly into a contingency table or when we have actual expected results to
-    compare to.
-
-    Parameters
-    ----------
-    observed: list or numpy array
-        Our observed data
-    expected: (Optional) list or numpy array
-        What we expected the results to be. If none given, then we expect all data points to be equally likely
-
-    Return
-    ------
-    X: float
-        The Chi statistic, or the sum of squared differences between observed and expected
-    p: float, 0 <= p <= 1
-        The likelihood that our observed differences, given the amount of data, can be attributed to chance
-    """
-    observed = _check_table(observed, False)
-    if not expected:
-        expected = np.repeat(np.mean(observed), len(observed))
-    else:
-        expected = _check_table(expected)
-    df = len(observed) - 1
-    X = np.sum(np.power(observed - expected, 2) / expected)
-    p = 1 - chi2.cdf(X, df)
-    return X, p
-
-
-def g_goodness_of_fit_test(observed, expected=None):
-    """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
-    Similar to chi_goodness_of_fit_test, used when we cannot divide the data cleanly into a contingency table or when we
-    have actual expected results to compare to.
-
-    Parameters
-    ----------
-    observed: list or numpy array
-        Our observed data
-    expected: (Optional) list or numpy array
-        What we expected the results to be. If none given, then we expect all data points to be equally likely
-
-    Return
-    ------
-    g: float
-        The G statistic, or the likelihood ratio of the difference between observed and expected
-    p: float, 0 <= p <= 1
-        The likelihood that our observed differences are due to chance
-    """
-    observed = _check_table(observed, False)
-    if not expected:
-        expected = np.repeat(np.mean(observed), len(observed))
-    else:
-        expected = _check_table(expected)
-    df = len(observed) - 1
-    g = 2 * np.sum(observed * np.log(observed / expected))
+    row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
+    expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
+    g = 2 * np.sum(cont_table * np.log(cont_table / expected))
     p = 1 - chi2.cdf(g, df)
     return g, p
 
@@ -231,7 +167,7 @@ def cmh_test(*args):
     -------
     epsilon: float
         Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that our common odds ratio would not equal one if we were to randomly sample strata from the same
         population
     """

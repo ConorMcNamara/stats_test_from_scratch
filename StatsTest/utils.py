@@ -120,12 +120,107 @@ def _sse(sum_data, square_data, n_data):
 
 
 def _right_extreme(n_instances, n_total, prob):
+    """Used for a binomial problem. Calculates the exact likelihood of finding observations as and more extreme
+    than our observed value
+
+    Parameters
+    ----------
+    n_instances: int
+        The number of observed successes in our binomial problem
+    n_total: int
+        The total number of observations
+    prob: float, 0<=p<=1
+        The expected probability of success
+
+    Returns
+    -------
+    p: float
+        The exact likelihood that we would find observations more extreme than our observed number of
+        success
+    """
     counter = np.arange(n_instances, n_total + 1)
     p = np.sum(binom.pmf(counter, n_total, prob))
     return p
 
 
 def _left_extreme(n_instances, n_total, prob):
+    """Used for a binomial problem. Calculates the exact likelihood of finding observations as and less extreme
+    than our observed value
+
+    Parameters
+    ----------
+    n_instances: int
+        The number of observed successes in our binomial problem
+    n_total: int
+        The total number of observations
+    prob: float, 0<=p<=1
+        The expected probability of success
+
+    Returns
+    -------
+    p: float
+        The exact likelihood that we would find observations less extreme than our observed number of
+        success
+    """
     counter = np.arange(n_instances+1)
     p = np.sum(binom.pmf(counter, n_total, prob))
     return p
+
+
+def _skew(data):
+    """Calculates the skew (third moment) of the data
+
+    Parameters
+    ----------
+    data: list or numpy array
+        Contains all measured observations that we want to evaluate the skew on
+
+    Returns
+    -------
+    skew: float
+        Our measure of the asymmetry of the probability distribution of a real-valued random variable about its mean
+    """
+    x_bar = np.mean(data)
+    n = len(data)
+    mu_3 = np.sum(np.power(data - x_bar, 3)) / n
+    sigma_3 = np.sum(np.power(np.var(data), 1.5))
+    skew = mu_3 / sigma_3
+    return skew
+
+
+def _kurtosis(data):
+    """Calculates the kurtosis (fourth moment) of the data
+
+    Parameters
+    ----------
+    data: list or numpy array
+        Contains all measured observations that we want to evaluate the kurtosis on
+
+    Returns
+    -------
+    kurtosis: float
+        The sharpness of the peak of a frequency-distribution curve in our data
+    """
+    x_bar = np.mean(data)
+    n = len(data)
+    mu_4 = np.sum(np.power(data - x_bar, 4)) / n
+    sigma_4 = np.sum(np.power(np.var(data), 2))
+    kurtosis = mu_4 / sigma_4
+    return kurtosis
+
+
+def _autocorr(data, lags):
+    """
+    Parameters
+    ----------
+    data: list or numpy array
+
+    lags: list or numpy array
+
+    :return:
+    """
+    mean = np.mean(data)
+    var = np.var(data)
+    xp = data - mean
+    corr = [1. if lag == 0 else np.sum(xp[l:]*xp[:-l])/len(data)/var for lag in lags]
+    return np.array(corr)

@@ -173,6 +173,29 @@ class TestSampleTest(unittest.TestCase):
         assert pytest.approx(t2) == t1
 
     # Two Sample F Test
+    def test_twoSampleFTest_alternativeNotString_Error(self):
+        data_1 = [100, 200, 300]
+        data_2 = [10, 20, 30]
+        with pytest.raises(TypeError, match="Alternative Hypothesis is not of string type"):
+            two_sample_f_test(data_1, data_2, alternative=10)
+
+    def test_twoSampleFTest_alternativeWrong_Error(self):
+        data_1 = [100, 200, 300]
+        data_2 = [10, 20]
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            two_sample_f_test(data_1, data_2, alternative='moar')
+
+    def test_twoSampleFTest_pResult(self):
+        data_1 = [560, 530, 570, 490, 510, 550, 550, 530]
+        data_2 = [600, 590, 590, 630, 610, 630]
+        f, p = two_sample_f_test(data_1, data_2)
+        assert pytest.approx(p, 0.0001) == 0.4263
+
+    def test_twoSampleFTest_fResult(self):
+        data_1 = [560, 530, 570, 490, 510, 550, 550, 530]
+        data_2 = [600, 590, 590, 630, 610, 630]
+        f, p = two_sample_f_test(data_1, data_2)
+        assert pytest.approx(f, 0.0001) == 2.1163
 
     # Binomial Sign Test
     def test_BinomialSignTest_alternativeNotString_Error(self):

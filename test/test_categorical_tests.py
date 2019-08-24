@@ -1,7 +1,7 @@
 import unittest
 import pytest
 from StatsTest.categorical_tests import *
-from scipy.stats import chisquare, chi2_contingency, power_divergence, fisher_exact
+from scipy.stats import chi2_contingency, fisher_exact
 from statsmodels.stats.contingency_tables import mcnemar
 import statsmodels.api as sm
 
@@ -73,38 +73,6 @@ class TestCategoricalTests(unittest.TestCase):
         table = [[100, 200], [300, 400]]
         x1, p1 = g_test(table)
         x2, p2, dof, expected = chi2_contingency(table, correction=False, lambda_="log-likelihood")
-        assert pytest.approx(x2) == x1
-
-    # Chi Square Test for Goodness of Fit
-
-    def test_chiGoodnessOfFit_pResult(self):
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
-        x1, p1 = chi_goodness_of_fit_test(observed, expected)
-        x2, p2 = chisquare(observed, expected)
-        assert pytest.approx(p2) == p1
-
-    def test_chiGoodnessOfFit_xResult(self):
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
-        x1, p1 = chi_goodness_of_fit_test(observed, expected)
-        x2, p2 = chisquare(observed, expected)
-        assert pytest.approx(x2) == x1
-
-    # G Test for Goodness of Fit
-
-    def test_gGoodnessOfFit_pResult(self):
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
-        x1, p1 = g_goodness_of_fit_test(observed, expected)
-        x2, p2 = power_divergence(observed, expected, lambda_='log-likelihood')
-        assert pytest.approx(p2) == p1
-
-    def test_gGoodnessOfFit_xResult(self):
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
-        x1, p1 = g_goodness_of_fit_test(observed, expected)
-        x2, p2 = power_divergence(observed, expected, lambda_='log-likelihood')
         assert pytest.approx(x2) == x1
 
     # CMH Test

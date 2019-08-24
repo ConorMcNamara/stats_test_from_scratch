@@ -1,0 +1,167 @@
+from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
+from scipy.stats import chi2
+import numpy as np
+
+# def shapiro_wilk_test(data):
+#     data = _check_table(data, only_count=False)
+#
+
+
+def chi_goodness_of_fit_test(observed, expected=None):
+    """Found in scipy.stats as chisquare
+    Used when we cannot divide the data cleanly into a contingency table or when we have actual expected results to
+    compare to.
+
+    Parameters
+    ----------
+    observed: list or numpy array
+        Our observed data
+    expected: (Optional) list or numpy array
+        What we expected the results to be. If none given, then we expect all data points to be equally likely
+
+    Returns
+    -------
+    X: float
+        The Chi statistic, or the sum of squared differences between observed and expected
+    p: float, 0 <= p <= 1
+        The likelihood that our observed differences, given the amount of data, can be attributed to chance
+    """
+    observed = _check_table(observed, False)
+    if not expected:
+        expected = np.repeat(np.mean(observed), len(observed))
+    else:
+        expected = _check_table(expected)
+    df = len(observed) - 1
+    X = np.sum(np.power(observed - expected, 2) / expected)
+    p = 1 - chi2.cdf(X, df)
+    return X, p
+
+
+def g_goodness_of_fit_test(observed, expected=None):
+    """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
+    Similar to chi_goodness_of_fit_test, used when we cannot divide the data cleanly into a contingency table or when we
+    have actual expected results to compare to.
+
+    Parameters
+    ----------
+    observed: list or numpy array
+        Our observed data
+    expected: (Optional) list or numpy array
+        What we expected the results to be. If none given, then we expect all data points to be equally likely
+
+    Returns
+    -------
+    g: float
+        The G statistic, or the likelihood ratio of the difference between observed and expected
+    p: float, 0 <= p <= 1
+        The likelihood that our observed differences are due to chance
+    """
+    observed = _check_table(observed, False)
+    if not expected:
+        expected = np.repeat(np.mean(observed), len(observed))
+    else:
+        expected = _check_table(expected)
+    df = len(observed) - 1
+    g = 2 * np.sum(observed * np.log(observed / expected))
+    p = 1 - chi2.cdf(g, df)
+    return g, p
+
+
+def jarque_bera_test(data):
+    """Found in statsmodels as jarque_bera
+    This test is used to evaluate whether the skew and kurtosis of said data follows that of a normal distribution
+
+    Parameters
+    ----------
+    data: list or numpy array
+        An array containing all observations from our data
+
+    Returns
+    -------
+    jb: float
+        Our test statistic, tells us how close our data is to matching a normal distribution. The closer to 0, the more
+        normal the data is
+    p_value: float, 0 <= p <= 1
+        The likelihood that we would see this skew and kurtosis from a normal distribution due to chance
+    """
+    data = _check_table(data, only_count=False)
+    n = len(data)
+    skew = _skew(data)
+    kurtosis = _kurtosis(data)
+    jb = (n / 6) * (pow(skew, 2) + (pow(kurtosis - 3, 2) / 4))
+    p_value = 1 - chi2.cdf(jb, 2)
+    return jb, p_value
+
+
+def ljung_box_test(data, num_lags=None):
+    """Found in statsmodels as acorr_ljung(boxpierce=False)
+    Used to determine if any group of autocorrelations in a time series dataset are different from zero
+
+    Parameters
+    ----------
+    data: list or numpy array
+        The time series dataset we are performing our test on
+    num_lags: int or list, default is none
+        If int, the maximum number of time lags
+        If list, then the series of time lags we are performing
+        If none, then use np.arange(1, 10)
+
+    Returns
+    -------
+    q: float
+        The Ljung-Box statistic, or our measure of autocorrelations differing from zero
+    p: float
+        The likelihood that our observed autocorrelations would differ from zero due to chance
+    """
+    if not num_lags:
+        h_lags = np.arange(1, 10)
+    elif isinstance(num_lags, int):
+        h_lags = np.arange(1, num_lags + 1)
+    elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
+        num_lags = _check_table(num_lags, only_count=False)
+        h_lags = num_lags
+    else:
+        raise ValueError("Cannot discern number of lags")
+    h = np.max(h_lags)
+    n = len(data)
+    n_repeat = np.repeat(n, h)
+    box_sum = np.sum(_autocorr(data, h_lags) / (n_repeat - h_lags))
+    q = n * (n + 2) * box_sum
+    p = 1 - chi2.cdf(q, h)
+    return q, p
+
+
+def box_pierce_test(data, num_lags=None):
+    """Found in statsmodels as acorr_ljung(boxpierce=True)
+    Used to determine if any group of autocorrelations in a time series dataset are different from zero
+
+    Parameters
+    ----------
+    data: list or numpy array
+        The time series dataset we are performing our test on
+    num_lags: int or list, default is none
+        If int, the maximum number of time lags
+        If list, then the series of time lags we are performing
+        If none, then use np.arange(1, 10)
+
+    Returns
+    -------
+    q: float
+        The Box-Pierce statistic, or our measure of autocorrelations differing from zero
+    p: float
+        The likelihood that our observed autocorrelations would differ from zero due to chance
+    """
+    if not num_lags:
+        h_lags = np.arange(1, 10)
+    elif isinstance(num_lags, int):
+        h_lags = np.arange(1, num_lags + 1)
+    elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
+        num_lags = _check_table(num_lags, only_count=False)
+        h_lags = num_lags
+    else:
+        raise ValueError("Cannot discern number of lags")
+    h = np.max(h_lags)
+    n = len(data)
+    q = n * np.sum(_autocorr(data, h_lags))
+    p = 1 - chi2.cdf(q, h)
+    return p, q

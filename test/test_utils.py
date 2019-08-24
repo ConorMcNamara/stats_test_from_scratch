@@ -4,6 +4,7 @@ import unittest
 import pandas as pd
 from numpy.testing import assert_array_equal
 import numpy as np
+from scipy.stats.mstats_basic import skew, kurtosis
 
 
 class TestUtils(unittest.TestCase):
@@ -130,6 +131,29 @@ class TestUtils(unittest.TestCase):
         n_data = [10, 10, 10]
         assert pytest.approx(1500, 0.01) == utils._sse(sum_data, square_data, n_data)
 
+    def test_rightExtreme_Result(self):
+        n = 50
+        n_success = 25
+        p = 0.5
+        assert pytest.approx(utils._left_extreme(n_success, n, p)) == utils._right_extreme(n_success, n, p)
+
+    def test_leftExtreme_Result(self):
+        n = 100
+        n_success = 60
+        p = 0.5
+        assert pytest.approx(utils._left_extreme(n_success, n, p)) != utils._right_extreme(n_success, n, p)
+
+    def test_skew_result(self):
+        data = np.random.normal(0, 100, 1000)
+        skew_1 = utils._skew(data)
+        skew_2 = skew(data)
+        assert pytest.approx(skew_2) == skew_1
+
+    def test_kurtosis_result(self):
+        data = np.random.normal(0, 100, 1000)
+        kurt_1 = utils._kurtosis(data)
+        kurt_2 = kurtosis(data) + 3
+        assert pytest.approx(kurt_2) == kurt_1
 
 if __name__ == '__main__':
     unittest.main()

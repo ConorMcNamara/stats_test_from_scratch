@@ -1,7 +1,7 @@
 import numpy as np
 from numbers import Number
 from math import sqrt
-from scipy.stats import t, norm, f, binom
+from scipy.stats import t, norm, f
 from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme
 
 
@@ -205,7 +205,7 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     ------
     f_statistic: float
         A ratio of the variance of data_1 to data_2
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that this ratio could occur from two two samples with equal variances, due to chance
     """
     if not isinstance(alternative, str):
@@ -217,7 +217,7 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     var_1, var_2 = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
     f_statistic = var_1 / var_2
     if alternative.casefold() == 'two-sided':
-        p = 2 * (1 - f.cdf(abs(f_statistic), df_1, df_2))
+        p = 2 * (1 - f.cdf(f_statistic, df_1, df_2))
     elif alternative.casefold() == 'greater':
         p = 1 - f.cdf(f_statistic, df_1, df_2)
     else:
