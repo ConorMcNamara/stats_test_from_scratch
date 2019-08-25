@@ -1,6 +1,7 @@
 from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
 from scipy.stats import chi2
 import numpy as np
+from math import sqrt, log, asinh
 
 # def shapiro_wilk_test(data):
 #     data = _check_table(data, only_count=False)
@@ -113,8 +114,8 @@ def ljung_box_test(data, num_lags=None):
     p: float
         The likelihood that our observed autocorrelations would differ from zero due to chance
     """
-    if not num_lags:
-        h_lags = np.arange(1, 10)
+    if num_lags is None:
+        h_lags = np.arange(1, 11)
     elif isinstance(num_lags, int):
         h_lags = np.arange(1, num_lags + 1)
     elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
@@ -125,7 +126,7 @@ def ljung_box_test(data, num_lags=None):
     h = np.max(h_lags)
     n = len(data)
     n_repeat = np.repeat(n, h)
-    box_sum = np.sum(_autocorr(data, h_lags) / (n_repeat - h_lags))
+    box_sum = np.sum(pow(_autocorr(data, h_lags), 2) / (n_repeat - h_lags))
     q = n * (n + 2) * box_sum
     p = 1 - chi2.cdf(q, h)
     return q, p
@@ -151,8 +152,8 @@ def box_pierce_test(data, num_lags=None):
     p: float
         The likelihood that our observed autocorrelations would differ from zero due to chance
     """
-    if not num_lags:
-        h_lags = np.arange(1, 10)
+    if num_lags is None:
+        h_lags = np.arange(1, 11)
     elif isinstance(num_lags, int):
         h_lags = np.arange(1, num_lags + 1)
     elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
@@ -162,6 +163,45 @@ def box_pierce_test(data, num_lags=None):
         raise ValueError("Cannot discern number of lags")
     h = np.max(h_lags)
     n = len(data)
-    q = n * np.sum(_autocorr(data, h_lags))
+    q = n * np.sum(pow(_autocorr(data, h_lags), 2))
     p = 1 - chi2.cdf(q, h)
-    return p, q
+    return q, p
+
+
+def k_squared_test(data):
+    """Found in scipy.stats as normaltest
+    Used to determine the likelihood that our sample dataset comes from a normal distribution.
+
+    Parameters
+    ----------
+    data: list or numpy array
+        Contains all observations from our sample to measure departure from normality
+
+    Returns
+    -------
+    k2: float
+        Our test statistic, or the measure of difference of our skew and kurtosis compared to a normal distribution
+    p: float, 0 <= p <= 1
+        The likelihood that we would see the observed differences in skew and kurtosis from a normal population due
+        to chance
+    """
+    data = _check_table(data, only_count=False)
+    n = len(data)
+    skew = _skew(data)
+    kurtosis = _kurtosis(data) - 3
+    y2_skew = (36 * (n - 7) * (pow(n, 2) + 2 * n - 5)) / ((n - 2) * (n + 5) * (n + 7) * (n + 9))
+    u2_skew = 6 * (n - 2) / ((n + 1) * (n + 3))
+    w2 = sqrt(2 * y2_skew + 4) - 1
+    epsilon_skew = 1 / sqrt(log(sqrt(w2)))
+    alpha_2_skew = 2 / (w2 - 1)
+    z1 = epsilon_skew * asinh(skew / (alpha_2_skew * sqrt(u2_skew)))
+    u1_kurt = - 6 / (n + 1)
+    u2_kurt = (24 * n * (n - 2) * (n - 3)) / (pow(n + 1, 2) * (n + 3) * (n + 5))
+    y1_kurt = 6 * (pow(n, 2) - (5 * n) + 2) / ((n + 7) * (n + 9)) * \
+              sqrt((6 * (n + 3) * (n + 5))/ (n * (n - 2) * (n - 3)))
+    a = 6 + (8 / y1_kurt) * ((2 / y1_kurt) + sqrt(1 + (4 / pow(y1_kurt, 2))))
+    z2 = sqrt(9 * a / 2) * (1 - (2 / (9 * a))) - \
+                            pow((1 - (2 / a) / (1 + ((kurtosis - u1_kurt) / sqrt(u2_kurt)) * sqrt(2 / (a - 4)))), 1/3)
+    k2 = pow(z1, 2) + pow(z2, 2)
+    p = 1 - chi2.cdf(k2, 2)
+    return k2, p

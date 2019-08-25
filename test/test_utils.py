@@ -155,5 +155,6 @@ class TestUtils(unittest.TestCase):
         kurt_2 = kurtosis(data) + 3
         assert pytest.approx(kurt_2) == kurt_1
 
+
 if __name__ == '__main__':
     unittest.main()

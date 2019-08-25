@@ -222,5 +222,5 @@ def _autocorr(data, lags):
     mean = np.mean(data)
     var = np.var(data)
     xp = data - mean
-    corr = [1. if lag == 0 else np.sum(xp[l:]*xp[:-l])/len(data)/var for lag in lags]
+    corr = [1. if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var for lag in lags]
     return np.array(corr)
