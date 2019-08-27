@@ -9,7 +9,7 @@ def _standard_error(std, n):
 
     Parameters
     ----------
-    std: number
+    std: float
         The standard deviation of our data
     n: int
         The length of our data
@@ -77,6 +77,8 @@ def _check_table(table, only_count=False):
     if only_count:
         if not np.issubdtype(table.dtype, np.integer):
             raise TypeError("Cannot perform statistical test with non-integer counts")
+        if not np.all(table > 0):
+            raise ValueError("Cannot have negative counts")
     else:
         if np.issubdtype(table.dtype, np.integer):
             pass
@@ -84,9 +86,6 @@ def _check_table(table, only_count=False):
             pass
         else:
             raise TypeError("Cannot perform statistical test with non-numeric values")
-    if only_count:
-        if not np.all(table > 0):
-            raise ValueError("Cannot have negative counts")
     return table
 
 
@@ -210,14 +209,19 @@ def _kurtosis(data):
 
 
 def _autocorr(data, lags):
-    """
+    """Calculates the autocorrelation for a given time series dataset given a set amount of lags
+
     Parameters
     ----------
     data: list or numpy array
-
+        Observations from a time series dataset
     lags: list or numpy array
+        The length of our time lags that we wish to calculate the autocorrelation with
 
-    :return:
+    Returns
+    -------
+    corr: numpy array
+        The autocorrelation for a dataset for each given lag
     """
     mean = np.mean(data)
     var = np.var(data)

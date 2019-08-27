@@ -5,6 +5,7 @@ import pandas as pd
 from numpy.testing import assert_array_equal
 import numpy as np
 from scipy.stats.mstats_basic import skew, kurtosis
+from statsmodels.tsa.stattools import acf
 
 
 class TestUtils(unittest.TestCase):
@@ -154,6 +155,13 @@ class TestUtils(unittest.TestCase):
         kurt_1 = utils._kurtosis(data)
         kurt_2 = kurtosis(data) + 3
         assert pytest.approx(kurt_2) == kurt_1
+
+    def test_autocorr_result(self):
+        data = np.random.normal(0, 10, 100)
+        lags = np.arange(0, 11)
+        a1 = utils._autocorr(data, lags)
+        a2 = acf(data, nlags=len(lags)-1, fft=False)
+        assert all([pytest.approx(a) == b for a, b in zip(a1, a2)])
 
 
 if __name__ == '__main__':

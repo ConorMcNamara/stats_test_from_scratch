@@ -97,8 +97,14 @@ class TestProportionTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Cannot calculate probability of success, needs to be between 0 and 1"):
             binomial_test(n_success, n_failure, success_prob=success_prob)
 
-    def test_BinomialTest_pResult(self):
+    def test_BinomialTest_rightSide_pResult(self):
         n_success, n_failure, success_prob = 50, 100, 0.66
+        p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
+        p2 = binom_test(n_success, n_success + n_failure, success_prob)
+        assert pytest.approx(p2) == p1
+
+    def test_BinomialTest_leftSide_pResult(self):
+        n_success, n_failure, success_prob = 50, 100, 0.25
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
         p2 = binom_test(n_success, n_success + n_failure, success_prob)
         assert pytest.approx(p2) == p1

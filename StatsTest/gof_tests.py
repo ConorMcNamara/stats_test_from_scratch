@@ -1,5 +1,5 @@
 from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
-from scipy.stats import chi2
+from scipy.stats import chi2, norm
 import numpy as np
 from math import sqrt, log, asinh
 
@@ -157,8 +157,7 @@ def box_pierce_test(data, num_lags=None):
     elif isinstance(num_lags, int):
         h_lags = np.arange(1, num_lags + 1)
     elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
-        num_lags = _check_table(num_lags, only_count=False)
-        h_lags = num_lags
+        h_lags = _check_table(num_lags, only_count=False)
     else:
         raise ValueError("Cannot discern number of lags")
     h = np.max(h_lags)
@@ -168,9 +167,65 @@ def box_pierce_test(data, num_lags=None):
     return q, p
 
 
+def skew_test(data):
+    """Found in scipy.stats as skewtest.
+    Used to determine the likelihood that our sample dataset comes from a normal distribution based on its skewness.
+
+    Returns
+    -------
+    z: float
+        Our test statistic, or the measure of difference of our skewness compared to a normal distribution
+    p: float, 0 <= p <= 1
+        The likelihood that we would see the observed differences in skewness from a normal population due
+        to chance
+    """
+    data = _check_table(data, only_count=False)
+    if len(data) < 8:
+        raise AttributeError("Skew Test is not reliable on datasets with less than 8 observations")
+    n = len(data)
+    skew = _skew(data)
+    y2 = (36 * (n - 7) * (pow(n, 2) + 2 * n - 5)) / ((n - 2) * (n + 5) * (n + 7) * (n + 9))
+    u2 = 6 * (n - 2) / ((n + 1) * (n + 3))
+    w2 = sqrt(2 * y2 + 4) - 1
+    delta = 1 / sqrt(log(sqrt(w2)))
+    alpha_2 = 2 / (w2 - 1)
+    z = delta * asinh(skew / sqrt(alpha_2 * u2))
+    p = 2 * (1 - norm.cdf(abs(z)))
+    return z, p
+
+
+def kurtosis_test(data):
+    """Found in scipy.stats as kurtosistest.
+    Used to determine the likelihood that our sample dataset comes from a normal distribution based on its kurtosis.
+
+    Returns
+    -------
+    z: float
+        Our test statistic, or the measure of difference of our kurtosis compared to a normal distribution
+    p: float, 0 <= p <= 1
+        The likelihood that we would see the observed differences in kurtosis from a normal population due
+        to chance
+    """
+    data = _check_table(data, only_count=False)
+    if len(data) < 20:
+        raise AttributeError("Kurtosis Test is not reliable on datasets with less than 20 observations")
+    n = len(data)
+    kurtosis = _kurtosis(data) - 3
+    mean_kurt = - 6 / (n + 1)
+    var_kurt = 24 * n * (n - 2) * (n - 3) / (pow(n + 1, 2) * (n + 3) * (n + 5))
+    skew_kurt = (6 * (pow(n, 2) - 5 * n + 2) / ((n + 7) * (n + 9))) * sqrt(6 * (n + 3) * (n + 5) / (n * (n - 2) * (n - 3)))
+    a = 6 + ((8 / skew_kurt) * (2 / skew_kurt + sqrt(1 + 4 / pow(skew_kurt, 2))))
+    z_top = 1 - 2 / a
+    z_bottom = 1 + ((kurtosis - mean_kurt) / sqrt(var_kurt)) * sqrt(2 / (a - 4))
+    z = sqrt(9 * a / 2) * (1 - 2 / (9 * a) - np.sign(z_bottom) * np.power(z_top / abs(z_bottom), 1 / 3.0))
+    p = 2 * (1 - norm.cdf(abs(z)))
+    return z, p
+
+
 def k_squared_test(data):
     """Found in scipy.stats as normaltest
-    Used to determine the likelihood that our sample dataset comes from a normal distribution.
+    Used to determine the likelihood that our sample dataset comes from a normal distribution based on its
+    skewness and kurtosis.
 
     Parameters
     ----------
@@ -180,28 +235,13 @@ def k_squared_test(data):
     Returns
     -------
     k2: float
-        Our test statistic, or the measure of difference of our skew and kurtosis compared to a normal distribution
+        Our test statistic, or the measure of difference of our skewness and kurtosis compared to a normal distribution
     p: float, 0 <= p <= 1
-        The likelihood that we would see the observed differences in skew and kurtosis from a normal population due
+        The likelihood that we would see the observed differences in skewness and kurtosis from a normal population due
         to chance
     """
-    data = _check_table(data, only_count=False)
-    n = len(data)
-    skew = _skew(data)
-    kurtosis = _kurtosis(data) - 3
-    y2_skew = (36 * (n - 7) * (pow(n, 2) + 2 * n - 5)) / ((n - 2) * (n + 5) * (n + 7) * (n + 9))
-    u2_skew = 6 * (n - 2) / ((n + 1) * (n + 3))
-    w2 = sqrt(2 * y2_skew + 4) - 1
-    epsilon_skew = 1 / sqrt(log(sqrt(w2)))
-    alpha_2_skew = 2 / (w2 - 1)
-    z1 = epsilon_skew * asinh(skew / (alpha_2_skew * sqrt(u2_skew)))
-    u1_kurt = - 6 / (n + 1)
-    u2_kurt = (24 * n * (n - 2) * (n - 3)) / (pow(n + 1, 2) * (n + 3) * (n + 5))
-    y1_kurt = 6 * (pow(n, 2) - (5 * n) + 2) / ((n + 7) * (n + 9)) * \
-              sqrt((6 * (n + 3) * (n + 5))/ (n * (n - 2) * (n - 3)))
-    a = 6 + (8 / y1_kurt) * ((2 / y1_kurt) + sqrt(1 + (4 / pow(y1_kurt, 2))))
-    z2 = sqrt(9 * a / 2) * (1 - (2 / (9 * a))) - \
-                            pow((1 - (2 / a) / (1 + ((kurtosis - u1_kurt) / sqrt(u2_kurt)) * sqrt(2 / (a - 4)))), 1/3)
+    z1, _ = skew_test(data)
+    z2, _ = kurtosis_test(data)
     k2 = pow(z1, 2) + pow(z2, 2)
     p = 1 - chi2.cdf(k2, 2)
     return k2, p
