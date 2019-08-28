@@ -1,7 +1,7 @@
 from StatsTest.rank_tests import *
 import pytest
 import unittest
-from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare
+from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner
 import numpy as np
 
 
@@ -155,6 +155,35 @@ class TestRankTest(unittest.TestCase):
         h, p = kruskal_wallis_test(x1, x2, x3)
         h2, p2 = kruskal(x1, x2, x3)
         assert pytest.approx(h) == h2
+
+    # Fligner-Kileen Test
+    def test_flignerKileenTest_kLessTwo_Error(self):
+        sample_data = [1, 2, 3]
+        with pytest.raises(AttributeError, match='Cannot perform Fligner-Kileen Test with less than 2 groups'):
+            fligner_kileen_test(sample_data)
+
+    def test_flignerKileenTest_centerWrong_Error(self):
+        sample_data = [1, 2, 3]
+        with pytest.raises(ValueError, match='Cannot discern how to center the data'):
+            fligner_kileen_test(sample_data, sample_data, center="center")
+
+    def test_flignerKileenTest_pResult(self):
+        data_1 = [51, 87, 50, 48, 79, 61, 53, 54]
+        data_2 = [82, 91, 92, 80, 52, 79, 73, 74]
+        data_4 = [85, 80, 65, 71, 67, 51, 63, 93]
+        data_3 = [79, 84, 74, 98, 63, 83, 85, 58]
+        x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
+        x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
+        assert pytest.approx(p2) == p1
+
+    def test_flignerKileenTest_xResult(self):
+        data_1 = [51, 87, 50, 48, 79, 61, 53, 54]
+        data_2 = [82, 91, 92, 80, 52, 79, 73, 74]
+        data_4 = [85, 80, 65, 71, 67, 51, 63, 93]
+        data_3 = [79, 84, 74, 98, 63, 83, 85, 58]
+        x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
+        x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
+        assert pytest.approx(x2) == x1
 
 
 if __name__ == '__main__':
