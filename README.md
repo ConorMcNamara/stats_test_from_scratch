@@ -20,6 +20,7 @@ My goal is two fold:
 3) Friedman Test: Scipy through [friedmanchisquare](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.friedmanchisquare.html)
 4) Page's Trend Test: Not found in either scipy or statsmodels.
 5) Kruskal-Wallis Test: Scipy through [kruskal](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html)
+6) Fligner-Kileen Test: Scipy through [fligner](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fligner.html)
 
 ## Categorical Tests
 1) Chi Square Test: Scipy through [chi2_contingency](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html)
