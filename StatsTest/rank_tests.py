@@ -190,8 +190,7 @@ def page_trend_test(*args, **kwargs):
     top = pow(12 * L - (3 * k_subjects * n_conditions * pow(n_conditions + 1, 2)), 2)
     bottom = k_subjects * pow(n_conditions, 2) * (pow(n_conditions, 2) - 1) * (n_conditions + 1)
     x = top / bottom
-    p = 1 - chi2.cdf(x, 1)
-    p /= 2
+    p = (1 - chi2.cdf(x, 1)) / 2
     return L, p
 
 
@@ -229,3 +228,49 @@ def kruskal_wallis_test(*args):
     H = (n - 1) * top / bottom
     p = 1 - chi2.cdf(H, g - 1)
     return H, p
+
+
+def fligner_kileen_test(*args, **kwargs):
+    """Found in scipy.stats as fligner
+    Used to test the homogeneity of group variances, making no assumptions of the data distribution beforehand
+
+    Parameters
+    ----------
+    args: list or numpy array
+        Each list represents all observations in a group that we wish to test their variances on
+    kwargs: str
+        Whether we are measuring our residuals as distance from the mean or median. Default is 'median'
+
+    Returns
+    -------
+    x: float
+        The test statistic measuring the differences in variances between all groups
+    p: float, 0 <= p <= 1
+        The likelihood that our differences would be observed if all groups were drawn from the same population
+    """
+    k = len(args)
+    if k < 2:
+        raise AttributeError("Cannot perform Fligner-Kileen Test with less than 2 groups")
+    if "center" in kwargs:
+        center = kwargs.get("center").casefold()
+        if center not in ['median', 'mean']:
+            raise ValueError("Cannot discern how to center the data")
+    else:
+        center = 'median'
+    if center == 'median':
+        m_i = [np.median(arg) for arg in args]
+    else:
+        m_i = [np.mean(arg) for arg in args]
+    n_i = [len(arg) for arg in args]
+    n = np.sum(n_i)
+    resids = np.abs([args[i] - m_i[i] for i in range(k)])
+    all_resids = np.hstack([resid for resid in resids])
+    rank_all_resids = rankdata(all_resids)
+    normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)
+    normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0:len(n_i) - 1])
+    var_nr = np.var(normalized_rank, ddof=1)
+    x_bar = np.mean(normalized_rank)
+    x_j = np.mean(normalized_split, axis=1)
+    x = np.sum(n_i * np.power(x_j - x_bar, 2)) / var_nr
+    p = 1 - chi2.cdf(x, k - 1)
+    return x, p
