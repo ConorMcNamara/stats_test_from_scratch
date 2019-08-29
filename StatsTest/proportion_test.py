@@ -11,7 +11,7 @@ def one_sample_proportion_z_test(sample_data, pop_mean, alternative='two-sided')
 
     Parameters
     ----------
-    sample_data: list or numpy array, must be binary
+    sample_data: list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success
     pop_mean: float
         Our expected proportion of success
@@ -60,10 +60,10 @@ def two_sample_proportion_z_test(data_1, data_2, alternative='two-sided'):
 
     Parameters
     ----------
-    data_1: list or numpy array, must be binary
+    data_1: list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
         data_2
-    data_2: list or numpy array, must be binary
+    data_2: list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
         data_1
     alternative: str, default is two-sided
@@ -108,12 +108,12 @@ def binomial_test(success, failure, alternative='two-sided', success_prob=None):
 
     Parameters
     ----------
-    success: list or numpy array, or int
+    success: list or numpy array, 1-D,  or int
         If int, the number of successes. If list, then it is the count of all successes.
-    failure: list or numpy array, or int
+    failure: list or numpy array, 1-D, or int
         If int, the number of failures. If list, then it is the count of all failures.
-    alternative: str
-        Our alternative hypothesis. Options are 'two-sided', 'greater' or 'less'. Default is 'two-sided'
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
     success_prob: float
         The probability of success. If None is given, then probability of success is assumed to be
         length of data_1 / (length of data_1 + length of data_2)

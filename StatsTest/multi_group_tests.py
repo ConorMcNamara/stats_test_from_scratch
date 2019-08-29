@@ -7,11 +7,12 @@ from math import sqrt
 
 def levene_test(*args):
     """Found in scipy.stats as levene(center='mean')
-    Used to determine if a variable/observation in multiple groups has equal variances across all groups.
+    Used to determine if a variable/observation in multiple groups has equal variances across all groups. In short, does
+    each group have equal variance?
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         The observed variable/observations for each group, organized into lists or numpy array
 
     Return
@@ -45,7 +46,7 @@ def brown_forsythe_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         The observed variable/observations for each group, organized into lists or numpy array
 
     Return
@@ -80,7 +81,7 @@ def one_way_f_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy array
 
     Return
@@ -115,7 +116,7 @@ def bartlett_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy array
 
     Return
@@ -148,7 +149,7 @@ def tukey_range_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy arrays
 
     Return
@@ -194,7 +195,7 @@ def cochran_q_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         Each array corresponds to all observations from a single treatment. That is, each array corresponds to a
         column in our table (Treatment_k), if we were to look at https://en.wikipedia.org/wiki/Cochran%27s_Q_test
 
@@ -228,7 +229,7 @@ def jonckheere_trend_test(*args, **kwargs):
 
     Parameters
     ----------
-    args: list or numpy array
+    args: list or numpy array, 1-D
         List or numpy arrays, where each array constitutes a population/group, and within that group are their responses.
         For example, based on the numeric example found here: https://en.wikipedia.org/wiki/Jonckheere%27s_trend_test,
         the first array would be the measurements found in "contacted" and the second array would the measurements found
@@ -290,7 +291,7 @@ def mood_median_test(*args, **kwargs):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
        List or numpy arrays, where each array constitutes a number of observations in a population/group.
     kwargs: str
         "alternative": Our alternative hypothesis. The three options are "greater", "less" or "two-sided', used to determine

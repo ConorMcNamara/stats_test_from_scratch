@@ -2,6 +2,7 @@ from StatsTest.utils import _check_table
 from scipy.stats import rankdata, norm, chi2
 import numpy as np
 from math import sqrt
+from scipy.stats.statlib import gscale
 
 
 def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
@@ -11,16 +12,16 @@ def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         The observed sample for ordinal response variable 1
-    data_2: list or numpy array
+    data_2: list or numpy array, 1-D
         The observed sample for ordinal response variable 2
     alternative: str, default is two-sided
         Our alternative hypothesis. It can be two-sided, greater or less
 
     Return
     ------
-    u: number
+    u: float
         The U statistic for our observed differences in the two ordinal responses
     p: float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
@@ -62,9 +63,9 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         The first sample or repeated measure
-    data_2: list or numpy array
+    data_2: list or numpy array, 1-D
         The second sample or repeated measure
     alternative: str, default is two-sided
         Our alternative hypothesis. It can be two-sided, greater or less
@@ -73,10 +74,11 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
 
     Return
     ------
-    w_value: number
-        The W statistic for our observed differences
+    w_value: float
+        The W statistic for our observed differences in mean ranks
     p: float, 0 <= p <= 1
-        The likelihood that the observed mean rank differences are due to chance
+        The likelihood that the observed mean rank differences would be found in two datasets sampled from the same
+        population
     """
     if alternative.casefold() not in ['two-sided', 'greater', 'less']:
         raise ValueError("Cannot determine method for alternative hypothesis")
@@ -115,7 +117,7 @@ def friedman_test(*args):
 
     Parameters
     ----------
-    args: list or numpy array
+    args: list or numpy array, 1-D
         An array containing the observations for each treatment (In the example above, each array would represent one
         of the judges ratings for every k wine).
 
@@ -148,12 +150,13 @@ def page_trend_test(*args, **kwargs):
 
     Parameters
     ----------
-    args: list or numpy array
+    args: list or numpy array, 1-D
         Here, each list/array represents a treatment/condition, where within each condition are the results of each
         subject in response to said treatment.
     kwargs: str
         Used to determine whether or not we are evaluating a monotonically increasing trend or a monotonically decreasing
-        trend
+        trend.
+        Options for 'alternative' are greater [increasing trend] or less [decreasing trend]. Default is greater
 
     Return
     ------
@@ -202,7 +205,7 @@ def kruskal_wallis_test(*args):
 
     Parameters
     ----------
-    args: list or numpy arrays
+    args: list or numpy arrays, 1-D
         Each list/array represents a group or a sample, and within that array contains the measurements for said group
         or array
 
@@ -236,10 +239,10 @@ def fligner_kileen_test(*args, **kwargs):
 
     Parameters
     ----------
-    args: list or numpy array
+    args: list or numpy array, 1-D
         Each list represents all observations in a group that we wish to test their variances on
     kwargs: str
-        Whether we are measuring our residuals as distance from the mean or median. Default is 'median'
+        Whether we are measuring our residuals as distance from the mean or median. Default is center='median'
 
     Returns
     -------
@@ -274,3 +277,148 @@ def fligner_kileen_test(*args, **kwargs):
     x = np.sum(n_i * np.power(x_j - x_bar, 2)) / var_nr
     p = 1 - chi2.cdf(x, k - 1)
     return x, p
+
+
+def ansari_bradley_test(data_1, data_2, alternative='two-sided'):
+    """Found in scipy.stats as ansari
+    Used to measure the level of dispersion (the distance from the median) between two datasets. Note that this is
+    based off of the assumptions that the two datasets have the same median.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        A list or array containing all observations from our first dataset
+    data_2: list or numpy array, 1-D
+        A list or array containing all observations from our second dataset
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
+
+    Returns
+    -------
+    ab: float
+        The sum of ranks of our first dataset, or our test statistic
+    p: float, 0 <= p <= 1
+        The likelihood that our observed  dispersion would be likely if the two datasets were sampled from the same
+        population
+    """
+    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    n, m = len(data_1), len(data_2)
+    all_data = np.concatenate([data_1, data_2])
+    n_obs = n + m
+    if len(np.unique(all_data)) != n_obs:
+        ties = True
+    else:
+        ties = False
+    rank_data = rankdata(all_data)
+    re_rank = - rank_data[rank_data > np.median(rank_data)] + np.max(rank_data) + 1
+    np.place(rank_data, rank_data > np.median(rank_data), re_rank)
+    ab = np.sum(rank_data[:n])
+    # exact p-value
+    if n < 55 and m < 55 and not ties:
+        a_start, a_1, i_fault = gscale(n,m)
+        ind = ab - a_start
+        total = np.sum(a_1)
+        if ind < len(a_1) / 2:
+            top_index = int(np.ceil(ind))
+            if ind == top_index:
+                if alternative.casefold() == 'two-sided':
+                    p = 2 * np.sum(a_1[:top_index + 1]) / total
+                elif alternative.casefold() == 'less':
+                    p = np.sum(a_1[:top_index + 1]) / total
+                else:
+                    p = np.sum(a_1[top_index + 2:]) / total
+            else:
+                if alternative.casefold() == 'two-sided':
+                    p = 2 * np.sum(a_1[:top_index]) / total
+                elif alternative.casefold() == 'less':
+                    p = np.sum(a_1[:top_index]) / total
+                else:
+                    p = np.sum(a_1[top_index + 1:]) / total
+        else:
+            bottom_index = int(np.floor(ind))
+            if ind == bottom_index:
+                if alternative.casefold() == "two-sided":
+                    p = 2 * np.sum(a_1[bottom_index:]) / total
+                elif alternative.casefold() == 'less':
+                    p = np.sum(a_1[bottom_index:]) / total
+                else:
+                    p = np.sum(a_1[:bottom_index + 1]) / total
+            else:
+                if alternative.casefold() == 'two-sided':
+                    p = 2 * np.sum(a_1[bottom_index + 1:]) / total
+                elif alternative.casefold() == 'less':
+                    p = np.sum(a_1[bottom_index + 1:]) / total
+                else:
+                    p = np.sum(a_1[:bottom_index + 2]) / total
+    else:
+        # even
+        if n_obs % 2 == 0:
+            mu_c = n * (n_obs + 2) / 4
+            if ties:
+                var_c = m * n * (16 * np.sum(np.power(rank_data, 2)) - n_obs * pow(n_obs + 2, 2)) / (16 * n_obs * (n_obs - 1))
+            else:
+                var_c = m * n * (n_obs + 2) * (n_obs - 2) / 48 / (n_obs - 1)
+        # odd
+        else:
+            mu_c = n * pow(n_obs + 1, 2) / 4 / n_obs
+            if ties:
+                var_c = m * n * (16 * n_obs * np.sum(np.power(rank_data, 2)) - pow(n_obs + 1, 4)) / (16 * pow(n_obs, 2) * (n_obs - 1))
+            else:
+                var_c = m * n * (n_obs + 1) * (3 + pow(n_obs, 2)) / (48 * pow(n_obs, 2))
+        z = (ab - mu_c) / sqrt(var_c)
+        if alternative.casefold() == 'two-sided':
+            p = 2 * (1 - norm.cdf(abs(z)))
+        elif alternative.casefold() == 'greater':
+            p = 1 - norm.cdf(z)
+        else:
+            p = norm.cdf(z)
+    return ab, p
+
+
+def mood_test(data_1, data_2, alternative='two-sided'):
+    """Found in scipy.stats as mood
+    Used to measure the level of dispersion of the ranks of the two datasets.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        A list or array containing all observations from our first dataset
+    data_2: list or numpy array, 1-D
+        A list or array containing all observations from our second dataset
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
+
+    Returns
+    -------
+    z: float
+        Our test statistic that measures the degree of normality of the rank dispersions
+    p: float, 0 <= p <= 1
+        The likelihood that our rank dispersion would occur from two datasets drawn from the same
+        distribution
+    """
+    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    len_1, len_2 = len(data_1), len(data_2)
+    n_obs = len_1 + len_2
+    if n_obs < 3:
+        raise AttributeError("Not enough observations to perform mood dispertion test")
+    all_data = np.concatenate([data_1, data_2])
+    rank_data = rankdata(all_data)
+    r_1 = rank_data[:len_1]
+    m = np.sum(np.power(r_1 - (n_obs + 1) / 2, 2))
+    mu_m = len_1 * (pow(n_obs, 2) - 1) / 12
+    var_m = len_1 * len_2 * (n_obs + 1) * (n_obs + 2) * (n_obs - 2) / 180
+    z = (m - mu_m) / sqrt(var_m)
+    if alternative.casefold() == 'two-sided':
+        if z > 0:
+            p = 2 * (1 - norm.cdf(z))
+        else:
+            p = 2 * norm.cdf(z)
+    elif alternative.casefold() == 'greater':
+        p = 1 - norm.cdf(z)
+    else:
+        p = norm.cdf(z)
+    return z, p

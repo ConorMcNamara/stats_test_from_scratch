@@ -1,7 +1,7 @@
 from StatsTest.rank_tests import *
 import pytest
 import unittest
-from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner
+from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, ansari, mood
 import numpy as np
 
 
@@ -157,6 +157,7 @@ class TestRankTest(unittest.TestCase):
         assert pytest.approx(h) == h2
 
     # Fligner-Kileen Test
+
     def test_flignerKileenTest_kLessTwo_Error(self):
         sample_data = [1, 2, 3]
         with pytest.raises(AttributeError, match='Cannot perform Fligner-Kileen Test with less than 2 groups'):
@@ -184,6 +185,80 @@ class TestRankTest(unittest.TestCase):
         x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
         x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(x2) == x1
+
+    # Ansari-Bradley Test
+
+    def test_ansariBradleyTest_alternativeWrong(self):
+        data_1 = np.random.normal(0, 100, 100)
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            ansari_bradley_test(data_1, data_1, alternative="moar")
+
+    def test_ansariBradleyTest_exact_pResult(self):
+        data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
+        data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(p2) == p1
+
+    def test_ansariBradleyTest_exact_xResult(self):
+        data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
+        data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(x2) == x1
+
+    def test_ansariBradleyTest_approxEven_pResult(self):
+        data_1 = np.arange(0, 101)
+        data_2 = np.arange(50, 151)
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(p2) == p1
+
+    def test_ansariBradleyTest_approxEven_xResult(self):
+        data_1 = np.arange(0, 101)
+        data_2 = np.arange(50, 151)
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(x2) == x1
+
+    def test_ansariBradleyTest_approxOdd_pResult(self):
+        data_1 = np.arange(1, 101)
+        data_2 = np.arange(50, 151)
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(p2) == p1
+
+    def test_ansariBradleyTest_approxOdd_xResult(self):
+        data_1 = np.arange(1, 101)
+        data_2 = np.arange(50, 151)
+        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+        x2, p2 = ansari(data_1, data_2)
+        assert pytest.approx(x2) == x1
+
+    # Mood Test
+    def test_moodTest_alternativeWrong_Error(self):
+        data_1 = np.arange(1, 100)
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            mood_test(data_1, data_1, alternative='moar')
+
+    def test_moodTest_nLessThree_Error(self):
+        data_1 = [1]
+        with pytest.raises(AttributeError, match="Not enough observations to perform mood dispertion test"):
+            mood_test(data_1, data_1)
+
+    def test_moodTest_pResult(self):
+        data_1 = np.random.randint(0, 100, 1000)
+        data_2 = np.random.normal(0, 100, 1000)
+        z1, p1 = mood_test(data_1, data_2)
+        z2, p2 = mood(data_1, data_2)
+        assert pytest.approx(p2) == p1
+
+    def test_moodTest_zResult(self):
+        data_1 = np.random.randint(0, 100, 1000)
+        data_2 = np.random.normal(0, 100, 1000)
+        z1, p1 = mood_test(data_1, data_2)
+        z2, p2 = mood(data_1, data_2)
+        assert pytest.approx(z2) == z1
 
 
 if __name__ == '__main__':

@@ -15,9 +15,9 @@ def chi_goodness_of_fit_test(observed, expected=None):
 
     Parameters
     ----------
-    observed: list or numpy array
-        Our observed data
-    expected: (Optional) list or numpy array
+    observed: list or numpy array, 1-D
+        Our observed data points
+    expected: (Optional) list or numpy array, 1-D
         What we expected the results to be. If none given, then we expect all data points to be equally likely
 
     Returns
@@ -45,7 +45,7 @@ def g_goodness_of_fit_test(observed, expected=None):
 
     Parameters
     ----------
-    observed: list or numpy array
+    observed: list or numpy array, 1-D
         Our observed data
     expected: (Optional) list or numpy array
         What we expected the results to be. If none given, then we expect all data points to be equally likely
@@ -74,7 +74,7 @@ def jarque_bera_test(data):
 
     Parameters
     ----------
-    data: list or numpy array
+    data: list or numpy array, 1-D
         An array containing all observations from our data
 
     Returns
@@ -100,7 +100,7 @@ def ljung_box_test(data, num_lags=None):
 
     Parameters
     ----------
-    data: list or numpy array
+    data: list or numpy array, 1-D
         The time series dataset we are performing our test on
     num_lags: int or list, default is none
         If int, the maximum number of time lags
@@ -138,18 +138,18 @@ def box_pierce_test(data, num_lags=None):
 
     Parameters
     ----------
-    data: list or numpy array
+    data: list or numpy array, 1-D
         The time series dataset we are performing our test on
     num_lags: int or list, default is none
         If int, the maximum number of time lags
         If list, then the series of time lags we are performing
-        If none, then use np.arange(1, 10)
+        If none, then use np.arange(1, 11)
 
     Returns
     -------
     q: float
         The Box-Pierce statistic, or our measure of autocorrelations differing from zero
-    p: float
+    p: float, 0 <= p <= 1
         The likelihood that our observed autocorrelations would differ from zero due to chance
     """
     if num_lags is None:
@@ -170,6 +170,11 @@ def box_pierce_test(data, num_lags=None):
 def skew_test(data):
     """Found in scipy.stats as skewtest.
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its skewness.
+
+    Parameters
+    ----------
+    data: list or numpy array, 1-D
+        Contains all observations from our sample to measure departure from normality
 
     Returns
     -------
@@ -197,6 +202,11 @@ def skew_test(data):
 def kurtosis_test(data):
     """Found in scipy.stats as kurtosistest.
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its kurtosis.
+
+    Parameters
+    ----------
+    data: list or numpy array, 1-D
+        Contains all observations from our sample to measure departure from normality
 
     Returns
     -------
@@ -229,7 +239,7 @@ def k_squared_test(data):
 
     Parameters
     ----------
-    data: list or numpy array
+    data: list or numpy array, 1-D
         Contains all observations from our sample to measure departure from normality
 
     Returns

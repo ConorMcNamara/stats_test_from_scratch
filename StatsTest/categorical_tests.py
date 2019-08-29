@@ -12,7 +12,7 @@ def chi_squared_test(cont_table):
 
     Parameters
     ----------
-    cont_table: list or numpy array
+    cont_table: list or numpy array, 2 x 2
         A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
         confusion matrix for predicting a binary variable.
 
@@ -39,7 +39,7 @@ def g_test(cont_table):
 
     Parameters
     ----------
-    cont_table: list or numpy array
+    cont_table: list or numpy array, 2 x 2
         A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
         confusion matrix for predicting a binary variable.
 
@@ -66,10 +66,10 @@ def fisher_test(cont_table, alternative='two-sided'):
 
     Parameters
     ----------
-    cont_table: list or numpy array
+    cont_table: list or numpy array, 2 x 2
         A 2x2 contingency table
     alternative: str, default is two-sided
-         What our alternative hypothesis is. It can be two-sided, less or greater
+        Our alternative hypothesis. It can be two-sided, less or greater
 
     Return
     ------
@@ -128,7 +128,7 @@ def mcnemar_test(cont_table):
 
     Parameters
     ----------
-    cont_table: list or numpy array
+    cont_table: list or numpy array, 2 x 2
         A 2x2 contingency table
 
     Return
@@ -160,7 +160,7 @@ def cmh_test(*args):
 
     Parameters
     ----------
-    args: list or numpy array
+    args: list or numpy array, 2 x 2
         A group of 2x2 contingency tables, where each group represents a strata
 
     Returns

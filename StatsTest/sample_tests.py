@@ -12,16 +12,16 @@ def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
 
     Parameters
     ----------
-    sample_data: list or numpy array
+    sample_data: list or numpy array, 1-D
         Our observational data
-    pop_mean: number
+    pop_mean: float
         The mean of our population, or what we expect the mean of our sample data to be
     alternative: str, default is two-sided
-        What our alternative hypothesis is. It can be two-sided, less or greater
+        Our alternative hypothesis. It can be two-sided, less or greater
 
     Return
     ------
-    z_score: number
+    z_score: float
         The Z-score of our data
     p: float, 0 <= p <= 1
         The likelihood that our observed data differs from our population mean, assuming a normal distribution, due to
@@ -55,12 +55,12 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array
+    data_2: list or numpy array, 1-D
         The observed dataset we are comparing to data_1
     alternative: str, default is two-sided
-        What our alternative hypothesis is. It can be two-sided, less or greater
+        Our alternative hypothesis. It can be two-sided, less or greater
 
     Return
     ------
@@ -96,12 +96,12 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
 
     Parameters
     ----------
-    sample_data: list or numpy array
+    sample_data: list or numpy array, 1-D
         The observed dataset we are comparing to the population mean
-    pop_mean: number
+    pop_mean: float
         The mean of our population, or what we expect the mean of our sample data to be
     alternative: str, default is two-sided
-        What our alternative hypothesis is. It can be two-sided, less or greater
+        Our alternative hypothesis. It can be two-sided, less or greater
 
     Return
     ------
@@ -135,9 +135,9 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array
+    data_2: list or numpy array, 1-D
         The observed dataset we are comparing to data_1
     alternative: str, default is two-sided
         Our alternative hypothesis. It can be two-sided, less or greater
@@ -184,7 +184,6 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
     return t_value, p
 
 
-# To-do: add unit tests for two_sample_f_test
 def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     """No method in scipy or statsmodels to immediately calculate this.
     Used to determine if two populations/samples have the same variance. Note that, due to this being a ratio between
@@ -233,12 +232,12 @@ def binomial_sign_test(data_1, data_2, alternative='two-sided', success_prob=0.5
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         A list of all observations for group X.
-    data_2: list or numpy array, or int
+    data_2: list or numpy array, 1-D
         A list of all observations for group Y.
-    alternative: str
-        Our alternative hypothesis. Options are 'two-sided', 'greater' or 'less'. Default is 'two-sided'
+    alternative: str, default is two-sided
+        Our alternative hypothesis. It can be two-sided, less or greater
     success_prob: float, 0 <= success_prob <= 1
         The probability of success. Default is 0.5
 
