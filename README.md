@@ -21,6 +21,8 @@ My goal is two fold:
 4) Page's Trend Test: Not found in either scipy or statsmodels.
 5) Kruskal-Wallis Test: Scipy through [kruskal](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html)
 6) Fligner-Kileen Test: Scipy through [fligner](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fligner.html)
+7) Ansari-Bradley Test: Scipy through [ansari](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ansari.html)
+8) Mood Test for Dispersion: Scipy through [mood](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mood.html)
 
 ## Categorical Tests
 1) Chi Square Test: Scipy through [chi2_contingency](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html)
