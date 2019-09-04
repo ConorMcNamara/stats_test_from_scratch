@@ -69,16 +69,17 @@ def _check_table(table, only_count=False):
         The dataset, converted to a numpy array
     """
     if isinstance(table, list):
-        table = np.array(table)
+        table = np.array([np.array(xi) for xi in table])
     elif isinstance(table, (np.ndarray, np.generic)):
         pass
     else:
         raise TypeError("Data type {} is not supported".format(type(table)))
     if only_count:
-        if not np.issubdtype(table.dtype, np.integer):
-            raise TypeError("Cannot perform statistical test with non-integer counts")
-        if not np.all(table > 0):
-            raise ValueError("Cannot have negative counts")
+        for tab in table:
+            if not np.issubdtype(tab.dtype, np.integer):
+                raise TypeError("Cannot perform statistical test with non-integer counts")
+            if not np.all(tab >= 0):
+                raise ValueError("Cannot have negative counts")
     else:
         if np.issubdtype(table.dtype, np.integer):
             pass

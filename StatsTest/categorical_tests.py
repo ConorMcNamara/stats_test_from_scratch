@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import chi2, binom
 from StatsTest.utils import _check_table, _hypergeom_distribution
+from math import sqrt
 
 
 def chi_squared_test(cont_table):
@@ -189,3 +190,124 @@ def cmh_test(*args):
     epsilon = top / bottom
     p = 1 - chi2.cdf(epsilon, 1)
     return epsilon, p
+
+
+def woolf_test(*args):
+    """Not found in either scipy or statsmodels
+    Used to test the homogeneity of the odds ratio of each contingency table. Unlike Breslow-Day, compares
+    the actual results to the expected Mantel-Haenzel odds ratio for each strata.
+
+    Parameters
+    ----------
+    args: list or numpy array, 2 x 2
+        A group of 2x2 contingency tables, where each group represents a strata
+
+    Returns
+    -------
+    epsilon: float
+        Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
+    p: float, 0 <= p <= 1
+        The likelihood that our common odds ratio would not be equivalent if we were to randomly sample strata from the
+        same population
+    """
+    k = len(args)
+    if k < 2:
+        raise AttributeError("Cannot perform Woolf Test on less than two groups")
+    or_i, w_i = [], []
+    for arg in args:
+        arg = _check_table(arg, only_count=True)
+        if arg.shape != (2, 2):
+            raise AttributeError("Woolf Test is meant for 2x2 contingency table")
+        a, b, c, d = arg[0, 0], arg[0, 1], arg[1, 0], arg[1, 1]
+        or_i = np.append(or_i, np.log(a * d / (b * c)))
+        w_i = np.append(w_i, np.power((1 / a) + (1 / b) + (1 / c) + (1 / d), -1))
+    or_bar = np.sum(w_i * or_i) / np.sum(w_i)
+    x = np.sum(w_i * np.power(or_i - or_bar, 2))
+    df = k - 1
+    p = 1 - chi2.cdf(x, df)
+    return x, p
+
+
+def breslow_day_test(*args):
+    """Found in statsmodels as StratifiedTable.test_equal_odds()
+    Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
+    row and column with its expected pooled ratio amount
+
+    For solving the quadratic, set A / (n_i - A) / m_i1 - A / mi2 - n_i + A equal to the pooled ratio, and then solve
+    for zero.
+    (1) A * (m_i2 - n_i1 + A) = ratio * (n_i - A) * (m_i1 - A)
+    (2) A * m_i2 - A * n_i2 + A^2 = ratio * n_i * m_i1  - ratio * n_i * A - ratio * m_i1 * A - ratio * A^2
+    (3) A^2 - ratio * A^2 + A * m_i2 - A * n_i + A * ratio * n_i + A * ratio * m_i1 - ratio * n_i * m_i1 = 0
+    (4) A^2(1 - ratio) + A(m_i2 - n_i + ratio * n_i + ratio * m_i1) - x * n_i * m_i1 = 0
+    From there, you can solve for the quadratic
+
+    Parameters
+    ----------
+    args: list or numpy array, 2 x 2
+        A group of 2x2 contingency tables, where each group represents a strata
+
+    Returns
+    -------
+    x: float
+        Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
+    p: float, 0 <= p <= 1
+        The likelihood that our common odds ratio would not be equivalent if we were to randomly generate a from the
+        pooled odds ratio
+    """
+    k = len(args)
+    if k < 2:
+        raise AttributeError("Cannot perform Breslow-Day Test for less than 2 groups")
+    a_i, bc, ad, m_i1, m_i2, n_i = [], [], [], [], [], []
+    for arg in args:
+        arg = _check_table(arg, only_count=True)
+        if arg.shape != (2, 2):
+            raise AttributeError("Breslow-Day Test is meant for 2x2 contingency table")
+        a, b, c, d = arg[0, 0], arg[0, 1], arg[1, 0], arg[1, 1]
+        a_i = np.append(a_i, a)
+        ad = np.append(ad, a * d)
+        bc = np.append(bc, b * c)
+        m_i1 = np.append(m_i1, np.sum(arg, axis=1)[0])
+        m_i2 = np.append(m_i2, np.sum(arg, axis=1)[1])
+        n_i = np.append(n_i, np.sum(arg, axis=0)[0])
+    odds = np.sum(ad / (m_i1 + m_i2)) / np.sum(bc / (m_i1 + m_i2))
+
+    def solve_quadratic(a, b, c):
+        return (-b + np.sqrt(np.power(b, 2) - 4 * a * c)) / (2 * a)
+
+    A = solve_quadratic(1 - odds, (m_i2 - n_i + (odds * n_i) + (odds * m_i1)), -odds * n_i * m_i1)
+    B, C, D = m_i1 - A, n_i - A, m_i2 - n_i + A
+    var_i = np.power((1 / A) + (1 / B) + (1 / C) + (1 / D), -1)
+    x = np.sum(np.power(a_i - A, 2) / var_i)
+    p = 1 - chi2.cdf(x, k - 1)
+    return x, p
+
+
+def bowker_test(cont_table):
+    """Found in statsmodels as TableSymmetry or as bowker_symmetry
+    Used to test if a given square table is symmetric about the main diagonal
+
+    Parameters
+    ----------
+    cont_table: list or numpy array, n x n
+        A nxn contingency table
+
+    Return
+    ------
+    x: float
+        Our Chi statistic, oor a measure of symmetry for our contingency table
+    p: float, 0 <= p <= 1
+        The probability that our table isn't symmetric due to chance
+    """
+    cont_table = _check_table(cont_table, only_count=True)
+    n1, n2 = np.shape(cont_table)
+    if n1 != n2:
+        raise AttributeError("Contingency Table needs to be of a square shape")
+    upper_diagonal = np.triu_indices(n1, 1)
+    # lower_diagonal = np.tril_indices(n1, -1) The issue with this code is that it doesn't maintain the exact order
+    # of a lower triangular matrix compared to np.triu_indices, which we need for our test statistic
+    upper_triangle = cont_table[upper_diagonal]
+    lower_triangle = cont_table.T[upper_diagonal]
+    x = np.sum(np.power(lower_triangle - upper_triangle, 2) / (upper_triangle + lower_triangle))
+    df = n1 * (n1 - 1) / 2
+    p = 1 - chi2.cdf(x, df)
+    return x, p

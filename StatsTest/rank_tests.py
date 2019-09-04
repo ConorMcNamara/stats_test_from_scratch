@@ -379,7 +379,7 @@ def ansari_bradley_test(data_1, data_2, alternative='two-sided'):
 
 def mood_test(data_1, data_2, alternative='two-sided'):
     """Found in scipy.stats as mood
-    Used to measure the level of dispersion of the ranks of the two datasets.
+    Used to measure the level of dispersion (difference from median) of the ranks of the two datasets.
 
     Parameters
     ----------

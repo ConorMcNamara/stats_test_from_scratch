@@ -2,7 +2,7 @@ import unittest
 import pytest
 from StatsTest.categorical_tests import *
 from scipy.stats import chi2_contingency, fisher_exact
-from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.contingency_tables import mcnemar, SquareTable
 import statsmodels.api as sm
 
 
@@ -117,6 +117,99 @@ class TestCategoricalTests(unittest.TestCase):
         epsilon1, p1 = cmh_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
         epsilon2, p2 = s_table.test_null_odds().statistic, s_table.test_null_odds().pvalue
         assert pytest.approx(epsilon2) == epsilon1
+
+    # Woolf Test
+    def test_woolfTest_kLess2_Error(self):
+        data = [[1, 2], [3, 4]]
+        with pytest.raises(AttributeError, match="Cannot perform Woolf Test on less than two groups"):
+            woolf_test(data)
+
+    def test_woolfTest_notSquare_Error(self):
+        data = [[1, 2, 3], [4, 5, 6]]
+        with pytest.raises(AttributeError, match="Woolf Test is meant for 2x2 contingency table"):
+            woolf_test(data, data)
+
+    def test_woolfTest_pResult(self):
+        data_1 = [[1, 365], [10, 502]]
+        data_2 = [[30, 335], [38, 464]]
+        data_3 = [[12, 323], [15, 447]]
+        data_4 = [[5, 318], [7, 442]]
+        data_5 = [[4, 314], [2, 440]]
+        data_6 = [[1, 313], [4, 436]]
+        data_7 = [[1, 312], [2, 434]]
+        x, p = woolf_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7)
+        assert pytest.approx(.4094, 0.001) == p
+
+    def test_woolfTest_xResult(self):
+        data_1 = [[1, 365], [10, 502]]
+        data_2 = [[30, 335], [38, 464]]
+        data_3 = [[12, 323], [15, 447]]
+        data_4 = [[5, 318], [7, 442]]
+        data_5 = [[4, 314], [2, 440]]
+        data_6 = [[1, 313], [4, 436]]
+        data_7 = [[1, 312], [2, 434]]
+        x, p = woolf_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7)
+        assert pytest.approx(6.1237, 0.001) == x
+
+    # Breslow-Day Test
+
+    def test_breslowDayTest_kLess2_Error(self):
+        data = [[1, 2], [3, 4]]
+        with pytest.raises(AttributeError, match="Cannot perform Breslow-Day Test for less than 2 groups"):
+            breslow_day_test(data)
+
+    def test_breslowDayTest_notSquare_Error(self):
+        data = [[1, 2, 3], [4, 5, 6]]
+        with pytest.raises(AttributeError, match="Breslow-Day Test is meant for 2x2 contingency table"):
+            breslow_day_test(data, data)
+
+    def test_breslowDayTest_pResult(self):
+        data_1 = [[126, 100], [35, 61]]
+        data_2 = [[908, 688], [497, 807]]
+        data_3 = [[913, 747], [336, 598]]
+        data_4 = [[235, 172], [58, 121]]
+        data_5 = [[402, 308], [121, 215]]
+        data_6 = [[182, 156], [72, 98]]
+        data_7 = [[60, 99], [11, 43]]
+        data_8 = [[104, 89], [21, 36]]
+        mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
+        x1, p1 = breslow_day_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        x2, p2 = sm.stats.StratifiedTable(mat).test_equal_odds().statistic, sm.stats.StratifiedTable(mat).test_equal_odds().pvalue
+        assert pytest.approx(p2) == p1
+
+    def test_breslowDayTest_xResult(self):
+        data_1 = [[126, 100], [35, 61]]
+        data_2 = [[908, 688], [497, 807]]
+        data_3 = [[913, 747], [336, 598]]
+        data_4 = [[235, 172], [58, 121]]
+        data_5 = [[402, 308], [121, 215]]
+        data_6 = [[182, 156], [72, 98]]
+        data_7 = [[60, 99], [11, 43]]
+        data_8 = [[104, 89], [21, 36]]
+        mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
+        x1, p1 = breslow_day_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        x2, p2 = sm.stats.StratifiedTable(mat).test_equal_odds().statistic, sm.stats.StratifiedTable(mat).test_equal_odds().pvalue
+        assert pytest.approx(x2) == x1
+
+    # Bowker Test
+    def test_bowkerTest_nonSquare_Error(self):
+        data_1 = [[1, 2, 3], [4, 5, 6]]
+        with pytest.raises(AttributeError, match="Contingency Table needs to be of a square shape"):
+            bowker_test(data_1)
+
+    def test_bowkerTest_pResult(self):
+        cont_table = np.random.randint(0, 100, (4, 4))
+        x1, p1 = bowker_test(cont_table)
+        square = SquareTable(cont_table)
+        x2, p2 = square.symmetry().statistic, square.symmetry().pvalue
+        assert pytest.approx(p2) == p1
+
+    def test_bowkerTest_xResult(self):
+        cont_table = np.random.randint(0, 100, (4, 4))
+        x1, p1 = bowker_test(cont_table)
+        square = SquareTable(cont_table)
+        x2, p2 = square.symmetry().statistic, square.symmetry().pvalue
+        assert pytest.approx(x2) == x1
 
 
 if __name__ == '__main__':
