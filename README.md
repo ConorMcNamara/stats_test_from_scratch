@@ -30,6 +30,9 @@ My goal is two fold:
 3) Fisher Test: Scipy through [fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html)
 4) McNemar Test: Statsmodels through [mcnemar](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
 5) Cochran–Mantel–Haenszel Test: Statsmodels through [StratifiedTable.test_null_odds](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds)
+6) Woolf Test: Not found in either scipy or statsmodels. 
+7) Breslow-Day Test: Found in statsmodels as [StratifiedTable.test_equal_odds()](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds)
+8) Bowker Test: Found in statsmodels as [TableSymmetry or as bowker_symmetry](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.SquareTable.symmetry.html#statsmodels.stats.contingency_tables.SquareTable.symmetry)
 
 ## Multi-Group Tests
 1) Levene Test: Scipy through [levene(center='mean')](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.levene.html)
