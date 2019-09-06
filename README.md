@@ -55,7 +55,7 @@ My goal is two fold:
 3) G Goodness of Fit Test: Scipy through [power_divergence(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.power_divergence.html)
 4) Jarque-Bera Test: Statsmodels through [jarque_bera](https://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.jarque_bera.html)
 5) Ljung-Box Test: Statsmodels through [acorr_ljung(boxpierce=False)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
-6) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce_True)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
+6) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce=True)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html)
 7) Skew Test: Scipy through [skewtest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewtest.html)
 8) Kurtosis Test: Scipy through [kurtosistest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosistest.html)
 9) K-Squared Test: Scipy through [normaltest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html)
