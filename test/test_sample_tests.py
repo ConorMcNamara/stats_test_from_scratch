@@ -3,6 +3,7 @@ import pytest
 import unittest
 import numpy as np
 from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
+from statsmodels.sandbox.stats.runs import runstest_1samp
 
 
 class TestSampleTest(unittest.TestCase):
@@ -173,6 +174,7 @@ class TestSampleTest(unittest.TestCase):
         assert pytest.approx(t2) == t1
 
     # Two Sample F Test
+
     def test_twoSampleFTest_alternativeNotString_Error(self):
         data_1 = [100, 200, 300]
         data_2 = [10, 20, 30]
@@ -198,6 +200,7 @@ class TestSampleTest(unittest.TestCase):
         assert pytest.approx(f, 0.0001) == 2.1163
 
     # Binomial Sign Test
+
     def test_BinomialSignTest_alternativeNotString_Error(self):
         n_success, n_failure, success_prob = [10, 20], [30, 40], 0.5
         with pytest.raises(TypeError, match="Alternative Hypothesis is not of string type"):
@@ -227,6 +230,43 @@ class TestSampleTest(unittest.TestCase):
         deer_hind = [142, 140, 144, 144, 142, 146, 149, 150, 142, 148]
         deer_fore = [138, 136, 147, 139, 143, 141, 143, 145, 136, 146]
         assert pytest.approx(0.109375) == binomial_sign_test(deer_hind, deer_fore)
+
+    # Wald-Wolfowitz Test
+
+    def test_WaldWolfowitzTest_cutoffWrong_Error(self):
+        x = np.arange(100)
+        with pytest.raises(ValueError, match="Cannot determine cutoff point"):
+            wald_wolfowitz_test(x, cutoff="moar")
+
+    def test_WaldWolfowitzTest_expectedWrongLength_Error(self):
+        x = np.arange(100)
+        expected = np.power(np.arange(99), 2)
+        with pytest.raises(AttributeError, match="Cannot perform Wald-Wolfowitz with unequal array lengths"):
+            wald_wolfowitz_test(x, expected)
+
+    def test_WaldWolfowitzTest_pResultMedian(self):
+        x = np.random.randint(0, 100, 50)
+        x1, p1 = wald_wolfowitz_test(x)
+        x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
+        assert pytest.approx(p2) == p1
+
+    def test_WaldWolfowitzTest_xResultMedian(self):
+        x = np.random.randint(0, 100, 50)
+        x1, p1 = wald_wolfowitz_test(x)
+        x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
+        assert pytest.approx(x2) == x1
+
+    def test_WaldWolfowitzTest_pResultMean(self):
+        x = np.random.randint(0, 100, 50)
+        x1, p1 = wald_wolfowitz_test(x, cutoff='mean')
+        x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
+        assert pytest.approx(p2) == p1
+
+    def test_WaldWolfowitzTest_xResultMean(self):
+        x = np.random.randint(0, 100, 50)
+        x1, p1 = wald_wolfowitz_test(x, cutoff='mean')
+        x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
+        assert pytest.approx(x2) == x1
 
 
 if __name__ == '__main__':

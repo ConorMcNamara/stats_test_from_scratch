@@ -1,12 +1,31 @@
 from StatsTest.gof_tests import *
 import unittest
 import pytest
-from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, skewtest
+from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, skewtest, shapiro
 from statsmodels.stats.stattools import jarque_bera
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 
 class TestGOFTests(unittest.TestCase):
+
+    # Shapiro-Wilk Test
+
+    def test_shapiroWilk_nLess3(self):
+        data = [1, 2]
+        with pytest.raises(AttributeError, match="Cannot run Shapiro-Wilks Test with less than 3 datapoints"):
+            shapiro_wilk_test(data)
+
+    def test_shapiroWilk_pResult(self):
+        data = np.random.randint(0, 50, 100)
+        w1, p1 = shapiro_wilk_test(data)
+        w2, p2 = shapiro(data)
+        assert pytest.approx(p2) == p1
+
+    def test_shapiroWilk_wResult(self):
+        data = np.random.randint(0, 50, 100)
+        w1, p1 = shapiro_wilk_test(data)
+        w2, p2 = shapiro(data)
+        assert pytest.approx(w2) == w1
 
     # Chi Square Test for Goodness of Fit
 
@@ -55,6 +74,7 @@ class TestGOFTests(unittest.TestCase):
         assert pytest.approx(j2) == j1
 
     # Ljung-Box Test
+
     def test_ljungBoxTest_lagsWrong_Error(self):
         data = np.random.normal(0, 100, 1000)
         with pytest.raises(ValueError, match="Cannot discern number of lags"):
@@ -75,6 +95,7 @@ class TestGOFTests(unittest.TestCase):
         assert pytest.approx(q2[len(q2) - 1]) == q1
 
     # Box-Pierce Test
+
     def test_boxPierceTest_lagsWrong_Error(self):
         data = np.random.normal(0, 100, 1000)
         with pytest.raises(ValueError, match="Cannot discern number of lags"):

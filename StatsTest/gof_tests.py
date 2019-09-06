@@ -1,11 +1,34 @@
 from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
 from scipy.stats import chi2, norm
+from scipy.stats import statlib
 import numpy as np
 from math import sqrt, log, asinh
 
-# def shapiro_wilk_test(data):
-#     data = _check_table(data, only_count=False)
-#
+
+def shapiro_wilk_test(data):
+    """Found in scipy.stats as shapiro
+    Used to determine if a sample comes from a normally distributed population
+
+    Parameters
+    ----------
+    data: list or numpy array
+        Our sample data
+
+    Returns
+    -------
+    w: float
+        Our test statistic for measuring the degree of normality in our data
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe our data from a normally distributed population
+    """
+    data = _check_table(data, only_count=False)
+    n = len(data)
+    if n < 3:
+        raise AttributeError("Cannot run Shapiro-Wilks Test with less than 3 datapoints")
+    zeroes = np.zeros(n // 2)
+    data = np.sort(data)
+    a, w, p, ifault = statlib.swilk(data, zeroes, 0)
+    return w, p
 
 
 def chi_goodness_of_fit_test(observed, expected=None):

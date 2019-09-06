@@ -119,6 +119,7 @@ class TestCategoricalTests(unittest.TestCase):
         assert pytest.approx(epsilon2) == epsilon1
 
     # Woolf Test
+
     def test_woolfTest_kLess2_Error(self):
         data = [[1, 2], [3, 4]]
         with pytest.raises(AttributeError, match="Cannot perform Woolf Test on less than two groups"):
@@ -192,6 +193,7 @@ class TestCategoricalTests(unittest.TestCase):
         assert pytest.approx(x2) == x1
 
     # Bowker Test
+
     def test_bowkerTest_nonSquare_Error(self):
         data_1 = [[1, 2, 3], [4, 5, 6]]
         with pytest.raises(AttributeError, match="Contingency Table needs to be of a square shape"):

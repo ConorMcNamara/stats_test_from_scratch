@@ -229,3 +229,32 @@ def _autocorr(data, lags):
     xp = data - mean
     corr = [1. if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var for lag in lags]
     return np.array(corr)
+
+
+def _rle(arr):
+    """Similar to R rle function, runs length encoding for a binary sequence.
+
+     Parameters
+     ----------
+     arr: list or numpy array
+        Our observed binary sequence
+
+    Returns
+    -------
+    z: numpy array
+        The length of each run/sequence
+    p: numpy array
+        The starting position of each run/sequence
+    ia[i]: numpy array
+        Whether the run/sequence belonged to our False or True condition
+     """
+    ia = np.array(arr)                  # force numpy
+    n = len(ia)
+    if n == 0:
+        return None, None, None
+    else:
+        y = np.array(ia[1:] != ia[:-1])     # pairwise unequal (string safe)
+        i = np.append(np.where(y), n - 1)   # must include last element posi
+        z = np.diff(np.append(-1, i))       # run lengths
+        p = np.cumsum(np.append(0, z))[:-1] # positions
+        return z, p, ia[i]

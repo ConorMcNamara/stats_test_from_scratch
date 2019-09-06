@@ -184,6 +184,7 @@ class TestMultiGroupTests(unittest.TestCase):
         assert pytest.approx(2.939, 0.001) == z
 
     # Median Test
+
     def test_medianTest_kLessTwo_Error(self):
         data_1 = [100, 200, 300]
         with pytest.raises(AttributeError, match="Cannot run Median Test with less than 2 groups"):

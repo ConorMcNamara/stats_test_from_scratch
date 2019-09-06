@@ -2,7 +2,7 @@ import numpy as np
 from numbers import Number
 from math import sqrt
 from scipy.stats import t, norm, f
-from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme
+from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme, _rle
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
@@ -268,3 +268,53 @@ def binomial_sign_test(data_1, data_2, alternative='two-sided', success_prob=0.5
     else:
         p = _left_extreme(neg_diff, total, success_prob) + _right_extreme(pos_diff, total, success_prob)
     return p
+
+
+def wald_wolfowitz_test(data_1, expected=None, cutoff='median'):
+    """Found in statsmodels as runstest_1samp
+    Used to determine if the elements of a dataset/sequence are mutually independent
+
+    Parameters
+    ---------
+    data_1: list or numpy array
+        Our dataset that we are checking for mutual independence
+    expected: list or numpy array, default is None
+        Contains the expected results from a given function. For example, if we expect our data to follow pow(x, 2), it
+        would follow something like [1, 4, 9, 16, 25, ....]
+    cutoff: str, {median, mean}, default is median
+        If expected is None, then our cutoff point for what we regard as greater or less than. Options are median or
+        mean
+
+    Returns
+    -------
+    x: float
+        Our measure of mutual independence for each data point
+    p: float, 0 <= p <= 1
+        How likely we would observe this amount of mutal dependence assuming our data was derived from a mutually
+        independent population
+    """
+    data_1 = np.array(data_1)
+
+    if expected is None:
+        if cutoff.casefold() not in ['median', 'mean']:
+            raise ValueError("Cannot determine cutoff point")
+        if cutoff.casefold() == "median":
+            midpoint = np.median(data_1)
+        else:
+            midpoint = np.mean(data_1)
+        plus_minus = data_1 >= midpoint
+    else:
+        expected = _check_table(expected)
+        if len(expected) != len(data_1):
+            raise AttributeError("Cannot perform Wald-Wolfowitz with unequal array lengths")
+        plus_minus = np.greater_equal(data_1, expected)
+    runs, _, loc = _rle(plus_minus)
+    n_runs = len(runs)
+    runs_length = np.sum(runs)
+    run_pos, run_neg = runs[loc], runs[~loc]
+    n_plus, n_minus = np.sum(run_pos), np.sum(run_neg)
+    mu = (2 * n_plus * n_minus) / runs_length + 1
+    var = 2 * n_plus * n_minus * (2 * n_plus * n_minus - runs_length) / (pow(runs_length, 2) * (runs_length - 1))
+    z = (n_runs - mu) / sqrt(var)
+    p = 2 * (1 - norm.cdf(abs(z)))
+    return z, p

@@ -236,6 +236,7 @@ class TestRankTest(unittest.TestCase):
         assert pytest.approx(x2) == x1
 
     # Mood Test
+
     def test_moodTest_alternativeWrong_Error(self):
         data_1 = np.arange(1, 100)
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
