@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.stats import norm, binom
+from scipy.stats import norm, binom, chi2
 from StatsTest.utils import _check_table, _left_extreme, _right_extreme
 from math import sqrt
 
@@ -158,3 +158,109 @@ def binomial_test(success, failure, alternative='two-sided', success_prob=None):
             small_pmf = np.sum(np.compress(num_small, vals))
             p = small_pmf + _right_extreme(num_success, total, success_prob)
     return p
+
+
+def chi_square_proportion_test(success_prob, n_total, expected=None):
+    """Not found in either statsmodels or scipy.stats
+    Used when we are given proportions of success (as well as total participants) instead of
+    numbers of success.
+
+    Parameters
+    ----------
+    success_prob: list or numpy array, 1-D
+        A list containing the percentage of success for each successive group. Needs to be the same size
+        as n_total and expected
+    n_total: list or numpy array, 1-D
+        A list containing the total count of each successive group. Needs to be the same size as success_prob and
+        expected
+    expected: list or numpy array, 1-D
+        If None, then expected is the weighted average of success_prob
+        Else, a list containing the expected probabilities of each success group. Needs to be the same size as success_prob
+        and n_total
+
+    Returns
+    -------
+    X: float
+        Our Chi measure of the difference between our observed and expected results
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe these differences if each group was sampled from the same population
+    """
+    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(n_total, only_count=True)
+    if len(success_prob) != len(n_total):
+        raise ValueError("Success probability and N Total are not of same length")
+    if expected is None:
+        expected = np.sum(success_prob * n_total) / np.sum(n_total)
+    else:
+        expected = _check_table(expected, only_count=False)
+        if len(expected) != len(success_prob):
+            raise ValueError("Expected and Success probability are not of same length")
+        if not np.all(expected < 1):
+            raise ValueError("Cannot have percentage of expected greater than 1")
+        elif not np.all(expected >= 0):
+            raise ValueError("Cannot have negative percentage of expected")
+    if not np.all(success_prob < 1):
+        raise ValueError("Cannot have percentage of success greater than 1")
+    elif not np.all(success_prob >= 0):
+        raise ValueError("Cannot have negative percentage of success")
+    n_success = success_prob * n_total
+    n_failure = n_total - n_success
+    n_expected_success = expected * n_total
+    n_expected_failure = (1 - expected) * n_total
+    df = len(n_total) - 1
+    X = np.sum(np.power(n_success - n_expected_success, 2) / n_expected_success) + \
+        np.sum(np.power(n_failure - n_expected_failure, 2) / n_expected_failure)
+    p = 1 - chi2.cdf(X, df)
+    return X, p
+
+
+def g_proportion_test(success_prob, n_total, expected=None):
+    """Not found in either statsmodels or scipy.stats
+    Used when we are given proportions of success (as well as total participants) instead of
+    numbers of success
+
+    Parameters
+    ----------
+    success_prob: list or numpy array, 1-D
+        A list containing the percentage of success for each successive group. Needs to be the same size
+        as n_total and expected
+    n_total: list or numpy array, 1-D
+        A list containing the total count of each successive group. Needs to be the same size as success_prob and
+        expected
+    expected: (optional) list or numpy array, 1-D
+        If None, then expected is the weighted average of success_prob
+        Else, a list containing the expected probabilities of each success group. Needs to be the same size as success_prob
+        and n_total.
+
+    Returns
+    -------
+    g: float
+        Our measure of the difference between our observed and expected results
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe these differences if each group was sampled from the same population
+    """
+    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(n_total, only_count=True)
+    if len(success_prob) != len(n_total):
+        raise ValueError("Success probability and N Total are not of same length")
+    if expected is None:
+        expected = np.sum(success_prob * n_total) / np.sum(n_total)
+    else:
+        expected = _check_table(expected, only_count=False)
+        if len(expected) != len(success_prob):
+            raise ValueError("Expected and Success probability are not of same length")
+        if not np.all(expected < 1):
+            raise ValueError("Cannot have percentage of expected greater than 1")
+        elif not np.all(expected >= 0):
+            raise ValueError("Cannot have negative percentage of expected")
+    if not np.all(success_prob < 1):
+        raise ValueError("Cannot have percentage of success greater than 1")
+    elif not np.all(success_prob >= 0):
+        raise ValueError("Cannot have negative percentage of success")
+    n_success = success_prob * n_total
+    n_failure = n_total - n_success
+    n_expected_success = expected * n_total
+    n_expected_failure = (1 - expected) * n_total
+    df = len(n_total) - 1
+    g = 2 * (np.sum(n_success * np.log(n_success / n_expected_success)) +
+             np.sum(n_failure * np.log(n_failure / n_expected_failure)))
+    p = 1 - chi2.cdf(g, df)
+    return g, p

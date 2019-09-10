@@ -108,3 +108,117 @@ class TestProportionTest(unittest.TestCase):
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
         p2 = binom_test(n_success, n_success + n_failure, success_prob)
         assert pytest.approx(p2) == p1
+
+    # Chi Square Proportion Test
+
+    def test_chiSquareProportionTest_unequalTotalLength_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100]
+        with pytest.raises(ValueError, match="Success probability and N Total are not of same length"):
+            chi_square_proportion_test(prob, n_total)
+
+    def test_chiSquareProportionsTest_unequalExpectedLength_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5]
+        with pytest.raises(ValueError, match="Expected and Success probability are not of same length"):
+            chi_square_proportion_test(prob, n_total, expected)
+
+    def test_chiSquareProportionsTest_expectedProbGreaterOne_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 1.2]
+        with pytest.raises(ValueError, match="Cannot have percentage of expected greater than 1"):
+            chi_square_proportion_test(prob, n_total, expected)
+
+    def test_chiSquareProportionsTest_expectedProbLessZero_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, -0.2]
+        with pytest.raises(ValueError, match="Cannot have negative percentage of expected"):
+            chi_square_proportion_test(prob, n_total, expected)
+
+    def test_chiSquareProportionsTest_probGreaterOne_Error(self):
+        prob = [0.2, 0.4, 1.2]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 0.7]
+        with pytest.raises(ValueError, match="Cannot have percentage of success greater than 1"):
+            chi_square_proportion_test(prob, n_total, expected)
+
+    def test_chiSquareProportionsTest_probLessZero_Error(self):
+        prob = [0.2, 0.4, -0.2]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 0.7]
+        with pytest.raises(ValueError, match="Cannot have negative percentage of success"):
+            chi_square_proportion_test(prob, n_total, expected)
+
+    def test_chiSquareProportionTest_pResult(self):
+        prob = [0.41025641025, 0.53773584605]
+        n_total = [156, 212]
+        x1, p1 = chi_square_proportion_test(prob, n_total)
+        assert pytest.approx(0.01559, 0.001) == p1
+
+    def test_chiSquareProportionTest_xResult(self):
+        prob = [0.4102564, 0.5377358]
+        n_total = [156, 212]
+        x1, p1 = chi_square_proportion_test(prob, n_total)
+        assert pytest.approx(5.8481, 0.00001) == x1
+
+    # G Proportion Test
+
+    def test_gSquareProportionTest_unequalTotalLength_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100]
+        with pytest.raises(ValueError, match="Success probability and N Total are not of same length"):
+            g_proportion_test(prob, n_total)
+
+    def test_gSquareProportionsTest_unequalExpectedLength_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5]
+        with pytest.raises(ValueError, match="Expected and Success probability are not of same length"):
+            g_proportion_test(prob, n_total, expected)
+
+    def test_gSquareProportionsTest_expectedProbGreaterOne_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 1.2]
+        with pytest.raises(ValueError, match="Cannot have percentage of expected greater than 1"):
+            g_proportion_test(prob, n_total, expected)
+
+    def test_gSquareProportionsTest_expectedProbLessZero_Error(self):
+        prob = [0.2, 0.4, 0.6]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, -0.2]
+        with pytest.raises(ValueError, match="Cannot have negative percentage of expected"):
+            g_proportion_test(prob, n_total, expected)
+
+    def test_gSquareProportionsTest_probGreaterOne_Error(self):
+        prob = [0.2, 0.4, 1.2]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 0.7]
+        with pytest.raises(ValueError, match="Cannot have percentage of success greater than 1"):
+            g_proportion_test(prob, n_total, expected)
+
+    def test_gSquareProportionsTest_probLessZero_Error(self):
+        prob = [0.2, 0.4, -0.2]
+        n_total = [100, 100, 100]
+        expected = [0.3, 0.5, 0.7]
+        with pytest.raises(ValueError, match="Cannot have negative percentage of success"):
+            g_proportion_test(prob, n_total, expected)
+
+    def test_gSquareProportionTest_pResult(self):
+        prob = [0.41025641025, 0.53773584605]
+        n_total = [156, 212]
+        x1, p1 = g_proportion_test(prob, n_total)
+        assert pytest.approx(0.0154, 0.001) == p1
+
+    def test_gSquareProportionTest_xResult(self):
+        prob = [0.41025641025, 0.53773584605]
+        n_total = [156, 212]
+        x1, p1 = g_proportion_test(prob, n_total)
+        assert pytest.approx(5.8703, 0.00001) == x1
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -193,9 +193,9 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
 
     Parameters
     ----------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         The observed measurements for our first sample
-    data_2: list or numpy array
+    data_2: list or numpy array, 1-D
         The observed measurements for our second sample
     alternative: str, default is two-sided
         Our alternative hypothesis. It can be two-sided, less or greater
@@ -276,9 +276,9 @@ def wald_wolfowitz_test(data_1, expected=None, cutoff='median'):
 
     Parameters
     ---------
-    data_1: list or numpy array
+    data_1: list or numpy array, 1-D
         Our dataset that we are checking for mutual independence
-    expected: list or numpy array, default is None
+    expected: list or numpy array, 1-D, default is None
         Contains the expected results from a given function. For example, if we expect our data to follow pow(x, 2), it
         would follow something like [1, 4, 9, 16, 25, ....]
     cutoff: str, {median, mean}, default is median

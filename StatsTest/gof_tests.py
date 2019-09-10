@@ -11,7 +11,7 @@ def shapiro_wilk_test(data):
 
     Parameters
     ----------
-    data: list or numpy array
+    data: list or numpy array, 1-D
         Our sample data
 
     Returns
