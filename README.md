@@ -48,6 +48,8 @@ My goal is two fold:
 ## Proportion Tests
 1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html)
 2) Binomial Test: Scipy through [binom_test](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.binom_test.html)
+3) Chi Square Proportion Test: Not found in either scipy or statsmodels
+4) G Proportion Test: Not found in either scipy or statsmodels
 
 ## Goodness of Fit Tests
 1) Shapiro-Wilk Test: Scipy through [shapiro](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html)
