@@ -61,3 +61,7 @@ My goal is two fold:
 7) Skew Test: Scipy through [skewtest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewtest.html)
 8) Kurtosis Test: Scipy through [kurtosistest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosistest.html)
 9) K-Squared Test: Scipy through [normaltest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html)
+
+## Correlation Tests
+1) Pearson Test: Scipy through [pearsonr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pearsonr.html)
+2) Spearman Rank Test: Scipy through [spearmanr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.spearmanr.html)
