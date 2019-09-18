@@ -86,3 +86,6 @@ def kendall_tau_test(x, y):
     if len(x) != len(y):
         raise ValueError("Cannot calculate correlation with datasets of different lengths")
     n = len(x)
+    perm = np.argsort(y)
+    x, y = x[perm], y[perm]
+    x = np.argsort(x, kind="mergesort")
