@@ -200,6 +200,22 @@ class TestOutliersTest(unittest.TestCase):
         data = [0.189, 0.167, 0.187, 0.183, 0.186, 0.182, 0.181, 0.184, 0.181, 0.177]
         assert len(dixon_q_test(data)) == 0
 
+    # Thompson Tau Test
+
+    def test_ThompsonTauTest_alphaLessZero_Error(self):
+        data = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot have alpha level greater than 1 or less than 0"):
+            thompson_tau_test(data, alpha=-0.5)
+
+    def test_ThompsonTauTest_alphaGreaterOne_Error(self):
+        data = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot have alpha level greater than 1 or less than 0"):
+            thompson_tau_test(data, alpha=1.2)
+
+    def test_ThompsonTauTest_results(self):
+        data = [48.9, 49.2, 49.2, 49.3, 49.3, 49.8, 49.9, 50.1, 50.2, 50.5]
+        assert len(thompson_tau_test(data, 0.05)) == 0
+
 
 if __name__ == '__main__':
     unittest.main()

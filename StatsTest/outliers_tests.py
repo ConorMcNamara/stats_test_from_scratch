@@ -44,10 +44,7 @@ def grubbs_test(data, alternative='two-sided', alpha=0.05):
 
     Returns
     -------
-    True/False: bool
-        Whether or not we were able to detect one outlier
-    return_val: float (optional)
-        If True, the value that was determined to be an outlier
+    If there is an outlier, returns the outlier. Else, returns None
     """
     if not isinstance(alternative, str):
         raise TypeError("Alternative Hypothesis is not of string type")
@@ -77,9 +74,9 @@ def grubbs_test(data, alternative='two-sided', alpha=0.05):
     g = val / s
     rejection_stat = ((n - 1) / sqrt(n)) * sqrt(pow(t_value, 2) / (n - 2 + pow(t_value, 2)))
     if g > rejection_stat:
-        return True, return_val
+        return return_val
     else:
-        return False
+        return None
 
 
 def extreme_studentized_deviate_test(data, num_outliers=1, alpha=0.05):
@@ -148,10 +145,7 @@ def tietjen_moore_test(data, num_outliers=1, alternative='two-sided', alpha=0.05
 
     Returns
     -------
-    True/False: bool
-        Whether or not we were able to detect k number of outliers in our dataset
-    outliers: list
-        If True, the k outliers we detected
+    If we found k outliers, returns the k outliers we detected. Else, returns None
     """
     data = _check_table(data, only_count=False)
     if alpha >= 1 or alpha <= 0:
@@ -194,9 +188,9 @@ def tietjen_moore_test(data, num_outliers=1, alternative='two-sided', alpha=0.05
     tietjen_E = np.apply_along_axis(teitjen, 1, E_norm, num_outliers=num_outliers, alternative=alternative, simulation=False)
     critical_value = np.percentile(tietjen_E, alpha * 100)
     if l < critical_value:
-        return True, outliers
+        return outliers
     else:
-        return False
+        return None
 
 
 def chauvenet_test(data):
@@ -253,6 +247,8 @@ def peirce_test(observed, expected, num_outliers=1, num_coef=1):
     n = len(observed)
     if num_outliers > n:
         raise ValueError("Cannot have number of outliers greater than number of observations")
+    if num_coef > n:
+        raise Warning("Number of regressor variables is greater than number of observations")
     q = pow(num_outliers, num_outliers / n) * pow(n - num_outliers, (n - num_outliers) / n) / n
     r_new, r_old = 1.0, 0.0
     while abs(r_new - r_old) > (n * 2.0e-16):
@@ -319,3 +315,37 @@ def dixon_q_test(data, alpha=0.01):
         return sort_data[q > q95[n - 3]]
     else:
         return sort_data[q > q90[n - 3]]
+
+
+def thompson_tau_test(data, alpha=0.05):
+    """Not found in either scipy.stats or statsmddels.
+    Uses the Thompson-Tau criteria to iteratively identify outliers until no more exist.
+
+    Parameters
+    ----------
+    data: list or numpy array, 1-D
+        Our dataset we are evaluating for outliers
+    alpha: float, default is 0.05
+        Our level of significance for detecting outliers
+
+    Returns
+    -------
+    outliers_list: list
+        A list containing all datapoints that we found to be an outlier by Thompson-Tau's criteria
+    """
+    data = _check_table(data, only_count=False)
+    if alpha < 0 or alpha > 1:
+        raise ValueError("Cannot have alpha level greater than 1 or less than 0")
+    outlier_exist, outlier_table = True, []
+    data_copy = np.copy(data)
+    while outlier_exist:
+        n, mu, s = len(data_copy), np.mean(data_copy), np.std(data_copy, ddof=1)
+        ab_resid = np.abs(data - mu) / s
+        rejection = t.isf(alpha / 2, n - 2) * (n - 1) / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))
+        is_outlier = ab_resid > rejection
+        if np.sum(is_outlier) != 0:
+            outlier_table.append(data_copy[np.argsort(ab_resid)][-1:][0])
+            data_copy = data_copy[np.argsort(ab_resid)][:-1]
+        else:
+            outlier_exist = False
+    return outlier_table
