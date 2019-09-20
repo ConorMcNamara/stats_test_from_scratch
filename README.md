@@ -65,3 +65,14 @@ My goal is two fold:
 ## Correlation Tests
 1) Pearson Test: Scipy through [pearsonr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pearsonr.html)
 2) Spearman Rank Test: Scipy through [spearmanr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.spearmanr.html)
+3) Kendall-Tau Test: Scipy through [kendalltau](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html)
+
+## Outliers Tests
+1) Tukey's Fence Test: Found in scikit
+2) Grubb's Test: Not found in either scipy or statsmodels
+3) Extreme Studentized Deviant (ESD) Test: Not found in either scipy or statsmodels
+4) Tietjen-Moore Test: Not found in either scipy or statsmodels
+5) Chauvenet Test: Not found in either scipy or statsmodels
+6) Peirce Test: Not found in either scipy or statsmodels
+7) Dixon's Q Test: Not found in either scipy or statsmodels
+8) Thompson-Tau Test: Not found in either scipy or statsmodels
