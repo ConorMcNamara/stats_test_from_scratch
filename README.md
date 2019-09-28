@@ -11,7 +11,7 @@ My goal is two fold:
 ## Sample Tests
 1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html).
 2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html)
-3) Two Sample F Test: Not found in either scipy or statsmodels.
+3) Two Sample F Test: Not found in either scipy or statsmodels
 4) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test)
 5) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp)
 
@@ -19,7 +19,7 @@ My goal is two fold:
 1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
 2) Mann-Whitney-U Test: Scipy through [mannwhitneyu](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html)
 3) Friedman Test: Scipy through [friedmanchisquare](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.friedmanchisquare.html)
-4) Page's Trend Test: Not found in either scipy or statsmodels.
+4) Page's Trend Test: Not found in either scipy or statsmodels
 5) Kruskal-Wallis Test: Scipy through [kruskal](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html)
 6) Fligner-Kileen Test: Scipy through [fligner](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fligner.html)
 7) Ansari-Bradley Test: Scipy through [ansari](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ansari.html)
@@ -31,7 +31,7 @@ My goal is two fold:
 3) Fisher Test: Scipy through [fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html)
 4) McNemar Test: Statsmodels through [mcnemar](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
 5) Cochran–Mantel–Haenszel Test: Statsmodels through [StratifiedTable.test_null_odds](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds)
-6) Woolf Test: Not found in either scipy or statsmodels. 
+6) Woolf Test: Not found in either scipy or statsmodels
 7) Breslow-Day Test: Found in statsmodels as [StratifiedTable.test_equal_odds()](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds)
 8) Bowker Test: Found in statsmodels as [TableSymmetry or as bowker_symmetry](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.SquareTable.symmetry.html#statsmodels.stats.contingency_tables.SquareTable.symmetry)
 
@@ -66,9 +66,11 @@ My goal is two fold:
 1) Pearson Test: Scipy through [pearsonr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pearsonr.html)
 2) Spearman Rank Test: Scipy through [spearmanr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.spearmanr.html)
 3) Kendall-Tau Test: Scipy through [kendalltau](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html)
+4) Point Biserial Correlation: Scipy through [pointbiserialr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pointbiserialr.html)
+5) Rank Biserial Correlation: Not found in either scipy or statsmodels
 
 ## Outliers Tests
-1) Tukey's Fence Test: Found in scikit
+1) Tukey's Fence Test: Not found in either scipy or statsmodels
 2) Grubb's Test: Not found in either scipy or statsmodels
 3) Extreme Studentized Deviant (ESD) Test: Not found in either scipy or statsmodels
 4) Tietjen-Moore Test: Not found in either scipy or statsmodels
