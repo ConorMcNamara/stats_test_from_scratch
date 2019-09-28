@@ -2,12 +2,13 @@ import pytest
 import unittest
 from StatsTest.correlation_tests import *
 import numpy as np
-from scipy.stats import pearsonr, spearmanr, kendalltau
+from scipy.stats import pearsonr, spearmanr, kendalltau, pointbiserialr
 
 
 class TestCorrelationTests(unittest.TestCase):
 
     # Pearson Test
+
     def test_pearsonTest_wrongLength_Error(self):
         x = [1, 2, 3, 4]
         y = [1, 2, 3]
@@ -29,6 +30,7 @@ class TestCorrelationTests(unittest.TestCase):
         assert pytest.approx(r2) == r1
 
     # Spearman Rank Test
+
     def test_spearmanTest_wrongLength_Error(self):
         x = [1, 2, 3, 4]
         y = [1, 2, 3]
@@ -58,7 +60,7 @@ class TestCorrelationTests(unittest.TestCase):
             kendall_tau_test(x, y)
 
     def test_kendallTau_wrongMethod_Error(self):
-        x = np.random.normal(0, 100, 20)
+        x = np.random.randint(0, 100, 20)
         with pytest.raises(ValueError, match="Cannot determine type of test for Kendall Tau"):
             kendall_tau_test(x, x, method="moar")
 
@@ -95,6 +97,34 @@ class TestCorrelationTests(unittest.TestCase):
         t1, p1 = kendall_tau_test(x1, x2, method='significance')
         t2, p2 = kendalltau(x1, x2, method='asymptotic')
         assert pytest.approx(t2) == t1
+
+    # Point Biserial Test
+
+    def test_BiserialCorrelation_pointWrong_Error(self):
+        a = np.array([0, 0, 0, 1, 1, 1, 1])
+        b = np.arange(7)
+        with pytest.raises(ValueError, match="Cannot discern method for biserial correlation test"):
+            biserial_correlation_test(b, a, "moar")
+
+    def test_BiserialCorrelation_tooManyGroups_Error(self):
+        a = np.array([0, 1, 2, 0, 1, 2])
+        b = np.arange(6)
+        with pytest.raises(AttributeError, match="Need to have two groupings for biseral correlation"):
+            biserial_correlation_test(b, a, "point")
+
+    def test_BiserialCorrelationPoint_pResult(self):
+        a = np.array([0, 0, 0, 1, 1, 1, 1])
+        b = np.arange(7)
+        r1, p1 = biserial_correlation_test(b, a, 'point')
+        r2, p2 = pointbiserialr(a, b)
+        assert pytest.approx(p2) == p1
+
+    def test_BiserialCorrelationPoint_rResult(self):
+        a = np.array([0, 0, 0, 1, 1, 1, 1])
+        b = np.arange(7)
+        r1, p1 = biserial_correlation_test(b, a, 'point')
+        r2, p2 = pointbiserialr(a, b)
+        assert pytest.approx(r2) == r1
 
 
 if __name__ == '__main__':
