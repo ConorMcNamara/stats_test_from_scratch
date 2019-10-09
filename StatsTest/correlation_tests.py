@@ -148,50 +148,64 @@ def kendall_tau_test(x, y, method='hypothesis'):
     return tau, p
 
 
-def biserial_correlation_test(x, y, method='point'):
+def point_biserial_correlation_test(x, y):
     """Found in scipy.stats as pointbiserialr
 
     x: list or numpy array, 1-D
-        Our observations. If normal, then these are expected to be continuous. If ranked, then these are expected to be
-        ordinal
+        Our observations. These are expected to be continuous.
     y: list or numpy array, 1-D
         Our groupings variable, or masked array. Must only have two variables and be the same length as x
-    method: str, {point, rank}, default is point
-        Whether we are using Point Biserial Correlation or Rank Biserial Correlation
 
     Returns
     -------
     rho: float
         The measure of correlation between our two groups
     p: float
-        The likelihood that our two groups would be correlated if both were derived from a t (if point)
-        or a normal (if rank) distribution
+        The likelihood that our two groups would be correlated if both were derived from a t (if point) distribution
     """
-    if method.casefold() not in ['point', 'rank']:
-        raise ValueError("Cannot discern method for biserial correlation test")
-    if method.casefold() == "point":
-        x = _check_table(x, only_count=False)
-    else:
-        x = _check_table(x, only_count=True)
+    x = _check_table(x, only_count=False)
     y = _check_table(y, only_count=True)
     if len(x) != len(y):
         raise ValueError("X and Y must be of the same length")
     if len(np.unique(y)) != 2:
         raise AttributeError("Need to have two groupings for biseral correlation")
-    g_0, g_1 = np.unique(y)[0], np.unique(y)[1]
-    group_0, group_1 = x[y == g_0], x[y == g_1]
+    group_0, group_1 = x[y == np.unique(y)[0]], x[y == np.unique(y)[1]]
     mu_1, mu_0 = np.mean(group_1), np.mean(group_0)
     n, n_1, n_0 = len(x), len(group_1), len(group_0)
-    if method.casefold() == "point":
-        s = np.std(x, ddof=1)
-        rho = ((mu_1 - mu_0) / s) * sqrt(n_1 * n_0 / (n * (n - 1)))
-        t_val = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
-        p = 2 * (1 - t.cdf(abs(t_val), n - 2))
-    else:
-        s = sqrt(n_1 * n_0 * (n + 1) / 12)
-        rho = 2 * ((mu_1 - mu_0) / (n_1 + n_0))
-        u_min = min((1 + rho) * n_1 * n_0 / 2, (1 - rho) * n_1 * n_0 / 2)
-        mu = n_1 * n_0 / 2
-        z = (u_min - mu) / s
-        p = 2 * (1 - norm.cdf(abs(z)))
+    s = np.std(x, ddof=1)
+    rho = ((mu_1 - mu_0) / s) * sqrt(n_1 * n_0 / (n * (n - 1)))
+    t_val = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
+    p = 2 * (1 - t.cdf(abs(t_val), n - 2))
+    return rho, p
+
+
+def rank_biserial_correlation_test(x, y):
+    """Not found in scipy.stats or statsmodels
+
+    x: list or numpy array, 1-D
+        Our observations. These are expected to be ordinal
+    y: list or numpy array, 1-D
+        Our groupings variable, or masked array. Must only have two variables and be the same length as x
+
+    Returns
+    -------
+    rho: float
+        The measure of correlation between our two groups
+    p: float
+        The likelihood that our two groups would be correlated if both were derived from a normal distribution
+    """
+    x, y = _check_table(x, only_count=True), _check_table(y, only_count=True)
+    if len(x) != len(y):
+        raise ValueError("X and Y must be of the same length")
+    if len(np.unique(y)) != 2:
+        raise AttributeError("Need to have two groupings for biseral correlation")
+    group_0, group_1 = x[y == np.unique(y)[0]], x[y == np.unique(y)[1]]
+    mu_1, mu_0 = np.mean(group_1), np.mean(group_0)
+    n, n_1, n_0 = len(x), len(group_1), len(group_0)
+    s = sqrt(n_1 * n_0 * (n + 1) / 12)
+    rho = 2 * ((mu_1 - mu_0) / (n_1 + n_0))
+    u_min = min((1 + rho) * n_1 * n_0 / 2, (1 - rho) * n_1 * n_0 / 2)
+    mu = n_1 * n_0 / 2
+    z = (u_min - mu) / s
+    p = 2 * (1 - norm.cdf(abs(z)))
     return rho, p

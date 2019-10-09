@@ -212,9 +212,13 @@ class TestOutliersTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Cannot have alpha level greater than 1 or less than 0"):
             thompson_tau_test(data, alpha=1.2)
 
-    def test_ThompsonTauTest_results(self):
+    def test_ThompsonTauTest_noResults(self):
         data = [48.9, 49.2, 49.2, 49.3, 49.3, 49.8, 49.9, 50.1, 50.2, 50.5]
         assert len(thompson_tau_test(data, 0.05)) == 0
+
+    def test_ThompsonTauTest_result(self):
+        data = [9, 10, 10, 10, 11, 50]
+        np.testing.assert_array_equal(thompson_tau_test(data), [50])
 
 
 if __name__ == '__main__':

@@ -100,31 +100,45 @@ class TestCorrelationTests(unittest.TestCase):
 
     # Point Biserial Test
 
-    def test_BiserialCorrelation_pointWrong_Error(self):
-        a = np.array([0, 0, 0, 1, 1, 1, 1])
-        b = np.arange(7)
-        with pytest.raises(ValueError, match="Cannot discern method for biserial correlation test"):
-            biserial_correlation_test(b, a, "moar")
-
-    def test_BiserialCorrelation_tooManyGroups_Error(self):
+    def test_BiserialCorrelationPoint_tooManyGroups_Error(self):
         a = np.array([0, 1, 2, 0, 1, 2])
         b = np.arange(6)
         with pytest.raises(AttributeError, match="Need to have two groupings for biseral correlation"):
-            biserial_correlation_test(b, a, "point")
+            point_biserial_correlation_test(b, a)
+
+    def test_BiserialCorrelationPoint_unequalLength_Error(self):
+        a = np.array([0, 1, 1, 0])
+        b = np.arange(5)
+        with pytest.raises(ValueError, match="X and Y must be of the same length"):
+            point_biserial_correlation_test(b, a)
 
     def test_BiserialCorrelationPoint_pResult(self):
         a = np.array([0, 0, 0, 1, 1, 1, 1])
         b = np.arange(7)
-        r1, p1 = biserial_correlation_test(b, a, 'point')
+        r1, p1 = point_biserial_correlation_test(b, a)
         r2, p2 = pointbiserialr(a, b)
         assert pytest.approx(p2) == p1
 
     def test_BiserialCorrelationPoint_rResult(self):
         a = np.array([0, 0, 0, 1, 1, 1, 1])
         b = np.arange(7)
-        r1, p1 = biserial_correlation_test(b, a, 'point')
+        r1, p1 = point_biserial_correlation_test(b, a)
         r2, p2 = pointbiserialr(a, b)
         assert pytest.approx(r2) == r1
+
+    # Rank Biserial Test
+
+    def test_BiserialCorrelationRank_tooManyGroups_Error(self):
+        a = np.array([0, 1, 2, 0, 1, 2])
+        b = np.arange(6)
+        with pytest.raises(AttributeError, match="Need to have two groupings for biseral correlation"):
+            rank_biserial_correlation_test(b, a)
+
+    def test_BiserialCorrelationRank_unequalLength_Error(self):
+        a = np.array([0, 1, 1, 0])
+        b = np.arange(5)
+        with pytest.raises(ValueError, match="X and Y must be of the same length"):
+            rank_biserial_correlation_test(b, a)
 
 
 if __name__ == '__main__':

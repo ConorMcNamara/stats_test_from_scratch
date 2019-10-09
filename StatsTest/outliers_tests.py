@@ -340,7 +340,7 @@ def thompson_tau_test(data, alpha=0.05):
     data_copy = np.copy(data)
     while outlier_exist:
         n, mu, s = len(data_copy), np.mean(data_copy), np.std(data_copy, ddof=1)
-        ab_resid = np.abs(data - mu) / s
+        ab_resid = np.abs(data_copy - mu) / s
         rejection = t.isf(alpha / 2, n - 2) * (n - 1) / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))
         is_outlier = ab_resid > rejection
         if np.sum(is_outlier) != 0:

@@ -2,6 +2,7 @@ from numbers import Number
 from math import sqrt, factorial
 import numpy as np
 from scipy.stats import binom
+import pandas as pd
 
 
 def _standard_error(std, n):
@@ -72,6 +73,8 @@ def _check_table(table, only_count=False):
         table = np.array([np.array(xi) for xi in table])
     elif isinstance(table, (np.ndarray, np.generic)):
         pass
+    elif isinstance(table, (pd.Series, pd.DataFrame, pd.SparseDataFrame, pd.SparseSeries, pd.SparseArray)):
+        table = np.array(table)
     else:
         raise TypeError("Data type {} is not supported".format(type(table)))
     if only_count:
@@ -83,7 +86,7 @@ def _check_table(table, only_count=False):
     else:
         if np.issubdtype(table.dtype, np.integer):
             pass
-        elif np.issubdtype(table.dtype, np.float):
+        elif np.issubdtype(table.dtype, np.dtype(float).type):
             pass
         else:
             raise TypeError("Cannot perform statistical test with non-numeric values")
