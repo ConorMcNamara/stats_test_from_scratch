@@ -261,6 +261,15 @@ class TestRankTest(unittest.TestCase):
         z2, p2 = mood(data_1, data_2)
         assert pytest.approx(z2) == z1
 
+    # Cucconi Test
+    def test_cucconiTest_howWrong_Error(self):
+        data_1 = np.random.randint(0, 100, 50)
+        data_2 = np.random.randint(0, 10, 50)
+        with pytest.raises(ValueError, match="Cannot identify method for calculating p-value"):
+            cucconi_test(data_1, data_2, how='moar')
+
+    # Lepage Test
+
 
 if __name__ == '__main__':
     unittest.main()

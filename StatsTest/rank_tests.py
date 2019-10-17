@@ -422,3 +422,104 @@ def mood_test(data_1, data_2, alternative='two-sided'):
     else:
         p = norm.cdf(z)
     return z, p
+
+
+def cucconi_test(data_1, data_2, how='bootstrap'):
+    """Not found in scipy.stats or statsmodels
+    Used to compare the central tendency and variability in two samples.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        A list or array containing all observations from our first dataset
+    data_2: list or numpy array, 1-D
+        A list or array containing all observations from our second dataset
+    how: str, {bootstrap, permutation}, default is bootstrap
+        Method for calculating p-value
+
+    Returns
+    -------
+    c: float
+        Our measure of central tendency and variability
+    p: float, 0 <= p <= 1
+        The likelihood that we would find this level of central tendency and variability from two samples drawn from the
+        same population
+    """
+
+    def calculate_c(data_1, data_2):
+        data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
+        all_data = np.concatenate([data_1, data_2])
+        rank_data = rankdata(all_data)
+        n, n_1, n_2 = len(all_data), len(data_1), len(data_2)
+        r_1 = rank_data[:n_1]
+        u = (6 * np.sum(np.power(r_1), 2) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11)/ 5)
+        v = (6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11)/ 5)
+        rho = 2 * (pow(n, 2) - 4) / ((2 * n + 1) * (8 * n + 11)) - 1
+        c = (pow(u, 2) + pow(v, 2) - 2 * rho * u * v) / (2 * (1 - pow(rho, 2)))
+        return c
+
+    def bootstrap(x, y, reps=1000):
+        m, n = len(x), len(y)
+        x_s = (x - np.mean(x)) / np.std(x, ddof=1)
+        y_s = (y - np.mean(y)) / np.std(y, ddof=1)
+        xboot = x_s[np.random.randint(low=0, high=m, size=(reps, m))]
+        yboot = y_s[np.random.randint(low=0, high=n, size=(reps, n))]
+        reps_list = np.apply_along_axis(calculate_c, 1, xboot, yboot)
+        return reps_list
+
+    def permutation(x, y, reps=1000):
+        m, n = len(x), len(y)
+        N = m + n
+        all_data = np.concatenate(x, y)
+        reps_list = np.zeros(reps)
+        for i in range(reps):
+            perm_data = all_data[np.random.permutation(N)]
+            x_perm = perm_data[:m]
+            y_perm = perm_data[m:]
+            reps_list[i] = calculate_c(x_perm, y_perm)
+        return reps_list
+
+    c = calculate_c(data_1, data_2)
+    if how.casefold() not in ['bootstrap', 'permutation']:
+        raise ValueError("Cannot identify method for calculating p-value")
+    if how.casefold() == 'bootstrap':
+        reps_list = bootstrap(data_1, data_2)
+    else:
+        reps_list = permutation(data_1, data_2)
+    p = np.sum(reps_list >= c) / len(reps_list)
+    return c, p
+
+
+def lepage_test(data_1, data_2):
+    """Not found in either scipy.stats or statsmodels
+    Used to compare the central tendency and variability in two samples. A sum of the squared Euclidean distances of both
+    the Wilcoxon-Rank-Sum test and the Ansari-Bradley test.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        A list or array containing all observations from our first dataset
+    data_2: list or numpy array, 1-D
+        A list or array containing all observations from our second dataset
+
+    Returns
+    -------
+    d: float
+        Our measure of central tendency and variability among the two datasets
+    p: float, 0 <= p <= 1
+        The likelihood we would find this level of central tendency and variability among two datasets sampled from the
+        same population
+    """
+    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
+    n, m = len(data_1), len(data_2)
+    N = n + m
+    c, _ = ansari_bradley_test(data_1, data_2, alternative='two-sided')
+    w, _ = two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided')
+    expected_w = n * (N + 1) / 2
+    sd_w = sqrt(m * n * (N + 1) / 12)
+    expected_c = n * pow(N + 1, 2) / (4 * N)
+    sd_c = sqrt(m * n * (N + 1) * (3 + pow(N, 2)) / (48 * pow(N, 2)))
+    d = pow(w - expected_w / sd_w, 2) + pow(c - expected_c/ sd_c, 2)
+    p = 1 - chi2.cdf(d, 2)
+    return d, p
+
