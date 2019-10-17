@@ -519,7 +519,7 @@ def lepage_test(data_1, data_2):
     sd_w = sqrt(m * n * (N + 1) / 12)
     expected_c = n * pow(N + 1, 2) / (4 * N)
     sd_c = sqrt(m * n * (N + 1) * (3 + pow(N, 2)) / (48 * pow(N, 2)))
-    d = pow(w - expected_w / sd_w, 2) + pow(c - expected_c/ sd_c, 2)
+    d = pow((w - expected_w) / sd_w, 2) + pow((c - expected_c) / sd_c, 2)
     p = 1 - chi2.cdf(d, 2)
     return d, p
 
