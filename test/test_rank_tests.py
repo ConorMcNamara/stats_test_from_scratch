@@ -94,6 +94,14 @@ class TestRankTest(unittest.TestCase):
         x2, p2 = friedmanchisquare(x1, x2, x3)
         assert pytest.approx(x2) == x
 
+    # Quade Test
+
+    def test_quadeTest_kLessThree_Error(self):
+        sample_data_1 = [1, 2, 3]
+        sample_data_2 = [2, 4, 6]
+        with pytest.raises(AttributeError, match="Quade Test not appropriate for 2 levels"):
+            quade_test(sample_data_1, sample_data_2)
+
     # Page's Trend Test
 
     def test_pageTrendTest_nLessThree_Error(self):

@@ -1,5 +1,5 @@
 from StatsTest.utils import _check_table
-from scipy.stats import rankdata, norm, chi2
+from scipy.stats import rankdata, norm, chi2, f
 import numpy as np
 from math import sqrt
 from scipy.stats.statlib import gscale
@@ -124,9 +124,9 @@ def friedman_test(*args):
     Return
     ------
     q: float
-        Our Q statistic, or a measure of the difference between our expected result and the observed outcomes
+        Our Q statistic, or a measure of if each treatment has identical effects
     p: float, 0 <= p <= 1
-        The likelihood that our observed differences between each treatment is due to chance
+        The likelihood that our observed treatment effects would occur from a randomized block design
     """
     k = len(args)
     if k < 3:
@@ -139,6 +139,40 @@ def friedman_test(*args):
     scalar = (12 * n) / (k * (k + 1))
     q = scalar * np.sum(np.power(r_bar - ((k + 1) / 2), 2))
     p = 1 - chi2.cdf(q, df)
+    return q, p
+
+
+def quade_test(*args):
+    """Not found in either scipy or statsmodels
+    Used to determine if there is at least one treatment different than the others. Not that it does not tell us which
+    treatment is different or how many differences there are.
+
+    Parameters
+    ----------
+    args: list or numpy array, 1-D
+        An array containing the observations for each treatment. In this instance, each arg pertains to a specific
+        treatment, with the indexes of each arg pertaining to a block
+
+    Return
+    ------
+    q: float
+        Our Q statistic, or a measure of if each treatment has identical effects
+    p: float, 0 <= p <= 1
+        The likelihood that our observed treatment effects would occur from a randomized block design
+    """
+    k = len(args)
+    if k < 3:
+        raise AttributeError("Quade Test not appropriate for {} levels".format(k))
+    all_data = np.vstack(args).T
+    b = all_data.shape[0]
+    rank = np.apply_along_axis(rankdata, 1, all_data)
+    rank_range = rankdata(np.ptp(all_data, axis=1))
+    s_ij = rank_range.reshape(1, -1).T * rank
+    s_j = np.sum(s_ij, axis=1)
+    a_2 = np.sum(np.power(s_ij, 2))
+    B = np.sum(np.power(s_j, 2)) / b
+    q = (b - 1) * B / (a_2 - b)
+    p = 1 - f.cdf(q, k - 1, (b - 1) * (k - 1))
     return q, p
 
 
@@ -444,6 +478,8 @@ def cucconi_test(data_1, data_2, how='bootstrap'):
     p: float, 0 <= p <= 1
         The likelihood that we would find this level of central tendency and variability from two samples drawn from the
         same population
+
+    Implementation was based here: http://www.kurims.kyoto-u.ac.jp/EMIS/journals/RCE/V35/v35n3a03.pdf
     """
 
     def calculate_c(data_1, data_2):
@@ -452,8 +488,8 @@ def cucconi_test(data_1, data_2, how='bootstrap'):
         rank_data = rankdata(all_data)
         n, n_1, n_2 = len(all_data), len(data_1), len(data_2)
         r_1 = rank_data[:n_1]
-        u = (6 * np.sum(np.power(r_1), 2) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11)/ 5)
-        v = (6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11)/ 5)
+        u = (6 * np.sum(np.power(r_1, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5)
+        v = (6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5)
         rho = 2 * (pow(n, 2) - 4) / ((2 * n + 1) * (8 * n + 11)) - 1
         c = (pow(u, 2) + pow(v, 2) - 2 * rho * u * v) / (2 * (1 - pow(rho, 2)))
         return c
@@ -479,9 +515,9 @@ def cucconi_test(data_1, data_2, how='bootstrap'):
             reps_list[i] = calculate_c(x_perm, y_perm)
         return reps_list
 
-    c = calculate_c(data_1, data_2)
     if how.casefold() not in ['bootstrap', 'permutation']:
         raise ValueError("Cannot identify method for calculating p-value")
+    c = calculate_c(data_1, data_2)
     if how.casefold() == 'bootstrap':
         reps_list = bootstrap(data_1, data_2)
     else:
