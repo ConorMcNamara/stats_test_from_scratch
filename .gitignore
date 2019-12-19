@@ -1,8 +1,10 @@
 # Mac OS
 **/.DS_Store
 
+#Pytest History
 **/.pytest_cache
 
+#R
 /.Rhistory
 
-/.idea
+/.ideas
