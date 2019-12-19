@@ -354,3 +354,19 @@ def mood_median_test(*args, **kwargs):
     else:
         p = chi2.cdf(X, df)
     return X, p
+
+
+def dunnett_test(control, alpha=0.05, *args):
+    """Not found in either scipy
+
+    """
+    k = len(args) + 1
+    if k < 2:
+        raise AttributeError("Cannot run Dunnett Test with less than two groups")
+    n = np.max([len(arg) for arg in args])
+    df = (k + 1) * (n - 1)
+    means = np.concatenate([np.mean(control), np.mean(args, axis=1)])
+    all_data = np.concatenate([control, args])
+    pooled_variance = (np.sum(np.power(all_data, 2)) - 3 * np.sum(np.power(means, 2))) / df
+    se = sqrt(2 * pooled_variance / n)
+    q_01 = ...

@@ -38,14 +38,9 @@ class TestOutliersTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Alpha level must be within 0 and 1"):
             grubbs_test(data, alternative="two-sided", alpha=1.5)
 
-    def test_GrubbsTest_resultBool(self):
-        data = [199.31, 199.53, 200.19, 200.82, 201.92, 201.95, 202.18, 245.57]
-        result, outlier = grubbs_test(data, alternative="two-sided", alpha=0.05)
-        assert result is True
-
     def test_GrubbsTest_resultOutlier(self):
         data = [199.31, 199.53, 200.19, 200.82, 201.92, 201.95, 202.18, 245.57]
-        result, outlier = grubbs_test(data, alternative="two-sided", alpha=0.05)
+        outlier = grubbs_test(data, alternative="two-sided", alpha=0.05)
         assert outlier == 245.57
 
     # Extreme Studentized Deviate Test
@@ -121,14 +116,9 @@ class TestOutliersTest(unittest.TestCase):
         with pytest.raises(ValueError, match="Alpha level must be within 0 and 1"):
             tietjen_moore_test(data, alpha=1.2)
 
-    def test_TietjenMooreTest_result(self):
-        data = [-1.40, -0.44, -0.30, -0.24, -0.22, -0.13, -0.05, 0.06, 0.10, 0.18, 0.20, 0.39, 0.48, 0.63, 1.01]
-        result, outliers = tietjen_moore_test(data, num_outliers=2, alternative='two-sided', alpha=0.05)
-        assert result is True
-
     def test_TietjenMooreTest_outliers(self):
         data = [-1.40, -0.44, -0.30, -0.24, -0.22, -0.13, -0.05, 0.06, 0.10, 0.18, 0.20, 0.39, 0.48, 0.63, 1.01]
-        result, outliers = tietjen_moore_test(data, num_outliers=2, alternative='two-sided', alpha=0.05)
+        outliers = tietjen_moore_test(data, num_outliers=2, alternative='two-sided', alpha=0.05)
         np.testing.assert_array_equal(outliers, np.array([1.01, -1.4]))
 
     # Chauvenet Test
@@ -219,6 +209,22 @@ class TestOutliersTest(unittest.TestCase):
     def test_ThompsonTauTest_result(self):
         data = [9, 10, 10, 10, 11, 50]
         np.testing.assert_array_equal(thompson_tau_test(data), [50])
+
+    # MAD-median Test
+    def test_madMedian_alphaLessZero_Error(self):
+        data = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot have alpha level greater than 1 or less than 0"):
+            mad_median_test(data, alpha=-0.5)
+
+    def test_madMedian_alphaGreaterOne_Error(self):
+        data = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot have alpha level greater than 1 or less than 0"):
+            mad_median_test(data, alpha=1.2)
+
+    def test_madMedianTest_result(self):
+        data = [-1.09, 1., 0.28, -1.51, -0.58, 6.61, -2.43, -0.43]
+        expected = [6.61]
+        np.testing.assert_array_almost_equal(expected, mad_median_test(data))
 
 
 if __name__ == '__main__':
