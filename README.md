@@ -10,17 +10,17 @@ My goal is two fold:
 # Statistical Tests currently supported and where to find them:
 ## Sample Tests
 1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html). Used to determine if the sample differs significantly from the normally distributed population we are evaluating, or if the distribution of two samples from a normally distributed population differ. 
-2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html). Used to determine if the sample differs signficnatly from the normally distributred population (with unknown sample variance), or if the means of two samples from a normally distributed population differ. 
+2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html). Used to determine if the sample differs significantly from the normally distributed population (with unknown sample variance), or if the means of two samples from a normally distributed population differ. 
 3) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
-4) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistnent significant differences between pairs of data, such as before-and-after treatments.
+4) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
 5) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
 
 ## Rank Tests
 1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html). Used to determine if two related or paired samples have different mean ranks. 
 2) Mann-Whitney-U Test: Scipy through [mannwhitneyu](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html). Used to determine if a randomly selected value from one ordinal population will be less or greater than a randomly selected value from a second ordinal population.
 3) Friedman Test: Scipy through [friedmanchisquare](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.friedmanchisquare.html). Used to determine if there are any differences in treatments across multiple test attempts.
-4) Quade Test: Not found in either scipy or statsmodels. Used to determine if tere is at least one treatment that is different from the others.
-5) Page's Trend Test: Not found in either scipy or statsmodels. Used to determine if the central tendancy for all treatments is the same, or there is an order to them.
+4) Quade Test: Not found in either scipy or statsmodels. Used to determine if there is at least one treatment that is different from the others.
+5) Page's Trend Test: Not found in either scipy or statsmodels. Used to determine if the central tendency for all treatments is the same, or there is an order to them.
 6) Kruskal-Wallis Test: Scipy through [kruskal](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html). Used to determine if two or more samples originate from the same distribution.
 7) Fligner-Kileen Test: Scipy through [fligner](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fligner.html). Used to determine if two or more samples have the same variances without the assumption of normality.
 8) Ansari-Bradley Test: Scipy through [ansari](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ansari.html). Used to determine if two samples have the same dispersion (distance from the median).
@@ -45,8 +45,9 @@ My goal is two fold:
 4) Bartlett Test: Scipy through [bartlett](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bartlett.html). Used to determine the equality of group variances using the likelihood ratio. 
 5) Tukey Range Test: Statsmodels through [pairwise_tukeyhsd](https://www.statsmodels.org/stable/generated/statsmodels.stats.multicomp.pairwise_tukeyhsd.html). Used to determine the equality of means for all sample pairs.
 6) Cochran's Q Test: Statsmodels through [cochrans_q](https://www.statsmodels.org/devel/generated/statsmodels.stats.contingency_tables.cochrans_q.html). Used to determine if the treatments (as measured by a binary response variable) have identical effects/are equally effective.
-7) Jonckheere Trend Test: Not found in either scipy or statsmodels. Used to determine if the group medians have an a priori ordering.
-8) Mood Median Test: Scipy through [median_test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.median_test.html). Used to test the equalty of group medians.
+7) Jonckheere Trend Test: Not found in either scipy or statsmodels. Used to determine if the group medians have an a-priori ordering.
+8) Mood Median Test: Scipy through [median_test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.median_test.html). Used to test the equality of group medians.
+9) Dunnett Test: Not found in either scipy or statsmodels. Used as post-hoc to ANOVA analysis to determine which groups are significantly different to the control group.
 
 ## Proportion Tests
 1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html). Used to determine if one proportion is different to the population proportion mean, or if two proportions share the same mean. 
@@ -81,3 +82,4 @@ My goal is two fold:
 6) Peirce Test: Not found in either scipy or statsmodels. Used to determine outliers based off of Peirce's criteria.
 7) Dixon's Q Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Q values.
 8) Thompson-Tau Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Thompson-Tau criteria.
+9) MAD-Median Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Mean Absolute Deviation - Median criteria.
