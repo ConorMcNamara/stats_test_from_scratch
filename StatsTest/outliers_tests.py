@@ -1,6 +1,6 @@
 import numpy as np
 from StatsTest.utils import _check_table
-from scipy.stats import t
+from scipy.stats import t, median_absolute_deviation, chi2
 from scipy.special import erfc
 from math import sqrt
 
@@ -129,7 +129,7 @@ def extreme_studentized_deviate_test(data, num_outliers=1, alpha=0.05):
 
 def tietjen_moore_test(data, num_outliers=1, alternative='two-sided', alpha=0.05):
     """Not found in either scipy.stats or statsmodels
-    An extension of Grubbs where it is used to determine if there exists k outliers in the dataset based on their
+    An extension of Grubbs where it is used to determine if there exists exactly k outliers in the dataset based on their
     dispersion from the mean. Note that this assumes that the data is normally distributed.
 
     Parameters
@@ -349,3 +349,27 @@ def thompson_tau_test(data, alpha=0.05):
         else:
             outlier_exist = False
     return outlier_table
+
+
+def mad_median_test(data, alpha=0.05):
+    """Not found in either scipy.stats or statsmodels
+    Uses the median absolute deviation rule as a method of outlier detection.
+
+    Parameters
+    ----------
+    data: list or numpy array
+        Our dataset we are evaluating for outliers
+    alpha: float, default is 0.05
+        Our level of confidence for detecting outliers
+
+    Returns
+    -------
+    A list containing all datapoints that we found to be an outlier by the MAD rule
+    """
+    data = _check_table(data, only_count=False)
+    if alpha < 0 or alpha > 1:
+        raise ValueError("Cannot have alpha level greater than 1 or less than 0")
+    median = np.median(data)
+    mad = median_absolute_deviation(data)
+    mad_med_obs = np.abs(data - median) / mad
+    return data[mad_med_obs > sqrt(chi2.ppf(1 - (alpha / 2.0), 1))]

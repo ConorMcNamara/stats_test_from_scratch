@@ -226,6 +226,34 @@ class TestMultiGroupTests(unittest.TestCase):
         x2, p2, med, tbl = median_test(g1, g2, g3)
         assert pytest.approx(x2) == x1
 
+    ## Dunnett Test
+
+    def test_dunnetTest_kLessTwo_Error(self):
+        control = [10, 10, 10]
+        d1 = [10, 20, 30]
+        with pytest.raises(AttributeError, match="Cannot run Dunnett Test with less than two groups"):
+            dunnett_test(control, 0.05, d1)
+
+    def test_dunnettTest_alphaWrong_Error(self):
+        control = [10, 10, 10]
+        d1 = [10, 20, 30]
+        with pytest.raises(ValueError, match="Alpha level not currently supported"):
+            dunnett_test(control, 0.2, d1, d1)
+
+    def test_dunnettTest_results(self):
+        control = [55, 47, 48]
+        p1 = [55, 64, 64]
+        p2 = [55, 49, 52]
+        p3 = [50, 44, 41]
+        np.testing.assert_array_equal(dunnett_test(control, 0.05, p1, p2, p3), [True, False, False])
+
+    def test_dunnettTest_moreResults(self):
+        control = [51, 87, 50, 48, 79, 61, 53, 54]
+        p1 = [82, 91, 92, 80, 52, 79, 73, 74]
+        p2 = [79, 84, 74, 98, 63, 83, 85, 58]
+        p3 = [85, 80, 65, 71, 67, 51, 63, 93]
+        np.testing.assert_array_equal(dunnett_test(control, 0.05, p1, p2, p3), [True, True, False])
+
 
 if __name__ == '__main__':
     unittest.main()

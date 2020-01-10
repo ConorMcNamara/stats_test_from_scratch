@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import chi2, binom
 from StatsTest.utils import _check_table, _hypergeom_distribution
-from math import sqrt
 
 
 def chi_squared_test(cont_table):
