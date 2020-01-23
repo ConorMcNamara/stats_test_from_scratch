@@ -48,6 +48,7 @@ My goal is two fold:
 7) Jonckheere Trend Test: Not found in either scipy or statsmodels. Used to determine if the group medians have an a-priori ordering.
 8) Mood Median Test: Scipy through [median_test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.median_test.html). Used to test the equality of group medians.
 9) Dunnett Test: Not found in either scipy or statsmodels. Used as post-hoc to ANOVA analysis to determine which groups are significantly different to the control group.
+10) Duncan's New Multi-Range Test: Not found in either scipy or statsmodels. Used as post-hoc to ANOVA analysis to determine which group means are significantly different to one another.
 
 ## Proportion Tests
 1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html). Used to determine if one proportion is different to the population proportion mean, or if two proportions share the same mean. 

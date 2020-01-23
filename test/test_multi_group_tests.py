@@ -254,6 +254,27 @@ class TestMultiGroupTests(unittest.TestCase):
         p3 = [85, 80, 65, 71, 67, 51, 63, 93]
         np.testing.assert_array_equal(dunnett_test(control, 0.05, p1, p2, p3), [True, True, False])
 
+    # Duncan's New Multi-Range Test
+    def test_duncanMultiRangeTest_kLessTwo_Error(self):
+        d1 = [10, 20, 30]
+        with pytest.raises(AttributeError, match="Cannot run Duncan Multi-Range Test with less than two groups"):
+            duncan_multiple_range_test(0.05, d1)
+
+    def test_duncanMultiRangeTest_alphaWrong_Error(self):
+        d1 = [10, 20, 30]
+        with pytest.raises(ValueError, match="Alpha level not currently supported"):
+            duncan_multiple_range_test(0.2, d1, d1)
+
+    def test_duncanMultiRangeTest_results(self):
+        data_1, data_2, data_3 = [9, 14, 11], [20, 19, 23], [39, 38, 41]
+        np.testing.assert_array_equal(duncan_multiple_range_test(0.05, data_1, data_2, data_3),
+                                      [np.array([2, 0]), np.array([2, 1]), np.array([1, 0])])
+
+    def test_duncanMultiRangeTest_moreResults(self):
+        data_1, data_2, data_3, data_4, data_5 = [10, 10, 10, 10, 9], [15, 15, 15, 15, 17], [20, 20, 20, 20, 8], [22, 22, 22, 22, 20], [10, 10, 10, 10, 14]
+        np.testing.assert_array_equal(duncan_multiple_range_test(0.05, data_1, data_2, data_3, data_4, data_5),
+                                      [np.array([3, 0]), np.array([3, 4]), np.array([3, 1]), np.array([2, 0]), np.array([2, 4]), np.array([1, 0])])
+
 
 if __name__ == '__main__':
     unittest.main()
