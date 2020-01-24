@@ -268,6 +268,25 @@ class TestSampleTest(unittest.TestCase):
         x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
         assert pytest.approx(x2) == x1
 
+    # Trinomial Test
+    def test_TrinomialTest_notPaired_Error(self):
+        a = [10, 20 ,30]
+        b = [5, 10]
+        with pytest.raises(AttributeError, match="Cannot perform Trinomial Test on unpaired data"):
+            trinomial_test(a, b)
+
+    def test_TrinomialTest_alternativeWrong_Error(self):
+        a = [10, 20, 30]
+        with pytest.raises(ValueError, match="Cannot determine alternative hypothesis"):
+            trinomial_test(a, a, 'MOAR')
+
+    def test_TrinomialTest_pResult(self):
+        a = [30, 15, 35, 12, 35, 8, 21, 8, 29, 17]
+        b = [23, 13, 31, 15, 35, 8, 18, 7, 22, 13]
+        expected = .049362
+        t, p = trinomial_test(a, b, 'two-sided')
+        assert pytest.approx(expected, 0.00001) == p
+
 
 if __name__ == '__main__':
     unittest.main()

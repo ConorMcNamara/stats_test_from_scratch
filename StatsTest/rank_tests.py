@@ -559,3 +559,41 @@ def lepage_test(data_1, data_2):
     p = 1 - chi2.cdf(d, 2)
     return d, p
 
+
+def conover_test(*args):
+    """Not found in scipy.stats or statsmodels.
+    Used to compare the equality of variances for multiple groups when we cannot assume that they all arise from the same
+    distribution.
+
+    Implementation based on: https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/PASS/Conover_Test_of_Variances-Simulation.pdf
+
+    Parameters
+    ----------
+     args: list or numpy array, 1-D
+        Each list represents all observations in a group that we wish to test their equality of variances on
+
+    Returns
+    -------
+    T: float
+        Measure of the degree of variance variability between the groups
+    p: float, 0 <= p <= 1
+        The likelihood that this observed variability would occur from random chance, i.e., the likelihood that we would
+        observe this difference from randomly selecting k groups of unknown distribution.
+    """
+    k = len(args)
+    n_k = [len(arg) for arg in args]
+    N = np.sum(n_k)
+    means = np.mean(args, axis=1)
+
+    def absolute_difference(data, means):
+        row_means_col_vec = means.reshape((k, 1))
+        return np.abs(data - row_means_col_vec)
+
+    z_k = absolute_difference(args, means)
+    r_k = np.apply_along_axis(rankdata, 1, z_k)
+    s_k = np.sum(np.power(r_k, 2), axis=1)
+    s_bar = np.mean(s_k)
+    d_2 = (1 / (N - 1)) * (np.sum(np.power(r_k, 4)) - N * np.power(s_bar, 2))
+    T = (1 / d_2) * (np.sum(np.power(s_k, 2) / n_k) - N * np.power(s_bar, 2))
+    p = 1 - chi2.cdf(T, k - 1)
+    return T, p

@@ -1,7 +1,8 @@
 import numpy as np
 from numbers import Number
-from math import sqrt
+from math import sqrt, factorial
 from scipy.stats import t, norm, f
+from scipy.special import factorial as st_factorial
 from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme, _rle
 
 
@@ -225,7 +226,7 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
 
 
 def binomial_sign_test(data_1, data_2, alternative='two-sided', success_prob=0.5):
-    """Not found in either scipy or statsmodels.
+    """Found in scipy as sign_test
     Used to determine whether or not the measured differences between two groups (X and Y) is
     significantly greater and/or less than each other. For instance, we might use this to determine if the weight loss
     for users who followed a certain diet is significant or not.
@@ -318,3 +319,52 @@ def wald_wolfowitz_test(data_1, expected=None, cutoff='median'):
     z = (n_runs - mu) / sqrt(var)
     p = 2 * (1 - norm.cdf(abs(z)))
     return z, p
+
+
+def trinomial_test(data_1, data_2, alternative='two-sided'):
+    """Not found in scipy.stats or statsmodels
+    Used on paired-data when the sign test loses power, that is, when there exists instances of "zero observations" or
+    differences of zero between the paired-data.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        The observed measurements for our first sample
+    data_2: list or numpy array, 1-D
+        The observed measurements for our first sample
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
+
+    Returns
+    -------
+    d: int
+        The number of positive instances minus the number of negative instances
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe these sign differences due to random chance
+    """
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    if len(data_1) != len(data_2):
+        raise AttributeError("Cannot perform Trinomial Test on unpaired data")
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine alternative hypothesis")
+    n = len(data_1)
+    diffs = data_1 - data_2
+    pos_diff, neg_diff, zero_diff = np.sum(diffs > 0), np.sum(diffs < 0), np.sum(diffs == 0)
+    p_0 = zero_diff / n
+    probs = []
+
+    def calculate_probs(n, z, k, p_0):
+        return np.sum(factorial(n) / (st_factorial(n - z - 2 * k) * st_factorial(k + z) * st_factorial(k)) * \
+                      np.power(p_0, n - z - (2 * k)) * np.power((1 - p_0) / 2, z + 2 * k))
+
+    for z in range(n + 1):
+        k = np.arange(0, (n - z) // 2 + 1)
+        probs.append(calculate_probs(n, z, k, p_0))
+    d = pos_diff - neg_diff
+    if alternative.casefold() == "two-sided":
+        p = np.sum(probs[abs(d):]) * 2
+    elif alternative.casefold() == 'greater':
+        p = np.sum(probs[abs(d):])
+    else:
+        p = np.sum(probs[:abs(d)])
+    return d, p

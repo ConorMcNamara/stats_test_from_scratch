@@ -14,6 +14,7 @@ My goal is two fold:
 3) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
 4) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
 5) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
+6) Trinomial Test: Not found in either scipy or statsmodels. Used as a replacement to the sign test when there are ties in the data.
 
 ## Rank Tests
 1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html). Used to determine if two related or paired samples have different mean ranks. 
@@ -27,6 +28,7 @@ My goal is two fold:
 9) Mood Test for Dispersion: Scipy through [mood](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mood.html). Used to determine if two samples have the same dispersion for their ranks.
 10) Cucconi Test: Not found in either scipy or statsmodels. Used to determine if the central tendency and variability of two samples are the same.
 11) Lepage Test: Not found in either scipy or statsmodels. Used to determine if the central tendency and variability of two samples are the same.
+12) Conover Test: Not found in either scipy or statsmodels. Used to determine if the variances of multiple groups are the same. 
 
 ## Categorical Tests
 1) Chi Square Test: Scipy through [chi2_contingency](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html). Used to determine if the distribution of our contingency table follows the row and column sum.
