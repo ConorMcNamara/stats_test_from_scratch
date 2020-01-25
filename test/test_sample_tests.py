@@ -287,6 +287,26 @@ class TestSampleTest(unittest.TestCase):
         t, p = trinomial_test(a, b, 'two-sided')
         assert pytest.approx(expected, 0.00001) == p
 
+    # Fligner-Policello Test
+    def test_FlignerPolicelloTest_alternativeWrong_Error(self):
+        x = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot determine alternative hypothesis"):
+            fligner_policello_test(x, x, "MOAR")
+
+    def test_FlignerPolicelloTest_zResult(self):
+        x = np.array([4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 20])
+        y = np.array([12, 8, 6, 16, 12, 14, 10, 18, 4, 11])
+        expected = .703046
+        z, p = fligner_policello_test(x, y)
+        assert pytest.approx(expected, 0.00001) == z
+
+    def test_FlignerPolicelloTest_pResult(self):
+        x = np.array([4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 20])
+        y = np.array([12, 8, 6, 16, 12, 14, 10, 18, 4, 11])
+        expected = .482027
+        z, p = fligner_policello_test(x, y)
+        assert pytest.approx(expected, 0.00001) == p
+
 
 if __name__ == '__main__':
     unittest.main()

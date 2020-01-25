@@ -16,8 +16,8 @@ def two_sample_mann_whitney_test(data_1, data_2, alternative='two-sided'):
         The observed sample for ordinal response variable 1
     data_2: list or numpy array, 1-D
         The observed sample for ordinal response variable 2
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, greater or less
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -67,8 +67,8 @@ def two_sample_wilcoxon_test(data_1, data_2, alternative='two-sided', handle_zer
         The first sample or repeated measure
     data_2: list or numpy array, 1-D
         The second sample or repeated measure
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, greater or less
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
     handle_zero: str, default is wilcox
         How we treat differences of zero. It can be either wilcox (ignore) or pratt
 
@@ -324,8 +324,8 @@ def ansari_bradley_test(data_1, data_2, alternative='two-sided'):
         A list or array containing all observations from our first dataset
     data_2: list or numpy array, 1-D
         A list or array containing all observations from our second dataset
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Returns
     -------
@@ -421,8 +421,8 @@ def mood_test(data_1, data_2, alternative='two-sided'):
         A list or array containing all observations from our first dataset
     data_2: list or numpy array, 1-D
         A list or array containing all observations from our second dataset
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Returns
     -------

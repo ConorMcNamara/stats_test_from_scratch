@@ -68,8 +68,8 @@ def fisher_test(cont_table, alternative='two-sided'):
     ----------
     cont_table: list or numpy array, 2 x 2
         A 2x2 contingency table
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -232,7 +232,7 @@ def breslow_day_test(*args):
     Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
     row and column with its expected pooled ratio amount
 
-    For solving the quadratic, set A / (n_i - A) / m_i1 - A / mi2 - n_i + A equal to the pooled ratio, and then solve
+    For solving the quadratic, set A / (n_i - A) / (m_i1 - A) / (mi2 - n_i + A) equal to the pooled ratio, and then solve
     for zero.
     (1) A * (m_i2 - n_i1 + A) = ratio * (n_i - A) * (m_i1 - A)
     (2) A * m_i2 - A * n_i2 + A^2 = ratio * n_i * m_i1  - ratio * n_i * A - ratio * m_i1 * A - ratio * A^2

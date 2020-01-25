@@ -3,8 +3,16 @@
 
 #Pytest History
 **/.pytest_cache
+*/.pytest_cache
+StatsTest/.pyc
 
 #R
+.Rhistory
 /.Rhistory
 
-/.ideas
+#Idea
+/.idea
+.idea
+
+# Pycache
+__pycache__/

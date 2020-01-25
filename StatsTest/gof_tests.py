@@ -40,8 +40,8 @@ def chi_goodness_of_fit_test(observed, expected=None):
     ----------
     observed: list or numpy array, 1-D
         Our observed data points
-    expected: (Optional) list or numpy array, 1-D
-        What we expected the results to be. If none given, then we expect all data points to be equally likely
+    expected: list or numpy array, 1-D, default is None
+        What we expected the results to be. If None given, then we expect all data points to be equally likely
 
     Returns
     -------
@@ -70,8 +70,8 @@ def g_goodness_of_fit_test(observed, expected=None):
     ----------
     observed: list or numpy array, 1-D
         Our observed data
-    expected: (Optional) list or numpy array
-        What we expected the results to be. If none given, then we expect all data points to be equally likely
+    expected: list or numpy array, default is None
+        What we expected the results to be. If None given, then we expect all data points to be equally likely
 
     Returns
     -------
@@ -125,10 +125,10 @@ def ljung_box_test(data, num_lags=None):
     ----------
     data: list or numpy array, 1-D
         The time series dataset we are performing our test on
-    num_lags: int or list, default is none
+    num_lags: int or list, default is None
         If int, the maximum number of time lags
         If list, then the series of time lags we are performing
-        If none, then use np.arange(1, 10)
+        If None, then use np.arange(1, 10)
 
     Returns
     -------
@@ -163,10 +163,10 @@ def box_pierce_test(data, num_lags=None):
     ----------
     data: list or numpy array, 1-D
         The time series dataset we are performing our test on
-    num_lags: int or list, default is none
+    num_lags: int or list, default is None
         If int, the maximum number of time lags
         If list, then the series of time lags we are performing
-        If none, then use np.arange(1, 11)
+        If None, then use np.arange(1, 11)
 
     Returns
     -------

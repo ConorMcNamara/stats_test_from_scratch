@@ -4,6 +4,7 @@ from math import sqrt, factorial
 from scipy.stats import t, norm, f
 from scipy.special import factorial as st_factorial
 from StatsTest.utils import _standard_error, _check_table, _right_extreme, _left_extreme, _rle
+import warnings
 
 
 def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
@@ -17,8 +18,8 @@ def one_sample_z_test(sample_data, pop_mean, alternative='two-sided'):
         Our observational data
     pop_mean: float
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -60,8 +61,8 @@ def two_sample_z_test(data_1, data_2, alternative='two-sided'):
         The observed dataset we are comparing to data_2
     data_2: list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -101,8 +102,8 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
         The observed dataset we are comparing to the population mean
     pop_mean: float
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -140,8 +141,8 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
         The observed dataset we are comparing to data_2
     data_2: list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
     paired: bool, default is False
         Whether or not data_1 and data_2 are paired observations
 
@@ -164,9 +165,9 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
             raise AttributeError("The data types are not paired")
         n = len(data_1)
         df = n - 1
-        squared_difference = sum((data_1 - data_2) ** 2)
-        difference = sum(data_1 - data_2)
-        std = sqrt((squared_difference - (difference**2 / n)) / df)
+        squared_difference = np.sum(np.power(data_1 - data_2, 2))
+        difference = np.sum(data_1 - data_2)
+        std = sqrt((squared_difference - (np.power(difference, 2) / n)) / df)
         standard_error_difference = _standard_error(std, n)
 
     else:
@@ -198,8 +199,8 @@ def two_sample_f_test(data_1, data_2, alternative='two-sided'):
         The observed measurements for our first sample
     data_2: list or numpy array, 1-D
         The observed measurements for our second sample
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
 
     Return
     ------
@@ -237,8 +238,8 @@ def binomial_sign_test(data_1, data_2, alternative='two-sided', success_prob=0.5
         A list of all observations for group X.
     data_2: list or numpy array, 1-D
         A list of all observations for group Y.
-    alternative: str, default is two-sided
-        Our alternative hypothesis. It can be two-sided, less or greater
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
     success_prob: float, 0 <= success_prob <= 1
         The probability of success. Default is 0.5
 
@@ -368,3 +369,51 @@ def trinomial_test(data_1, data_2, alternative='two-sided'):
     else:
         p = np.sum(probs[:abs(d)])
     return d, p
+
+
+def fligner_policello_test(data_1, data_2, alternative='two-sided'):
+    """Not found in either scipy.stats or statsmodels.
+    Used to determine whether the population medians corresponding to two independent samples are equal.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        The observed measurements for our first sample
+    data_2: list or numpy array, 1-D
+        The observed measurements for our first sample
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
+
+    Returns
+    -------
+    z: float
+        The z-score of our observed median differences
+    p: float, 0 <= p <= 1
+        The likelihood that we would observe these differences due to chance
+    """
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine alternative hypothesis")
+    m, n = len(data_1), len(data_2)
+    if m < 12 or n < 12:
+        warnings.warn("Datasets may be too small for accurate approximation of p")
+
+    def compare_points(x, y):
+        z = x - y[:, None]
+        z = np.where(z > 0, 1, z)
+        z = np.where(z == 0, 0.5, z)
+        z = np.where(z < 0, 0, z)
+        return np.sum(z, axis=0)
+
+    n_x, n_y = compare_points(data_1, data_2), compare_points(data_2, data_1)
+    Nx, Ny = np.sum(n_x), np.sum(n_y)
+    m_x, m_y = np.mean(n_x), np.mean(n_y)
+    ss_x, ss_y = np.sum(np.power(n_x - m_x, 2)), np.sum(np.power(n_y - m_y, 2))
+    z = (Ny - Nx) / (2 * np.sqrt(ss_x + ss_y - (m_x * m_y)))
+    if alternative.casefold() == 'two-sided':
+        p = 2 * (1 - norm.cdf(abs(z)))
+    elif alternative.casefold() == 'greater':
+        p = 1 - norm.cdf(z)
+    else:
+        p = norm.cdf(z)
+    return z, p
