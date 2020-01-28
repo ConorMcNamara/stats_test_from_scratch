@@ -173,6 +173,58 @@ class TestSampleTest(unittest.TestCase):
         t2, p2 = ttest_ind(data_1, data_2, equal_var=False)
         assert pytest.approx(t2) == t1
 
+    # Two Sample Trimmed Means T Test
+
+    def test_TrimmmedMeans_pLessZero_Error(self):
+        with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
+            trimmed_means_test([1, 2, 3], [4, 5, 6], p=-5)
+
+    def test_TrimmmedMeans_pGreaterHundred_Error(self):
+        with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
+            trimmed_means_test([1, 2, 3], [4, 5, 6], p=105)
+
+    def test_TrimmedMeans_alternativeWrong_Error(self):
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            trimmed_means_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
+
+    def test_TrimmedMeans_pResult(self):
+        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
+        data_2 = [2, 8, 6, 22, 11, 27, 10, 25, 30, 38]
+        t, p = trimmed_means_test(data_1, data_2, p=20, alternative='two-sided')
+        assert pytest.approx(0.469887, 0.00001) == p
+
+    def test_TrimmedMeans_tResult(self):
+        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
+        data_2 = [2, 8, 6, 22, 11, 27, 10, 25, 30, 38]
+        t, p = trimmed_means_test(data_1, data_2, p=20, alternative='two-sided')
+        assert pytest.approx(-0.741422, 0.00001) == t
+
+    # Yeun - Welch Test
+
+    def test_YeunWelch_pLessZero_Error(self):
+        with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
+            yeun_welch_test([1, 2, 3], [4, 5, 6], p=-5)
+
+    def test_YeunWelch_pGreaterHundred_Error(self):
+        with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
+            yeun_welch_test([1, 2, 3], [4, 5, 6], p=105)
+
+    def test_YeunWelch_alternativeWrong_Error(self):
+        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+            yeun_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
+
+    def test_YeunWelch_pResult(self):
+        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
+        data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
+        t, p = yeun_welch_test(data_1, data_2, p=20, alternative='two-sided')
+        assert pytest.approx(0.739002, 0.00001) == p
+
+    def test_YeunWelch_tResult(self):
+        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
+        data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
+        t, p = yeun_welch_test(data_1, data_2, p=20, alternative='two-sided')
+        assert pytest.approx(0.34365, 0.0001) == t
+
     # Two Sample F Test
 
     def test_twoSampleFTest_alternativeNotString_Error(self):
@@ -288,6 +340,7 @@ class TestSampleTest(unittest.TestCase):
         assert pytest.approx(expected, 0.00001) == p
 
     # Fligner-Policello Test
+
     def test_FlignerPolicelloTest_alternativeWrong_Error(self):
         x = [1, 2, 3, 4]
         with pytest.raises(ValueError, match="Cannot determine alternative hypothesis"):

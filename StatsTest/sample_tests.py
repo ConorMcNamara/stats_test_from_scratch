@@ -186,6 +186,97 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
     return t_value, p
 
 
+def trimmed_means_test(data_1, data_2, p=10, alternative='two-sided'):
+    """Not found in scipy.stats or statsmodels.
+    Used when we wish to perform a two-sample t-test, but suspect that the data is being heavily influenced by outliers,
+    i.e., cannot assume normality.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array, 1-D
+        The observed dataset we are comparing to data_1
+    p: float, 0 <= p <= 100
+        The percentage of data we wish to drop from each sample
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
+
+    Return
+    ------
+    t_value: number
+        The t statistic for the difference between our datasets
+    p: float, 0 <= p <= 1
+        The likelihood that the observed differences are due to chance
+    """
+    if p < 0 or p > 100:
+        raise ValueError("Percentage trimmed needs to be between 0 and 100")
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
+    n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
+    trim_data_1, trim_data_2 = sort_data_1[n_1: len(sort_data_1) - n_1], sort_data_2[n_2: len(sort_data_2) - n_2]
+    n_x, n_y = len(data_1), len(data_2)
+    m_x, m_y = len(trim_data_1), len(trim_data_2)
+    winsor_values_1, winsor_values_2 = np.append(trim_data_1[0] * n_1, trim_data_1[-1] * n_1), np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2)
+    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(trim_data_2, winsor_values_2)
+    s_x, s_y = np.var(winsor_data_1, ddof=1), np.var(winsor_data_2, ddof=1)
+    x_bar, y_bar = np.mean(trim_data_1), np.mean(trim_data_2)
+    pooled_var = ((n_x - 1) * s_x + (n_y - 1) * s_y) / ((m_x - 1) + (m_y - 1))
+    t_value = (x_bar - y_bar) / np.sqrt(pooled_var * ((1 / m_x) + (1 / m_y)))
+    df = m_x + m_y - 2
+    p = (1.0 - t.cdf(abs(t_value), df))
+    if alternative.casefold() == 'two-sided':
+        p *= 2
+    return t_value, p
+
+
+def yeun_welch_test(data_1, data_2, p=10, alternative='two-sided'):
+    """Not found in scipy.stats or statsmodels.
+    Used when we wish to perform a two-sample t-test, but cannot assume normality or equality of variances.
+
+    Parameters
+    ----------
+    data_1: list or numpy array, 1-D
+        The observed dataset we are comparing to data_2
+    data_2: list or numpy array, 1-D
+        The observed dataset we are comparing to data_1
+    p: float, 0 <= p <= 100
+        The percentage of data we wish to drop from each sample
+    alternative: str, {two-sided, greater, less}, default is two-sided
+        Our alternative hypothesis
+
+    Return
+    ------
+    t_value: number
+        The t statistic for the difference between our datasets
+    p: float, 0 <= p <= 1
+        The likelihood that the observed differences are due to chance
+    """
+    if p < 0 or p > 100:
+        raise ValueError("Percentage trimmed needs to be between 0 and 100")
+    if alternative.casefold() not in ['two-sided', 'greater', 'less']:
+        raise ValueError("Cannot determine method for alternative hypothesis")
+    data_1, data_2 = _check_table(data_1), _check_table(data_2)
+    sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
+    n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
+    trim_data_1, trim_data_2 = sort_data_1[n_1: len(sort_data_1) - n_1], sort_data_2[n_2: len(sort_data_2) - n_2]
+    n_x, n_y = len(data_1), len(data_2)
+    m_x, m_y = len(trim_data_1), len(trim_data_2)
+    winsor_values_1, winsor_values_2 = np.append(trim_data_1[0] * n_1, trim_data_1[-1] * n_1), np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2)
+    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(trim_data_2, winsor_values_2)
+    s_x, s_y = np.var(winsor_data_1, ddof=1), np.var(winsor_data_2, ddof=1)
+    x_bar, y_bar = np.mean(trim_data_1), np.mean(trim_data_2)
+    d_x, d_y = (n_x - 1) * s_x / (m_x * (m_x - 1)), (n_y - 1) * s_y / (m_y * (m_y - 1))
+    df = pow(d_x + d_y, 2) / (pow(d_x, 2) / (m_x - 1) + pow(d_y, 2) / (m_y -1))
+    t_value = (x_bar - y_bar) / sqrt(d_x + d_y)
+    p = 1 - t.cdf(t_value, df // 1)
+    if alternative.casefold() == 'two-sided':
+        p *= 2
+    return t_value, p
+
+
 def two_sample_f_test(data_1, data_2, alternative='two-sided'):
     """No method in scipy or statsmodels to immediately calculate this.
     Used to determine if two populations/samples have the same variance. Note that, due to this being a ratio between
@@ -333,8 +424,6 @@ def trinomial_test(data_1, data_2, alternative='two-sided'):
         The observed measurements for our first sample
     data_2: list or numpy array, 1-D
         The observed measurements for our first sample
-    alternative: str, {two-sided, greater, less}, default is two-sided
-        Our alternative hypothesis
 
     Returns
     -------

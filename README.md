@@ -11,10 +11,12 @@ My goal is two fold:
 ## Sample Tests
 1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html). Used to determine if the sample differs significantly from the normally distributed population we are evaluating, or if the distribution of two samples from a normally distributed population differ. 
 2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html). Used to determine if the sample differs significantly from the normally distributed population (with unknown sample variance), or if the means of two samples from a normally distributed population differ. 
-3) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
-4) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
-5) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
-6) Trinomial Test: Not found in either scipy or statsmodels. Used as a replacement to the sign test when there are ties in the data.
+3) Trimmed Means T Test: Not found in either scipy or statsmodels. Used when our two samples violate the assumption of normality.
+4) Yeun-Welch Test: Not found in either scipy or statsmodels. Used when our two samples violate the assumption of normality and equality of variances.
+5) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
+6) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
+7) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
+8) Trinomial Test: Not found in either scipy or statsmodels. Used as a replacement to the sign test when there are ties in the data.
 
 ## Rank Tests
 1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html). Used to determine if two related or paired samples have different mean ranks. 
