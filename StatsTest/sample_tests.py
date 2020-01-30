@@ -127,6 +127,10 @@ def one_sample_t_test(sample_data, pop_mean, alternative='two-sided'):
     p = (1.0 - t.cdf(abs(t_value), df))
     if alternative.casefold() == 'two_sided':
         p *= 2
+    elif alternative.casefold() == 'less':
+        p = 1 - p
+    else:
+        pass
     return t_value, p
 
 
@@ -183,6 +187,10 @@ def two_sample_t_test(data_1, data_2, alternative='two-sided', paired=False):
     p = (1.0 - t.cdf(abs(t_value), df))
     if alternative.casefold() == 'two-sided':
         p *= 2
+    elif alternative.casefold() == 'less':
+        p = 1 - p
+    else:
+        pass
     return t_value, p
 
 
@@ -229,6 +237,10 @@ def trimmed_means_test(data_1, data_2, p=10, alternative='two-sided'):
     p = (1.0 - t.cdf(abs(t_value), df))
     if alternative.casefold() == 'two-sided':
         p *= 2
+    elif alternative.casefold() == 'less':
+        p = 1 - p
+    else:
+        pass
     return t_value, p
 
 
@@ -274,6 +286,10 @@ def yeun_welch_test(data_1, data_2, p=10, alternative='two-sided'):
     p = 1 - t.cdf(t_value, df // 1)
     if alternative.casefold() == 'two-sided':
         p *= 2
+    elif alternative.casefold() == 'less':
+        p = 1 - p
+    else:
+        pass
     return t_value, p
 
 
