@@ -70,6 +70,7 @@ My goal is two fold:
 7) Skew Test: Scipy through [skewtest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewtest.html). Used to determine if the sample is normally distributed through its skew.
 8) Kurtosis Test: Scipy through [kurtosistest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosistest.html). Used to determine if a sample is normally distributed through its kurtosis.
 9) K-Squared Test: Scipy through [normaltest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html). Used to determine if a sample is normally distributed through its skew and kurtosis. 
+10) Lilliefors Test: Statsmodels through [lilliefors](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.lilliefors.html). Used to determine if a sample is normally distributed.
 
 ## Correlation Tests
 1) Pearson Test: Scipy through [pearsonr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pearsonr.html). Used to determine the correlation between two different data points.

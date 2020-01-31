@@ -167,6 +167,28 @@ class TestGOFTests(unittest.TestCase):
         z2, p2 = normaltest(data)
         assert pytest.approx(p2) == p1
 
+    # Lilliefors Test
+
+    def test_lilliefors_nLessFour_Error(self):
+        data = [1, 2, 3]
+        with pytest.raises(AttributeError, match="Cannot perform Lilliefors Test on less than 4 observations"):
+            lilliefors_test(data, alpha=0.05)
+
+    def test_lilliefors_alphaWrong_Error(self):
+        data = [1, 2, 3, 4]
+        with pytest.raises(ValueError, match="Cannot determine alpha level for Lilleifors Test"):
+            lilliefors_test(data, alpha=0.5)
+
+    def test_lilliefors_dResult(self):
+        data = [1.2, 1.6, 1.8, 1.9, 1.9, 2.0, 2.2, 2.6, 3.0, 3.5, 4.0, 4.8, 5.6, 6.6, 7.6]
+        d, result = lilliefors_test(data, 0.05)
+        assert pytest.approx(0.1875, 0.001) == d
+
+    def test_lilliefors_boolResult(self):
+        data = [1.2, 1.6, 1.8, 1.9, 1.9, 2.0, 2.2, 2.6, 3.0, 3.5, 4.0, 4.8, 5.6, 6.6, 7.6]
+        d, result = lilliefors_test(data, 0.05)
+        assert result == True
+
 
 if __name__ == '__main__':
     unittest.main()

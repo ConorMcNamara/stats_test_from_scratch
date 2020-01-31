@@ -303,10 +303,10 @@ def lilliefors_test(data, alpha=0.05):
     data = _check_table(data)
     n = len(data)
     if n < 4:
-        raise AttributeError("Cannot perform Lilliefors Test on less thhan 4 observations")
+        raise AttributeError("Cannot perform Lilliefors Test on less than 4 observations")
     if alpha not in [0.01, 0.05, 0.10, 0.15, 0.20]:
         raise ValueError("Cannot determine alpha level for Lilleifors Test")
-    index = n - 4 if n <= 50 else 51
+    index = n - 4 if n <= 50 else 47
 
     q_01 = [0.4129, 0.3959, 0.3728, 0.3504, 0.3331, 0.3162, 0.3037, 0.2905, 0.2812, 0.2714, 0.2627, 0.2545, 0.2477, 0.2408,
             0.2345, 0.2285, 0.2226, 0.2190, 0.2141, 0.2090, 0.2053, 0.2010, 0.1985, 0.1941, 0.1911, 0.1886, 0.1848, 0.1820,
@@ -341,6 +341,6 @@ def lilliefors_test(data, alpha=0.05):
     z_table = (data - np.mean(data)) / np.std(data, ddof=1)
     expected = norm.cdf(z_table)
     actual = np.cumsum(np.ones(len(data)) / len(data))
-    diff = expected - actual
+    diff = np.abs(actual - expected)
     d_max = np.max(diff)
     return d_max, d_max < d_x
