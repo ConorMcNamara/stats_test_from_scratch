@@ -1,7 +1,7 @@
 # stats_test_from_scratch
 One issue with Python is that there is no unified source for statistical tests like there is for ML with scikit-learn or Deep Learning with Keras. 
 
-You could have statistical tests in Scipy, Statsmodels, Numpy and Pandas; but it's not clear which libraries carry which tests. Additionally, there are some tests that you can find in R that aren't currently supported by these libraries.
+You could have statistical tests in Scipy, Statsmodels or some other obscure Pthon package but it's not clear which libraries carry which tests (some even carry the same test on top of it!). Additionally, there are some tests that you can find in R that aren't currently supported by these libraries.
 
 My goal is two fold:
 1) Implement the statistical tests from scratch, with an emphasis on making the code as presentable and easy-to-understand as possible. This is so anyone can understand exactly how what the test is measuring and how it is measuring it, even if it means we are sacrificing computational speed in the process.
@@ -11,8 +11,8 @@ My goal is two fold:
 ## Sample Tests
 1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html). Used to determine if the sample differs significantly from the normally distributed population we are evaluating, or if the distribution of two samples from a normally distributed population differ. 
 2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html). Used to determine if the sample differs significantly from the normally distributed population (with unknown sample variance), or if the means of two samples from a normally distributed population differ. 
-3) Trimmed Means T Test: Not found in either scipy or statsmodels. Used when our two samples violate the assumption of normality.
-4) Yeun-Welch Test: Not found in either scipy or statsmodels. Used when our two samples violate the assumption of normality and equality of variances.
+3) Trimmed Means T Test: Not found in either scipy or statsmodels. Used to measure central tendency when our two samples violate the assumption of normality.
+4) Yeun-Welch Test: Not found in either scipy or statsmodels. Used to measure central tendency when our two samples violate the assumption of normality and equality of variances.
 5) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
 6) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
 7) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
