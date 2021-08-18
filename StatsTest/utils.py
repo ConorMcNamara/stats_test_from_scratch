@@ -1,11 +1,14 @@
 from numbers import Number
 from math import sqrt, factorial
+from typing import Optional, Sequence, Tuple, Union
+
 import numpy as np
-from scipy.stats import binom
 import pandas as pd
 
+from scipy.stats import binom
 
-def _standard_error(std, n):
+
+def _standard_error(std: float, n: int) -> float:
     """Calculates the standard error given the standard deviation and length of data
 
     Parameters
@@ -15,20 +18,28 @@ def _standard_error(std, n):
     n: int
         The length of our data
 
-    Return
-    ------
+    Returns
+    -------
     The standard error, or our standard deviation divided by the square root of n.
     """
     if not isinstance(std, Number):
-        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(n)))
+        raise TypeError(
+            "Cannot calculate standard error with standard deviation of type {}".format(
+                type(n)
+            )
+        )
     if not isinstance(n, int):
-        raise TypeError("Cannot calculate standard error with n of type{}".format(type(n)))
+        raise TypeError(
+            "Cannot calculate standard error with n of type{}".format(type(n))
+        )
     if n <= 0:
-        raise ValueError("Cannot calculate standard error with n less than or equal to zero")
+        raise ValueError(
+            "Cannot calculate standard error with n less than or equal to zero"
+        )
     return std / sqrt(n)
 
 
-def _hypergeom_distribution(a, b, c, d):
+def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
     """Calculates the hyper-geometric distribution for a given a, b, c and d
 
     Parameters
@@ -42,30 +53,50 @@ def _hypergeom_distribution(a, b, c, d):
     d: int
         The bottom right corner of our 2x2 matrix
 
-    Return
-    ------
+    Returns
+    -------
     The hyper-geometric distribution given a, b, c and d
     """
-    if isinstance(a, int) and isinstance(b, int) and isinstance(c, int) and isinstance(d, int):
+    if (
+        isinstance(a, int)
+        and isinstance(b, int)
+        and isinstance(c, int)
+        and isinstance(d, int)
+    ):
         pass
-    elif not isinstance(a, np.integer) or not isinstance(b, np.integer) or not isinstance(c, np.integer) or not isinstance(d, np.integer):
+    elif (
+        not isinstance(a, np.integer)
+        or not isinstance(b, np.integer)
+        or not isinstance(c, np.integer)
+        or not isinstance(d, np.integer)
+    ):
         raise TypeError("Cannot compute factorials for non-integer values")
-    return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / \
-           (factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d))
+    return (
+        factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)
+    ) / (
+        factorial(a)
+        * factorial(b)
+        * factorial(c)
+        * factorial(d)
+        * factorial(a + b + c + d)
+    )
 
 
-def _check_table(table, only_count=False):
+def _check_table(
+    table: Union[Sequence, np.ndarray, pd.Series, pd.DataFrame, pd.SparseDtype],
+    only_count: bool = False,
+) -> np.ndarray:
     """Performs checks on our table to ensure that it is suitable for our statistical tests
 
     Parameters
     ----------
     table: list or numpy array
         The dataset we are applying our checks on
-    only_count: bool
+    only_count: bool, default=False
         Whether or not this dataset involves counts of instances
 
-    Return
-    ------
+    Returns
+    -------
     table: numpy array
         The dataset, converted to a numpy array
     """
@@ -73,14 +104,19 @@ def _check_table(table, only_count=False):
         table = np.array([np.array(xi) for xi in table])
     elif isinstance(table, (np.ndarray, np.generic)):
         pass
-    elif isinstance(table, (pd.Series, pd.DataFrame, pd.SparseDataFrame, pd.SparseSeries, pd.SparseArray)):
+    elif isinstance(
+        table,
+        (pd.Series, pd.DataFrame, pd.SparseDataFrame, pd.SparseSeries, pd.SparseArray),
+    ):
         table = np.array(table)
     else:
         raise TypeError("Data type {} is not supported".format(type(table)))
     if only_count:
         for tab in table:
             if not np.issubdtype(tab.dtype, np.integer):
-                raise TypeError("Cannot perform statistical test with non-integer counts")
+                raise TypeError(
+                    "Cannot perform statistical test with non-integer counts"
+                )
             if not np.all(tab >= 0):
                 raise ValueError("Cannot have negative counts")
     else:
@@ -93,7 +129,11 @@ def _check_table(table, only_count=False):
     return table
 
 
-def _sse(sum_data, square_data, n_data):
+def _sse(
+    sum_data: Union[Sequence, np.ndarray],
+    square_data: Union[Sequence, np.ndarray],
+    n_data: Union[Sequence, np.ndarray],
+) -> float:
     """Calculates the sum of squares for the errors
 
     Parameters
@@ -105,12 +145,16 @@ def _sse(sum_data, square_data, n_data):
     n_data: list or numpy array
         An array containing the length of each group of data
 
-    Return
-    ------
+    Returns
+    -------
     sse: float
         The sum of squares of the errors
     """
-    sum_data, square_data, n_data = _check_table(sum_data, False), _check_table(square_data, False), _check_table(n_data, False)
+    sum_data, square_data, n_data = (
+        _check_table(sum_data, False),
+        _check_table(square_data, False),
+        _check_table(n_data, False),
+    )
     if not np.all(square_data >= 0):
         raise ValueError("Cannot have negative square of numbers")
     if not np.all(n_data > 0):
@@ -122,7 +166,7 @@ def _sse(sum_data, square_data, n_data):
     return sse
 
 
-def _right_extreme(n_instances, n_total, prob):
+def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
     """Used for a binomial problem. Calculates the exact likelihood of finding observations as and more extreme
     than our observed value
 
@@ -146,7 +190,7 @@ def _right_extreme(n_instances, n_total, prob):
     return p
 
 
-def _left_extreme(n_instances, n_total, prob):
+def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
     """Used for a binomial problem. Calculates the exact likelihood of finding observations as and less extreme
     than our observed value
 
@@ -165,12 +209,12 @@ def _left_extreme(n_instances, n_total, prob):
         The exact likelihood that we would find observations less extreme than our observed number of
         success
     """
-    counter = np.arange(n_instances+1)
+    counter = np.arange(n_instances + 1)
     p = np.sum(binom.pmf(counter, n_total, prob))
     return p
 
 
-def _skew(data):
+def _skew(data: Union[Sequence, np.ndarray]) -> float:
     """Calculates the skew (third moment) of the data
 
     Parameters
@@ -191,7 +235,7 @@ def _skew(data):
     return skew
 
 
-def _kurtosis(data):
+def _kurtosis(data: Union[Sequence, np.ndarray]) -> float:
     """Calculates the kurtosis (fourth moment) of the data
 
     Parameters
@@ -212,7 +256,9 @@ def _kurtosis(data):
     return kurtosis
 
 
-def _autocorr(data, lags):
+def _autocorr(
+    data: Union[Sequence, np.ndarray], lags: Union[Sequence, np.ndarray]
+) -> np.ndarray:
     """Calculates the autocorrelation for a given time series dataset given a set amount of lags
 
     Parameters
@@ -230,11 +276,16 @@ def _autocorr(data, lags):
     mean = np.mean(data)
     var = np.var(data)
     xp = data - mean
-    corr = [1. if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var for lag in lags]
+    corr = [
+        1.0 if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var
+        for lag in lags
+    ]
     return np.array(corr)
 
 
-def _rle(arr):
+def _rle(
+    arr: Union[Sequence, np.ndarray]
+) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray]]:
     """Similar to R rle function, runs length encoding for a binary sequence.
 
      Parameters
@@ -250,14 +301,14 @@ def _rle(arr):
         The starting position of each run/sequence
     ia[i]: numpy array
         Whether the run/sequence belonged to our False or True condition
-     """
-    ia = np.array(arr)                  # force numpy
+    """
+    ia = np.array(arr)  # force numpy
     n = len(ia)
     if n == 0:
         return None, None, None
     else:
-        y = np.array(ia[1:] != ia[:-1])     # pairwise unequal (string safe)
-        i = np.append(np.where(y), n - 1)   # must include last element posi
-        z = np.diff(np.append(-1, i))       # run lengths
-        p = np.cumsum(np.append(0, z))[:-1] # positions
+        y = np.array(ia[1:] != ia[:-1])  # pairwise unequal (string safe)
+        i = np.append(np.where(y), n - 1)  # must include last element posi
+        z = np.diff(np.append(-1, i))  # run lengths
+        p = np.cumsum(np.append(0, z))[:-1]  # positions
         return z, p, ia[i]

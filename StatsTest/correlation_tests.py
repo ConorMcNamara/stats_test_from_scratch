@@ -1,11 +1,18 @@
-from scipy.stats import t, rankdata, norm
-import numpy as np
-from StatsTest.utils import _check_table
 from math import sqrt, factorial
+from typing import Sequence, Tuple, Union
+
+import numpy as np
+
+from scipy.stats import t, rankdata, norm
+
+from StatsTest.utils import _check_table
 
 
-def pearson_test(x, y):
+def pearson_test(
+    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
+) -> Tuple[float, float]:
     """Found in scipy.stats as pearsonr
+
     Used to evaluate the pearson correlation between X and Y.
 
     Parameters
@@ -24,17 +31,24 @@ def pearson_test(x, y):
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
     if len(x) != len(y):
-        raise ValueError("Cannot calculate correlation with datasets of different lengths")
+        raise ValueError(
+            "Cannot calculate correlation with datasets of different lengths"
+        )
     n = len(x)
-    rho = (n * np.sum(x * y) - np.sum(x) * np.sum(y)) / (sqrt(n * np.sum(np.power(x, 2)) - pow(np.sum(x), 2)) *
-                                                       sqrt(n * np.sum(np.power(y, 2)) - pow(np.sum(y), 2)))
+    rho = (n * np.sum(x * y) - np.sum(x) * np.sum(y)) / (
+        sqrt(n * np.sum(np.power(x, 2)) - pow(np.sum(x), 2))
+        * sqrt(n * np.sum(np.power(y, 2)) - pow(np.sum(y), 2))
+    )
     t_stat = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
     p = 2 * (1 - t.cdf(abs(t_stat), n - 2))
     return rho, p
 
 
-def spearman_test(x, y):
+def spearman_test(
+    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
+) -> Tuplee[float, float]:
     """Found in scipy.stats as spearmanr
+
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
     monotonic relationship between X and Y.
 
@@ -54,7 +68,9 @@ def spearman_test(x, y):
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
     if len(x) != len(y):
-        raise ValueError("Cannot calculate correlation with datasets of different lengths")
+        raise ValueError(
+            "Cannot calculate correlation with datasets of different lengths"
+        )
     df = len(x) - 2
     rank_x, rank_y = rankdata(x), rankdata(y)
     std_x, std_y = np.std(rank_x, ddof=1), np.std(rank_y, ddof=1)
@@ -65,8 +81,13 @@ def spearman_test(x, y):
     return rho, p
 
 
-def kendall_tau_test(x, y, method='hypothesis'):
+def kendall_tau_test(
+    x: Union[Sequence, np.ndarray],
+    y: Union[Sequence, np.ndarray],
+    method: str = "hypothesis",
+) -> Tuple[float, float]:
     """Found in scipy.stats as kendalltau
+
     Used to evaluate if two ordinal variables are correlated to one another.
 
     Parameters
@@ -75,7 +96,7 @@ def kendall_tau_test(x, y, method='hypothesis'):
         Our "X" ordinal variable
     y: list or numpy array, 1-D
         Our "Y" ordinal variable
-    method: str, {hypothesis, significance, exact}, default is hypothesis
+    method: {'hypothesis', 'significance', 'exact'}
         Whether we want to run a hypothesis test, a significance test or an exact test.
 
     Returns
@@ -88,10 +109,12 @@ def kendall_tau_test(x, y, method='hypothesis'):
     """
     x, y = _check_table(x, only_count=True), _check_table(y, only_count=True)
     if len(x) != len(y):
-        raise ValueError("Cannot calculate correlation with datasets of different lengths")
+        raise ValueError(
+            "Cannot calculate correlation with datasets of different lengths"
+        )
     n = len(x)
     denom = n * (n - 1) / 2
-    if method.casefold() not in ['hypothesis', 'significance', 'exact']:
+    if method.casefold() not in ["hypothesis", "significance", "exact"]:
         raise ValueError("Cannot determine type of test for Kendall Tau")
 
     def find_concordant_pairs(x, y):
@@ -100,10 +123,16 @@ def kendall_tau_test(x, y, method='hypothesis'):
         unique_y, counts_y = np.unique(y, return_counts=True)
         t, u = counts_x[counts_x != 1], counts_y[counts_y != 1]
         for i in np.arange(len(x) - 1):
-            x_data, y_data = x[i + 1:], y[i + 1:]
+            x_data, y_data = x[i + 1 :], y[i + 1 :]
             x_val, y_val = x[i], y[i]
-            concordant += len(np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0]))
-            discordant += len(np.intersect1d(np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]))
+            concordant += len(
+                np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0])
+            )
+            discordant += len(
+                np.intersect1d(
+                    np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]
+                )
+            )
         return concordant, discordant, t, u
 
     x, y = x[np.argsort(x)], y[np.argsort(x)]
@@ -111,13 +140,13 @@ def kendall_tau_test(x, y, method='hypothesis'):
     n1 = np.sum(t * (t - 1) / 2)
     n2 = np.sum(u * (u - 1) / 2)
     tau = (concordant - discordant) / sqrt((denom - n1) * (denom - n2))
-    if method.casefold() == 'hypothesis':
+    if method.casefold() == "hypothesis":
         v = 2 * (2 * n + 5) / (9 * n * (n - 1))
         p = 2 * (1 - norm.cdf(abs(tau) / sqrt(v)))
-    elif method.casefold() == 'exact':
+    elif method.casefold() == "exact":
         if len(t) != 0 or len(u) != 0:
             raise AttributeError("Cannot run exact test when ties are present")
-        n_choose = (n * (n - 1) // 2)
+        n_choose = n * (n - 1) // 2
         c = min(discordant, n_choose - discordant)
         if n > 171:
             p = 0.0
@@ -142,15 +171,23 @@ def kendall_tau_test(x, y, method='hypothesis'):
         v_0 = n * (n - 1) * (2 * n + 5)
         v_t, v_u = np.sum(t * (t - 1) * (2 * t + 5)), np.sum(u * (u - 1) * (2 * u + 5))
         v_1 = np.sum(t * (t - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
-        v_2 = np.sum(t * (t - 1) * (t - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
+        v_2 = (
+            np.sum(t * (t - 1) * (t - 2))
+            * np.sum(u * (u - 1) * (u - 2))
+            / (9 * n * (n - 1) * (n - 2))
+        )
         v = (v_0 - v_t - v_u) / 18 + v_1 + v_2
         p = 2 * (1 - norm.cdf(abs(concordant - discordant) / sqrt(v)))
     return tau, p
 
 
-def point_biserial_correlation_test(x, y):
+def point_biserial_correlation_test(
+    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
+) -> Tuple[float, float]:
     """Found in scipy.stats as pointbiserialr
 
+    Parameters
+    ----------
     x: list or numpy array, 1-D
         Our observations. These are expected to be continuous.
     y: list or numpy array, 1-D
@@ -179,9 +216,13 @@ def point_biserial_correlation_test(x, y):
     return rho, p
 
 
-def rank_biserial_correlation_test(x, y):
+def rank_biserial_correlation_test(
+    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
+) -> Tuple[float, float]:
     """Not found in scipy.stats or statsmodels
 
+    Parameters
+    ----------
     x: list or numpy array, 1-D
         Our observations. These are expected to be ordinal
     y: list or numpy array, 1-D
