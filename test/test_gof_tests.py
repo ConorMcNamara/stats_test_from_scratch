@@ -10,18 +10,18 @@ class TestGOFTests(unittest.TestCase):
 
     # Shapiro-Wilk Test
 
-    def test_shapiroWilk_nLess3(self):
+    def test_shapiroWilk_nLess3(self) -> None:
         data = [1, 2]
         with pytest.raises(AttributeError, match="Cannot run Shapiro-Wilks Test with less than 3 datapoints"):
             shapiro_wilk_test(data)
 
-    def test_shapiroWilk_pResult(self):
+    def test_shapiroWilk_pResult(self) -> None:
         data = np.random.randint(0, 50, 100)
         w1, p1 = shapiro_wilk_test(data)
         w2, p2 = shapiro(data)
         assert pytest.approx(p2) == p1
 
-    def test_shapiroWilk_wResult(self):
+    def test_shapiroWilk_wResult(self) -> None:
         data = np.random.randint(0, 50, 100)
         w1, p1 = shapiro_wilk_test(data)
         w2, p2 = shapiro(data)
@@ -29,14 +29,14 @@ class TestGOFTests(unittest.TestCase):
 
     # Chi Square Test for Goodness of Fit
 
-    def test_chiGoodnessOfFit_pResult(self):
+    def test_chiGoodnessOfFit_pResult(self) -> None:
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
         x1, p1 = chi_goodness_of_fit_test(observed, expected)
         x2, p2 = chisquare(observed, expected)
         assert pytest.approx(p2) == p1
 
-    def test_chiGoodnessOfFit_xResult(self):
+    def test_chiGoodnessOfFit_xResult(self) -> None:
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
         x1, p1 = chi_goodness_of_fit_test(observed, expected)
@@ -45,14 +45,14 @@ class TestGOFTests(unittest.TestCase):
 
     # G Test for Goodness of Fit
 
-    def test_gGoodnessOfFit_pResult(self):
+    def test_gGoodnessOfFit_pResult(self) -> None:
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
         x1, p1 = g_goodness_of_fit_test(observed, expected)
         x2, p2 = power_divergence(observed, expected, lambda_='log-likelihood')
         assert pytest.approx(p2) == p1
 
-    def test_gGoodnessOfFit_xResult(self):
+    def test_gGoodnessOfFit_xResult(self) -> None:
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
         x1, p1 = g_goodness_of_fit_test(observed, expected)
@@ -61,13 +61,13 @@ class TestGOFTests(unittest.TestCase):
 
     # Jarque-Bera Test
 
-    def test_jarqueBera_pResult(self):
+    def test_jarqueBera_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         j1, p1 = jarque_bera_test(data)
         j2, p2, skew, kurtosis = jarque_bera(data)
         assert pytest.approx(p2) == p1
 
-    def test_jarqueBera_jResult(self):
+    def test_jarqueBera_jResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         j1, p1 = jarque_bera_test(data)
         j2, p2, skew, kurtosis = jarque_bera(data)
@@ -75,19 +75,19 @@ class TestGOFTests(unittest.TestCase):
 
     # Ljung-Box Test
 
-    def test_ljungBoxTest_lagsWrong_Error(self):
+    def test_ljungBoxTest_lagsWrong_Error(self) -> None:
         data = np.random.normal(0, 100, 1000)
         with pytest.raises(ValueError, match="Cannot discern number of lags"):
             ljung_box_test(data, num_lags="s")
 
-    def test_ljungBoxTest_pResult(self):
+    def test_ljungBoxTest_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 11)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
         q2, p2 = acorr_ljungbox(data, num_lags)
         assert pytest.approx(p2[len(p2) - 1]) == p1
 
-    def test_ljungBoxTest_qResult(self):
+    def test_ljungBoxTest_qResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 6)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
@@ -96,19 +96,19 @@ class TestGOFTests(unittest.TestCase):
 
     # Box-Pierce Test
 
-    def test_boxPierceTest_lagsWrong_Error(self):
+    def test_boxPierceTest_lagsWrong_Error(self) -> None:
         data = np.random.normal(0, 100, 1000)
         with pytest.raises(ValueError, match="Cannot discern number of lags"):
             box_pierce_test(data, num_lags="s")
 
-    def test_boxPierceTest_pResult(self):
+    def test_boxPierceTest_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 11)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
         _1, _2, q2, p2 = acorr_ljungbox(data, num_lags, boxpierce=True)
         assert pytest.approx(p2[len(p2) - 1]) == p1
 
-    def test_boxPierceTest_qResult(self):
+    def test_boxPierceTest_qResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 6)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
@@ -117,18 +117,18 @@ class TestGOFTests(unittest.TestCase):
 
     # Skew Test
 
-    def test_skewTest_nLess8_Error(self):
+    def test_skewTest_nLess8_Error(self) -> None:
         data = np.random.normal(0, 10, 7)
         with pytest.raises(AttributeError, match="Skew Test is not reliable on datasets with less than 8 observations"):
             skew_test(data)
 
-    def test_skewTest_pResult(self):
+    def test_skewTest_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = skew_test(data)
         z2, p2 = skewtest(data)
         assert pytest.approx(p2) == p1
 
-    def test_skewTest_zResult(self):
+    def test_skewTest_zResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = skew_test(data)
         z2, p2 = skewtest(data)
@@ -136,18 +136,18 @@ class TestGOFTests(unittest.TestCase):
 
     # Kurtosis Test
 
-    def test_kurtosisTest_nLess20_Error(self):
+    def test_kurtosisTest_nLess20_Error(self) -> None:
         data = np.random.normal(0, 10, 19)
         with pytest.raises(AttributeError, match='Kurtosis Test is not reliable on datasets with less than 20 observations'):
             kurtosis_test(data)
 
-    def test_kurtosisTest_pResult(self):
+    def test_kurtosisTest_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = kurtosis_test(data)
         z2, p2 = kurtosistest(data)
         assert pytest.approx(p2) == p1
 
-    def test_kurtosisTest_zResult(self):
+    def test_kurtosisTest_zResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = kurtosis_test(data)
         z2, p2 = kurtosistest(data)
@@ -155,13 +155,13 @@ class TestGOFTests(unittest.TestCase):
 
     # K-Squared Test
 
-    def test_k2Test_pResult(self):
+    def test_k2Test_pResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = k_squared_test(data)
         z2, p2 = normaltest(data)
         assert pytest.approx(p2) == p1
 
-    def test_k2Test_zResult(self):
+    def test_k2Test_zResult(self) -> None:
         data = np.random.normal(0, 100, 1000)
         z1, p1 = k_squared_test(data)
         z2, p2 = normaltest(data)
@@ -169,22 +169,22 @@ class TestGOFTests(unittest.TestCase):
 
     # Lilliefors Test
 
-    def test_lilliefors_nLessFour_Error(self):
+    def test_lilliefors_nLessFour_Error(self) -> None:
         data = [1, 2, 3]
         with pytest.raises(AttributeError, match="Cannot perform Lilliefors Test on less than 4 observations"):
             lilliefors_test(data, alpha=0.05)
 
-    def test_lilliefors_alphaWrong_Error(self):
+    def test_lilliefors_alphaWrong_Error(self) -> None:
         data = [1, 2, 3, 4]
         with pytest.raises(ValueError, match="Cannot determine alpha level for Lilleifors Test"):
             lilliefors_test(data, alpha=0.5)
 
-    def test_lilliefors_dResult(self):
+    def test_lilliefors_dResult(self) -> None:
         data = [1.2, 1.6, 1.8, 1.9, 1.9, 2.0, 2.2, 2.6, 3.0, 3.5, 4.0, 4.8, 5.6, 6.6, 7.6]
         d, result = lilliefors_test(data, 0.05)
         assert pytest.approx(0.1875, 0.001) == d
 
-    def test_lilliefors_boolResult(self):
+    def test_lilliefors_boolResult(self) -> None:
         data = [1.2, 1.6, 1.8, 1.9, 1.9, 2.0, 2.2, 2.6, 3.0, 3.5, 4.0, 4.8, 5.6, 6.6, 7.6]
         d, result = lilliefors_test(data, 0.05)
         assert result == True
