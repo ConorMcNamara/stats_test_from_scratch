@@ -1,11 +1,11 @@
-import pytest
-import unittest
-from StatsTest.correlation_tests import *
 import numpy as np
+import pytest
 from scipy.stats import pearsonr, spearmanr, kendalltau, pointbiserialr
 
+from StatsTest.correlation_tests import *
 
-class TestCorrelationTests(unittest.TestCase):
+
+class TestCorrelationTests:
 
     # Pearson Test
 
@@ -128,13 +128,13 @@ class TestCorrelationTests(unittest.TestCase):
 
     # Rank Biserial Test
 
-    def test_BiserialCorrelationRank_tooManyGroups_Error(self) -> None:
+    def test_biserial_correlation_rank_too_many_groups_error(self) -> None:
         a = np.array([0, 1, 2, 0, 1, 2])
         b = np.arange(6)
         with pytest.raises(AttributeError, match="Need to have two groupings for biseral correlation"):
             rank_biserial_correlation_test(b, a)
 
-    def test_BiserialCorrelationRank_unequalLength_Error(self) -> None:
+    def test_biserial_correlation_rank_unequal_length_error(self) -> None:
         a = np.array([0, 1, 1, 0])
         b = np.arange(5)
         with pytest.raises(ValueError, match="X and Y must be of the same length"):
@@ -142,4 +142,4 @@ class TestCorrelationTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

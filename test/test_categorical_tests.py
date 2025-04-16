@@ -1,4 +1,3 @@
-import unittest
 import pytest
 from StatsTest.categorical_tests import *
 from scipy.stats import chi2_contingency, fisher_exact
@@ -6,7 +5,7 @@ from statsmodels.stats.contingency_tables import mcnemar, SquareTable
 import statsmodels.api as sm
 
 
-class TestCategoricalTests(unittest.TestCase):
+class TestCategoricalTests:
 
     # Fisher Test
 
@@ -164,7 +163,7 @@ class TestCategoricalTests(unittest.TestCase):
         with pytest.raises(AttributeError, match="Breslow-Day Test is meant for 2x2 contingency table"):
             breslow_day_test(data, data)
 
-    def test_breslowDayTest_pResult(self) -< None:
+    def test_breslowDayTest_pResult(self) -> None:
         data_1 = [[126, 100], [35, 61]]
         data_2 = [[908, 688], [497, 807]]
         data_3 = [[913, 747], [336, 598]]
@@ -215,4 +214,4 @@ class TestCategoricalTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

@@ -1,6 +1,5 @@
 import StatsTest.utils as utils
 import pytest
-import unittest
 import pandas as pd
 from numpy.testing import assert_array_equal
 import numpy as np
@@ -8,7 +7,7 @@ from scipy.stats.mstats_basic import skew, kurtosis
 from statsmodels.tsa.stattools import acf
 
 
-class TestUtils(unittest.TestCase):
+class TestUtils:
 
     def test_standardError_String1_Error(self) -> None:
         s, n = 's', 10
@@ -165,4 +164,4 @@ class TestUtils(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

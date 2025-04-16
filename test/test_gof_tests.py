@@ -1,12 +1,11 @@
 from StatsTest.gof_tests import *
-import unittest
 import pytest
 from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, skewtest, shapiro
 from statsmodels.stats.stattools import jarque_bera
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 
-class TestGOFTests(unittest.TestCase):
+class TestGOFTests:
 
     # Shapiro-Wilk Test
 
@@ -191,4 +190,4 @@ class TestGOFTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

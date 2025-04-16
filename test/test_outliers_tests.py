@@ -1,10 +1,9 @@
 from StatsTest.outliers_tests import *
-import unittest
 import pytest
 import numpy as np
 
 
-class TestOutliersTest(unittest.TestCase):
+class TestOutliersTest:
 
     # Tukey's Fence Test
     def test_TukeyFenceTest_results(self) -> None:
@@ -228,4 +227,4 @@ class TestOutliersTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

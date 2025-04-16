@@ -1,12 +1,11 @@
 from StatsTest.post_hoc_tests import *
-import unittest
 import pytest
 import numpy as np
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 from statsmodels.stats.libqsturng import psturng
 
 
-class TestPostHocTest(unittest.TestCase):
+class TestPostHocTest:
 
     # Tukey Range Test
 
@@ -78,4 +77,4 @@ class TestPostHocTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

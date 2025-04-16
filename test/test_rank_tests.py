@@ -1,11 +1,10 @@
 from StatsTest.rank_tests import *
 import pytest
-import unittest
 from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, ansari, mood
 import numpy as np
 
 
-class TestRankTest(unittest.TestCase):
+class TestRankTest:
 
     # Mann-Whitney U Test
 
@@ -280,4 +279,4 @@ class TestRankTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

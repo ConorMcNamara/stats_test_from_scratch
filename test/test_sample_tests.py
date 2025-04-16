@@ -1,12 +1,11 @@
 from StatsTest.sample_tests import *
 import pytest
-import unittest
 import numpy as np
 from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
 from statsmodels.sandbox.stats.runs import runstest_1samp
 
 
-class TestSampleTest(unittest.TestCase):
+class TestSampleTest:
 
     # One Sample Z Test
 
@@ -362,4 +361,4 @@ class TestSampleTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

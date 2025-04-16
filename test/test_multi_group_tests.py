@@ -1,4 +1,3 @@
-import unittest
 import pytest
 from StatsTest.multi_group_tests import *
 from scipy.stats import levene, f_oneway, bartlett, median_test
@@ -6,7 +5,7 @@ from numpy.random import randint
 from statsmodels.stats.contingency_tables import cochrans_q
 
 
-class TestMultiGroupTests(unittest.TestCase):
+class TestMultiGroupTests:
 
     # Levene Test
 
@@ -211,4 +210,4 @@ class TestMultiGroupTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

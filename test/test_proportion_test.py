@@ -1,10 +1,9 @@
-import unittest
 import pytest
 from StatsTest.proportion_test import *
 from scipy.stats import binom_test
 
 
-class TestProportionTest(unittest.TestCase):
+class TestProportionTest:
 
     # One Sample Proportion Test
 
@@ -221,4 +220,4 @@ class TestProportionTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()
