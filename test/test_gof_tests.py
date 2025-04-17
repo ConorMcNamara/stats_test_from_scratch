@@ -4,12 +4,21 @@ from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, s
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import jarque_bera
 
-from StatsTest.gof_tests import shapiro_wilk_test, chi_goodness_of_fit_test, g_goodness_of_fit_test, jarque_bera_test, \
-    ljung_box_test, box_pierce_test, skew_test, kurtosis_test, k_squared_test, lilliefors_test
+from StatsTest.gof_tests import (
+    shapiro_wilk_test,
+    chi_goodness_of_fit_test,
+    g_goodness_of_fit_test,
+    jarque_bera_test,
+    ljung_box_test,
+    box_pierce_test,
+    skew_test,
+    kurtosis_test,
+    k_squared_test,
+    lilliefors_test,
+)
 
 
 class TestGOFTests:
-
     # Shapiro-Wilk Test
 
     def test_shapiroWilk_nLess3(self) -> None:
@@ -40,7 +49,7 @@ class TestGOFTests:
         observed = [10, 20, 30, 40]
         expected = [20, 20, 20, 20]
         x1, p1 = g_goodness_of_fit_test(observed, expected)
-        x2, p2 = power_divergence(observed, expected, lambda_='log-likelihood')
+        x2, p2 = power_divergence(observed, expected, lambda_="log-likelihood")
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
@@ -101,7 +110,9 @@ class TestGOFTests:
 
     def test_kurtosisTest_nLess20_Error(self) -> None:
         data = np.random.normal(0, 10, 19)
-        with pytest.raises(AttributeError, match='Kurtosis Test is not reliable on datasets with less than 20 observations'):
+        with pytest.raises(
+            AttributeError, match="Kurtosis Test is not reliable on datasets with less than 20 observations"
+        ):
             kurtosis_test(data)
 
     def test_kurtosisTest_result(self) -> None:
@@ -139,5 +150,5 @@ class TestGOFTests:
         assert result is True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

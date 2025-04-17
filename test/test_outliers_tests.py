@@ -1,12 +1,20 @@
 import numpy as np
 import pytest
 
-from StatsTest.outliers_test import tukey_fence_test, grubbs_test, extreme_studentized_deviate_test, tietjen_moore_test, \
-    chauvenet_test, peirce_test, dixon_q_test, thompson_tau_test, mad_median_test
+from StatsTest.outliers_test import (
+    tukey_fence_test,
+    grubbs_test,
+    extreme_studentized_deviate_test,
+    tietjen_moore_test,
+    chauvenet_test,
+    peirce_test,
+    dixon_q_test,
+    thompson_tau_test,
+    mad_median_test,
+)
 
 
 class TestOutliersTest:
-
     # Tukey's Fence Test
     def test_TukeyFenceTest_results(self) -> None:
         data = [5, 63, 64, 64, 70, 72, 76, 77, 81, 100]
@@ -72,26 +80,122 @@ class TestOutliersTest:
             extreme_studentized_deviate_test(data, num_outliers=1, alpha=-1)
 
     def test_ESD_numResults(self) -> None:
-        data = [-0.25, 0.68, 0.94, 1.15, 1.20, 1.26, 1.26,
-                1.34, 1.38, 1.43, 1.49, 1.49, 1.55, 1.56,
-                1.58, 1.65, 1.69, 1.70, 1.76, 1.77, 1.81,
-                1.91, 1.94, 1.96, 1.99, 2.06, 2.09, 2.10,
-                2.14, 2.15, 2.23, 2.24, 2.26, 2.35, 2.37,
-                2.40, 2.47, 2.54, 2.62, 2.64, 2.90, 2.92,
-                2.92, 2.93, 3.21, 3.26, 3.30, 3.59, 3.68,
-                4.30, 4.64, 5.34, 5.42, 6.01]
+        data = [
+            -0.25,
+            0.68,
+            0.94,
+            1.15,
+            1.20,
+            1.26,
+            1.26,
+            1.34,
+            1.38,
+            1.43,
+            1.49,
+            1.49,
+            1.55,
+            1.56,
+            1.58,
+            1.65,
+            1.69,
+            1.70,
+            1.76,
+            1.77,
+            1.81,
+            1.91,
+            1.94,
+            1.96,
+            1.99,
+            2.06,
+            2.09,
+            2.10,
+            2.14,
+            2.15,
+            2.23,
+            2.24,
+            2.26,
+            2.35,
+            2.37,
+            2.40,
+            2.47,
+            2.54,
+            2.62,
+            2.64,
+            2.90,
+            2.92,
+            2.92,
+            2.93,
+            3.21,
+            3.26,
+            3.30,
+            3.59,
+            3.68,
+            4.30,
+            4.64,
+            5.34,
+            5.42,
+            6.01,
+        ]
         outliers, outliers_list = extreme_studentized_deviate_test(data, num_outliers=10, alpha=0.05)
         assert outliers == 3
 
     def test_ESD_outliersResults(self) -> None:
-        data = [-0.25, 0.68, 0.94, 1.15, 1.20, 1.26, 1.26,
-                1.34, 1.38, 1.43, 1.49, 1.49, 1.55, 1.56,
-                1.58, 1.65, 1.69, 1.70, 1.76, 1.77, 1.81,
-                1.91, 1.94, 1.96, 1.99, 2.06, 2.09, 2.10,
-                2.14, 2.15, 2.23, 2.24, 2.26, 2.35, 2.37,
-                2.40, 2.47, 2.54, 2.62, 2.64, 2.90, 2.92,
-                2.92, 2.93, 3.21, 3.26, 3.30, 3.59, 3.68,
-                4.30, 4.64, 5.34, 5.42, 6.01]
+        data = [
+            -0.25,
+            0.68,
+            0.94,
+            1.15,
+            1.20,
+            1.26,
+            1.26,
+            1.34,
+            1.38,
+            1.43,
+            1.49,
+            1.49,
+            1.55,
+            1.56,
+            1.58,
+            1.65,
+            1.69,
+            1.70,
+            1.76,
+            1.77,
+            1.81,
+            1.91,
+            1.94,
+            1.96,
+            1.99,
+            2.06,
+            2.09,
+            2.10,
+            2.14,
+            2.15,
+            2.23,
+            2.24,
+            2.26,
+            2.35,
+            2.37,
+            2.40,
+            2.47,
+            2.54,
+            2.62,
+            2.64,
+            2.90,
+            2.92,
+            2.92,
+            2.93,
+            3.21,
+            3.26,
+            3.30,
+            3.59,
+            3.68,
+            4.30,
+            4.64,
+            5.34,
+            5.42,
+            6.01,
+        ]
         outliers, outliers_list = extreme_studentized_deviate_test(data, num_outliers=10, alpha=0.05)
         np.testing.assert_array_equal(outliers_list, [6.01, 5.42, 5.34])
 
@@ -119,7 +223,7 @@ class TestOutliersTest:
 
     def test_TietjenMooreTest_outliers(self) -> None:
         data = [-1.40, -0.44, -0.30, -0.24, -0.22, -0.13, -0.05, 0.06, 0.10, 0.18, 0.20, 0.39, 0.48, 0.63, 1.01]
-        outliers = tietjen_moore_test(data, num_outliers=2, alternative='two-sided', alpha=0.05)
+        outliers = tietjen_moore_test(data, num_outliers=2, alternative="two-sided", alpha=0.05)
         np.testing.assert_array_equal(outliers, np.array([1.01, -1.4]))
 
     # Chauvenet Test
@@ -223,10 +327,10 @@ class TestOutliersTest:
             mad_median_test(data, alpha=1.2)
 
     def test_madMedianTest_result(self) -> None:
-        data = [-1.09, 1., 0.28, -1.51, -0.58, 6.61, -2.43, -0.43]
+        data = [-1.09, 1.0, 0.28, -1.51, -0.58, 6.61, -2.43, -0.43]
         expected = [6.61]
         np.testing.assert_array_almost_equal(expected, mad_median_test(data))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

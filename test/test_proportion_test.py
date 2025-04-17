@@ -1,10 +1,15 @@
 import pytest
-from StatsTest.proportion_tests import one_sample_proportion_z_test, two_sample_proportion_z_test, binomial_test, chi_square_proportion_test, g_proportion_test
+from StatsTest.proportion_tests import (
+    one_sample_proportion_z_test,
+    two_sample_proportion_z_test,
+    binomial_test,
+    chi_square_proportion_test,
+    g_proportion_test,
+)
 from scipy.stats import binomtest
 
 
 class TestProportionTest:
-
     # One Sample Proportion Test
 
     def test_OneSampleZProp_popNotFloat_Error(self) -> None:
@@ -28,7 +33,7 @@ class TestProportionTest:
     def test_OneSampleZProp_nonBinary_Error(self) -> None:
         sample_data = [1, 2, 3, 4]
         pop_mean = 0.5
-        with pytest.raises(AttributeError, match='Cannot perform a proportion test on non-binary data'):
+        with pytest.raises(AttributeError, match="Cannot perform a proportion test on non-binary data"):
             one_sample_proportion_z_test(sample_data, pop_mean)
 
     def test_OneSampleZProp_tooFewObs_Error(self) -> None:
@@ -74,7 +79,7 @@ class TestProportionTest:
     def test_BinomialTest_alternativeWrong_Error(self) -> None:
         n_success, n_failure, success_prob = 50, 100, 0.5
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            binomial_test(n_success, n_failure, alternative='moar', success_prob=success_prob)
+            binomial_test(n_success, n_failure, alternative="moar", success_prob=success_prob)
 
     def test_BinomialTest_successProbNotFloat_Error(self) -> None:
         n_success, n_failure, success_prob = 50, 100, "0.5"
@@ -204,5 +209,5 @@ class TestProportionTest:
         assert pytest.approx(5.8703, 0.00001) == x1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

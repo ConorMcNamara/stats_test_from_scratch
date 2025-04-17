@@ -3,12 +3,18 @@ import pytest
 from scipy.stats import levene, f_oneway, bartlett, median_test
 from statsmodels.stats.contingency_tables import cochrans_q
 
-from StatsTest.multi_group_tests import levene_test, brown_forsythe_test, one_way_f_test, bartlett_test, cochran_q_test, \
-    jonckheere_trend_test, mood_median_test
+from StatsTest.multi_group_tests import (
+    levene_test,
+    brown_forsythe_test,
+    one_way_f_test,
+    bartlett_test,
+    cochran_q_test,
+    jonckheere_trend_test,
+    mood_median_test,
+)
 
 
 class TestMultiGroupTests:
-
     # Levene Test
 
     def test_leveneTest_kLessTwo_Error(self) -> None:
@@ -22,7 +28,7 @@ class TestMultiGroupTests:
         data_3 = np.random.randint(0, 10, 10)
         data_4 = np.random.randint(0, 50, 10)
         w1, p1 = levene_test(data_1, data_2, data_3, data_4)
-        w2, p2 = levene(data_1, data_2, data_3, data_4, center='mean')
+        w2, p2 = levene(data_1, data_2, data_3, data_4, center="mean")
         assert pytest.approx(p2) == p1
         assert pytest.approx(w2) == w1
 
@@ -39,7 +45,7 @@ class TestMultiGroupTests:
         data_3 = np.random.randint(0, 10, 10)
         data_4 = np.random.randint(0, 50, 10)
         w1, p1 = brown_forsythe_test(data_1, data_2, data_3, data_4)
-        w2, p2 = levene(data_1, data_2, data_3, data_4, center='median')
+        w2, p2 = levene(data_1, data_2, data_3, data_4, center="median")
         assert pytest.approx(p2) == p1
         assert pytest.approx(w2) == w1
 
@@ -107,7 +113,9 @@ class TestMultiGroupTests:
     def test_jonckheereTest_unevenSampleSize_Error(self) -> None:
         sample_data1 = [1, 2, 3]
         sample_data2 = [3, 4]
-        with pytest.raises(AttributeError, match="Jonckheere Test requires that each group have the same number of observations"):
+        with pytest.raises(
+            AttributeError, match="Jonckheere Test requires that each group have the same number of observations"
+        ):
             jonckheere_trend_test(sample_data1, sample_data2)
 
     def test_jonckheereTest_alternativeInt_Error(self) -> None:
@@ -157,11 +165,11 @@ class TestMultiGroupTests:
         g1 = [10, 14, 14, 18, 20, 22, 24, 25, 31, 31, 32, 39, 43, 43, 48, 49]
         g2 = [28, 30, 31, 33, 34, 35, 36, 40, 44, 55, 57, 61, 91, 92, 99]
         g3 = [0, 3, 9, 22, 23, 25, 25, 33, 34, 34, 40, 45, 46, 48, 62, 67, 84]
-        x1, p1 = mood_median_test(g1, g2, g3, alternative='less')
+        x1, p1 = mood_median_test(g1, g2, g3, alternative="less")
         x2, p2, med, tbl = median_test(g1, g2, g3)
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

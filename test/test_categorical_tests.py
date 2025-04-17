@@ -4,18 +4,25 @@ import statsmodels.api as sm
 from scipy.stats import chi2_contingency, fisher_exact
 from statsmodels.stats.contingency_tables import mcnemar, SquareTable
 
-from StatsTest.categorical_tests import fisher_test, mcnemar_test, chi_squared_test, g_test, cmh_test, woolf_test, \
-    breslow_day_test, bowker_test
+from StatsTest.categorical_tests import (
+    fisher_test,
+    mcnemar_test,
+    chi_squared_test,
+    g_test,
+    cmh_test,
+    woolf_test,
+    breslow_day_test,
+    bowker_test,
+)
 
 
 class TestCategoricalTests:
-
     # Fisher Test
 
     def test_fisherTest_wrongAlternative_Error(self) -> None:
         table = [[1, 2], [3, 4]]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            fisher_test(table, alternative='poop')
+            fisher_test(table, alternative="poop")
 
     def test_fisherTest_notContTable_Error(self) -> None:
         table = [1, 2, 3, 4]
@@ -24,8 +31,8 @@ class TestCategoricalTests:
 
     def test_fisherTest_pResult(self) -> None:
         table = [[8, 2], [1, 5]]
-        p1 = fisher_test(table, alternative='two-sided')
-        odds_ratio, p2 = fisher_exact(table, alternative='two-sided')
+        p1 = fisher_test(table, alternative="two-sided")
+        odds_ratio, p2 = fisher_exact(table, alternative="two-sided")
         assert pytest.approx(p2) == p1
 
     # McNemar Test
@@ -121,7 +128,7 @@ class TestCategoricalTests:
         data_6 = [[1, 313], [4, 436]]
         data_7 = [[1, 312], [2, 434]]
         x, p = woolf_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7)
-        assert pytest.approx(.4094, 0.001) == p
+        assert pytest.approx(0.4094, 0.001) == p
         assert pytest.approx(6.1237, 0.001) == x
 
     # Breslow-Day Test
@@ -147,7 +154,10 @@ class TestCategoricalTests:
         data_8 = [[104, 89], [21, 36]]
         mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
         x1, p1 = breslow_day_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
-        x2, p2 = sm.stats.StratifiedTable(mat).test_equal_odds().statistic, sm.stats.StratifiedTable(mat).test_equal_odds().pvalue
+        x2, p2 = (
+            sm.stats.StratifiedTable(mat).test_equal_odds().statistic,
+            sm.stats.StratifiedTable(mat).test_equal_odds().pvalue,
+        )
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
@@ -167,5 +177,5 @@ class TestCategoricalTests:
         assert pytest.approx(x2) == x1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

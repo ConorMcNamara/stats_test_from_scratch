@@ -7,7 +7,6 @@ from StatsTest.post_hoc_tests import tukey_range_test, dunnett_test, duncan_mult
 
 
 class TestPostHocTest:
-
     # Tukey Range Test
 
     def test_tukeyRangeTest_kLessTwo_Error(self) -> None:
@@ -65,17 +64,31 @@ class TestPostHocTest:
 
     def test_duncanMultiRangeTest_results(self) -> None:
         data_1, data_2, data_3 = [9, 14, 11], [20, 19, 23], [39, 38, 41]
-        np.testing.assert_array_equal(duncan_multiple_range_test(0.05, data_1, data_2, data_3),
-                                      [np.array([2, 0]), np.array([2, 1]), np.array([1, 0])])
+        np.testing.assert_array_equal(
+            duncan_multiple_range_test(0.05, data_1, data_2, data_3),
+            [np.array([2, 0]), np.array([2, 1]), np.array([1, 0])],
+        )
 
     def test_duncanMultiRangeTest_moreResults(self) -> None:
-        data_1, data_2, data_3, data_4, data_5 = [10, 10, 10, 10, 9], [15, 15, 15, 15, 17], [20, 20, 20, 20, 8], [
-            22, 22, 22, 22, 20], [10, 10, 10, 10, 14]
-        np.testing.assert_array_equal(duncan_multiple_range_test(0.05, data_1, data_2, data_3, data_4, data_5),
-                                      [np.array([3, 0]), np.array([3, 4]), np.array([3, 1]), np.array([2, 0]),
-                                       np.array([2, 4]), np.array([1, 0])])
+        data_1, data_2, data_3, data_4, data_5 = (
+            [10, 10, 10, 10, 9],
+            [15, 15, 15, 15, 17],
+            [20, 20, 20, 20, 8],
+            [22, 22, 22, 22, 20],
+            [10, 10, 10, 10, 14],
+        )
+        np.testing.assert_array_equal(
+            duncan_multiple_range_test(0.05, data_1, data_2, data_3, data_4, data_5),
+            [
+                np.array([3, 0]),
+                np.array([3, 4]),
+                np.array([3, 1]),
+                np.array([2, 0]),
+                np.array([2, 4]),
+                np.array([1, 0]),
+            ],
+        )
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

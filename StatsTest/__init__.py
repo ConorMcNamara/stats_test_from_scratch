@@ -4,7 +4,18 @@ __version__ = "0.1.0"
 
 from typing import List
 
-from StatsTest import categorical_tests, correlation_tests, gof_tests, multi_group_tests, outliers_test, post_hoc_tests, proportion_tests, rank_tests, sample_tests, utils
+from StatsTest import (
+    categorical_tests,
+    correlation_tests,
+    gof_tests,
+    multi_group_tests,
+    outliers_test,
+    post_hoc_tests,
+    proportion_tests,
+    rank_tests,
+    sample_tests,
+    utils,
+)
 
 __all__: List[str] = [
     "categorical_tests",
@@ -16,7 +27,7 @@ __all__: List[str] = [
     "proportion_tests",
     "rank_tests",
     "sample_tests",
-    "utils"
+    "utils",
 ]
 
 

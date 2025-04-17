@@ -10,9 +10,7 @@ from StatsTest.utils import _sse
 from StatsTest.multi_group_tests import one_way_f_test
 
 
-def dunnett_test(
-    control: Union[Sequence, np.ndarray], alpha: float = 0.05, *args
-) -> np.ndarray:
+def dunnett_test(control: Union[Sequence, np.ndarray], alpha: float = 0.05, *args) -> np.ndarray:
     """Not found in either scipy or statsmodels
 
     This test is used to compare the means of several groups to a control and determine which groups are significant
@@ -1792,9 +1790,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
     """
     k = len(args)
     if k <= 1:
-        raise AttributeError(
-            "Cannot run Duncan Multi-Range Test with less than two groups"
-        )
+        raise AttributeError("Cannot run Duncan Multi-Range Test with less than two groups")
     if alpha not in [0.01, 0.05, 0.10]:
         raise ValueError("Alpha level not currently supported")
     len_data = [len(arg) for arg in args]
@@ -1831,12 +1827,8 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
         np.append([2.748, 2.846, 2.890, 2.908], np.repeat(2.911, 31)),
         np.append([2.680, 2.785, 2.838, 2.864, 2.876], np.repeat(2.878, 30)),
         np.append([2.630, 2.742, 2.800, 2.832, 2.849, 2.857], np.repeat(2.858, 29)),
-        np.append(
-            [2.592, 2.708, 2.771, 2.808, 2.829, 2.840, 2.845], np.repeat(2.847, 28)
-        ),
-        np.append(
-            [2.563, 2.682, 2.748, 2.788, 2.813, 2.827, 2.835], np.repeat(2.839, 28)
-        ),
+        np.append([2.592, 2.708, 2.771, 2.808, 2.829, 2.840, 2.845], np.repeat(2.847, 28)),
+        np.append([2.563, 2.682, 2.748, 2.788, 2.813, 2.827, 2.835], np.repeat(2.839, 28)),
         np.append(
             [2.540, 2.660, 2.730, 2.772, 2.799, 2.817, 2.827, 2.833],
             np.repeat(2.835, 27),
@@ -2128,9 +2120,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
         np.append([3.635, 3.749, 3.797], np.repeat(3.814, 32)),
         np.append([3.461, 3.587, 3.649, 3.680, 3.694], np.repeat(3.697, 30)),
         np.append([3.344, 3.477, 3.548, 3.558, 3.611, 3.622], np.repeat(3.626, 29)),
-        np.append(
-            [3.261, 3.399, 3.475, 3.521, 3.549, 3.566, 3.575], np.repeat(3.579, 28)
-        ),
+        np.append([3.261, 3.399, 3.475, 3.521, 3.549, 3.566, 3.575], np.repeat(3.579, 28)),
         np.append(
             [3.199, 3.339, 3.420, 3.470, 3.502, 3.523, 3.536, 3.544],
             np.repeat(3.547, 27),
@@ -3142,7 +3132,5 @@ def scheffe_test(*args) -> List[List]:
             mean_a, mean_b = means[group], means[next_group]
             n_a, n_b = sample_sizes[group], sample_sizes[next_group]
             scheffe_val = np.power(mean_a - mean_b, 2) / (ssw * ((1 / n_a) + (1 / n_b)))
-            results.append(
-                ["group {} - group {}".format(group, next_group), scheffe_val > f_prime]
-            )
+            results.append(["group {} - group {}".format(group, next_group), scheffe_val > f_prime])
     return results

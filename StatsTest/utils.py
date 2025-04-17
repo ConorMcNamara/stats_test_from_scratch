@@ -23,19 +23,11 @@ def _standard_error(std: float, n: int) -> float:
     The standard error, or our standard deviation divided by the square root of n.
     """
     if not isinstance(std, Number):
-        raise TypeError(
-            "Cannot calculate standard error with standard deviation of type {}".format(
-                type(n)
-            )
-        )
+        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(n)))
     if not isinstance(n, int):
-        raise TypeError(
-            "Cannot calculate standard error with n of type{}".format(type(n))
-        )
+        raise TypeError("Cannot calculate standard error with n of type{}".format(type(n)))
     if n <= 0:
-        raise ValueError(
-            "Cannot calculate standard error with n less than or equal to zero"
-        )
+        raise ValueError("Cannot calculate standard error with n less than or equal to zero")
     return std / sqrt(n)
 
 
@@ -57,12 +49,7 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
     -------
     The hyper-geometric distribution given a, b, c and d
     """
-    if (
-        isinstance(a, int)
-        and isinstance(b, int)
-        and isinstance(c, int)
-        and isinstance(d, int)
-    ):
+    if isinstance(a, int) and isinstance(b, int) and isinstance(c, int) and isinstance(d, int):
         pass
     elif (
         not isinstance(a, np.integer)
@@ -71,14 +58,8 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
         or not isinstance(d, np.integer)
     ):
         raise TypeError("Cannot compute factorials for non-integer values")
-    return (
-        factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)
-    ) / (
-        factorial(a)
-        * factorial(b)
-        * factorial(c)
-        * factorial(d)
-        * factorial(a + b + c + d)
+    return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / (
+        factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d)
     )
 
 
@@ -114,9 +95,7 @@ def _check_table(
     if only_count:
         for tab in table:
             if not np.issubdtype(tab.dtype, np.integer):
-                raise TypeError(
-                    "Cannot perform statistical test with non-integer counts"
-                )
+                raise TypeError("Cannot perform statistical test with non-integer counts")
             if not np.all(tab >= 0):
                 raise ValueError("Cannot have negative counts")
     else:
@@ -256,9 +235,7 @@ def _kurtosis(data: Union[Sequence, np.ndarray]) -> float:
     return kurtosis
 
 
-def _autocorr(
-    data: Union[Sequence, np.ndarray], lags: Union[Sequence, np.ndarray]
-) -> np.ndarray:
+def _autocorr(data: Union[Sequence, np.ndarray], lags: Union[Sequence, np.ndarray]) -> np.ndarray:
     """Calculates the autocorrelation for a given time series dataset given a set amount of lags
 
     Parameters
@@ -276,16 +253,11 @@ def _autocorr(
     mean = np.mean(data)
     var = np.var(data)
     xp = data - mean
-    corr = [
-        1.0 if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var
-        for lag in lags
-    ]
+    corr = [1.0 if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var for lag in lags]
     return np.array(corr)
 
 
-def _rle(
-    arr: Union[Sequence, np.ndarray]
-) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray]]:
+def _rle(arr: Union[Sequence, np.ndarray]) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray]]:
     """Similar to R rle function, runs length encoding for a binary sequence.
 
      Parameters

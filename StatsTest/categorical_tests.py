@@ -7,9 +7,7 @@ from scipy.stats import chi2, binom
 from StatsTest.utils import _check_table, _hypergeom_distribution
 
 
-def chi_squared_test(
-    cont_table: Union[Sequence[Sequence], np.ndarray]
-) -> Tuple[float, float]:
+def chi_squared_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
     """Found in scipy.stats as chi2_contingency.
 
     Determines the difference between what we expect the count of a group to be versus what was observed in our
@@ -33,9 +31,7 @@ def chi_squared_test(
     cont_table = _check_table(cont_table, only_count=True)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
     row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
-    expected = np.matmul(
-        np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]
-    ) / np.sum(row_sum)
+    expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     X = np.sum(pow(cont_table - expected, 2) / expected)
     p = 1 - chi2.cdf(X, df)
     return X, p
@@ -63,17 +59,13 @@ def g_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
     cont_table = _check_table(cont_table, True)
     df = (cont_table.shape[0] - 1) * (cont_table.shape[1] - 1)
     row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
-    expected = np.matmul(
-        np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]
-    ) / np.sum(row_sum)
+    expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     g = 2 * np.sum(cont_table * np.log(cont_table / expected))
     p = 1 - chi2.cdf(g, df)
     return g, p
 
 
-def fisher_test(
-    cont_table: Union[Sequence[Sequence], np.ndarray], alternative: str = "two-sided"
-) -> float:
+def fisher_test(cont_table: Union[Sequence[Sequence], np.ndarray], alternative: str = "two-sided") -> float:
     """Found in scipy.stats as fisher_exact
 
     Used to determine the exact likelihood that we would observe a measurement in our 2x2 contingency table that
@@ -135,9 +127,7 @@ def fisher_test(
         return p + np.sum([i for i in all_p if i <= p])
 
 
-def mcnemar_test(
-    cont_table: Union[Sequence[Sequence], np.ndarray]
-) -> Tuple[float, float]:
+def mcnemar_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
     """Found in statsmodels as mcnemar
 
     Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
@@ -165,9 +155,7 @@ def mcnemar_test(
         p = 1 - chi2.cdf(chi_squared, 1)
     else:
         chi_squared = min(b, c)
-        p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(
-            binom.ppf(0.99, b + c, 0.5), b + c, 0.5
-        )
+        p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(binom.ppf(0.99, b + c, 0.5), b + c, 0.5)
     return chi_squared, p
 
 
@@ -206,9 +194,7 @@ def cmh_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, floa
         total = np.append(total, np.sum(n))
         n_i, m_i = np.append(n_i, n[0]), np.append(m_i, m[0])
     top = pow(abs(np.sum(a - (n_i * m_i / total))), 2)
-    bottom = np.sum(
-        (n_i * (total - n_i) * m_i * (total - m_i)) / (np.power(total, 2) * (total - 1))
-    )
+    bottom = np.sum((n_i * (total - n_i) * m_i * (total - m_i)) / (np.power(total, 2) * (total - 1)))
     epsilon = top / bottom
     p = 1 - chi2.cdf(epsilon, 1)
     return epsilon, p
@@ -251,9 +237,7 @@ def woolf_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
     return x, p
 
 
-def breslow_day_test(
-    tables: Union[Sequence[Sequence], np.ndarray]
-) -> Tuple[float, float]:
+def breslow_day_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
     """Found in statsmodels as StratifiedTable.test_equal_odds()
 
     Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
@@ -299,9 +283,7 @@ def breslow_day_test(
     def solve_quadratic(a, b, c):
         return (-b + np.sqrt(np.power(b, 2) - 4 * a * c)) / (2 * a)
 
-    A = solve_quadratic(
-        1 - odds, (m_i2 - n_i + (odds * n_i) + (odds * m_i1)), -odds * n_i * m_i1
-    )
+    A = solve_quadratic(1 - odds, (m_i2 - n_i + (odds * n_i) + (odds * m_i1)), -odds * n_i * m_i1)
     B, C, D = m_i1 - A, n_i - A, m_i2 - n_i + A
     var_i = np.power((1 / A) + (1 / B) + (1 / C) + (1 / D), -1)
     x = np.sum(np.power(a_i - A, 2) / var_i)
@@ -309,9 +291,7 @@ def breslow_day_test(
     return x, p
 
 
-def bowker_test(
-    cont_table: Union[Sequence[Sequence], np.ndarray]
-) -> Tuple[float, float]:
+def bowker_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
     """Found in statsmodels as TableSymmetry or as bowker_symmetry
 
     Used to test if a given square table is symmetric about the main diagonal
@@ -337,9 +317,7 @@ def bowker_test(
     # of a lower triangular matrix compared to np.triu_indices, which we need for our test statistic
     upper_triangle = cont_table[upper_diagonal]
     lower_triangle = cont_table.T[upper_diagonal]
-    x = np.sum(
-        np.power(lower_triangle - upper_triangle, 2) / (upper_triangle + lower_triangle)
-    )
+    x = np.sum(np.power(lower_triangle - upper_triangle, 2) / (upper_triangle + lower_triangle))
     df = n1 * (n1 - 1) / 2
     p = 1 - chi2.cdf(x, df)
     return x, p

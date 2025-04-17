@@ -9,34 +9,33 @@ import StatsTest.utils as utils
 
 
 class TestUtils:
-
     def test_standardError_String1_Error(self) -> None:
-        s, n = 's', 10
+        s, n = "s", 10
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
     def test_standardError_List1_Error(self) -> None:
-        s, n = ['s'], 10
+        s, n = ["s"], 10
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
     def test_standardError_Dict1_Error(self) -> None:
-        s, n = {'s': 10}, 10
+        s, n = {"s": 10}, 10
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
     def test_standardError_String2_Error(self) -> None:
-        s, n = 10, 'n'
+        s, n = 10, "n"
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
     def test_standardError_List2_Error(self) -> None:
-        s, n = 10, 'n'
+        s, n = 10, "n"
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
     def test_standardError_Dict2_Error(self) -> None:
-        s, n = 10, {'n', 10}
+        s, n = 10, {"n", 10}
         with pytest.raises(TypeError):
             utils._standard_error(s, n)
 
@@ -61,7 +60,7 @@ class TestUtils:
             utils._hypergeom_distribution(a, b, c, d)
 
     def test_hypergeom_String_Error(self) -> None:
-        a, b, c, d = 10, 10, 10, '10'
+        a, b, c, d = 10, 10, 10, "10"
         with pytest.raises(TypeError):
             utils._hypergeom_distribution(a, b, c, d)
 
@@ -71,22 +70,22 @@ class TestUtils:
             utils._hypergeom_distribution(a, b, c, d)
 
     def test_hypergeom_Dict_Error(self) -> None:
-        a, b, c, d = 10, 10, 10, {'d': 10}
+        a, b, c, d = 10, 10, 10, {"d": 10}
         with pytest.raises(TypeError):
             utils._hypergeom_distribution(a, b, c, d)
 
     def test_checkTable_ListStrings_Error(self) -> None:
-        table = ['a', 'b', 'c']
+        table = ["a", "b", "c"]
         with pytest.raises(TypeError):
             utils._check_table(table, False)
 
     def test_checkTable_Dict_Error(self) -> None:
-        table = {'a': 10}
+        table = {"a": 10}
         with pytest.raises(TypeError):
             utils._check_table(table, False)
 
     def test_checkTable_Pandas_Error(self) -> None:
-        table = pd.DataFrame({'a': [10]})
+        table = pd.DataFrame({"a": [10]})
         with pytest.raises(TypeError):
             utils._check_table(table, False)
 
@@ -160,9 +159,9 @@ class TestUtils:
         data = np.random.normal(0, 10, 100)
         lags = np.arange(0, 11)
         a1 = utils._autocorr(data, lags)
-        a2 = acf(data, nlags=len(lags)-1, fft=False)
+        a2 = acf(data, nlags=len(lags) - 1, fft=False)
         assert all([pytest.approx(a) == b for a, b in zip(a1, a2)])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

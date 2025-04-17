@@ -102,18 +102,14 @@ def two_sample_wilcoxon_test(
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     diff = data_1 - data_2
     if handle_zero.casefold() == "wilcox":
-        assert np.sum(diff == 0) != len(
-            data_1
-        ), "Cannot perform wilcoxon test when all differences are zero"
+        assert np.sum(diff == 0) != len(data_1), "Cannot perform wilcoxon test when all differences are zero"
         diff = np.compress(np.not_equal(diff, 0), diff)
     n = len(diff)
     abs_diff, sign_diff = np.abs(diff), np.sign(diff)
     rank = rankdata(abs_diff)
     if handle_zero.casefold() == "pratt":
         zero_ranks = np.not_equal(abs_diff, 0)
-        sign_diff, rank = np.compress(zero_ranks, sign_diff), np.compress(
-            zero_ranks, rank
-        )
+        sign_diff, rank = np.compress(zero_ranks, sign_diff), np.compress(zero_ranks, rank)
     w_value = np.sum(sign_diff * rank)
     std = sqrt(n * (n + 1) * (2 * n + 1) / 6)
     z_score = w_value / std
@@ -222,14 +218,10 @@ def page_trend_test(*args, **kwargs) -> Tuple[float, float]:
     """
     n_conditions = len(args)
     if n_conditions < 3:
-        raise AttributeError(
-            "Page Test not appropriate for {} levels".format(n_conditions)
-        )
+        raise AttributeError("Page Test not appropriate for {} levels".format(n_conditions))
     lengths = [len(arg) for arg in args]
     if len(np.unique(lengths)) != 1:
-        raise AttributeError(
-            "Page Test requires that each level have the same number of observations"
-        )
+        raise AttributeError("Page Test requires that each level have the same number of observations")
     if "alternative" in kwargs:
         alternative = kwargs.get("alternative")
         if not isinstance(alternative, str):
@@ -249,12 +241,7 @@ def page_trend_test(*args, **kwargs) -> Tuple[float, float]:
     x_i = np.sum(rank_data, axis=0)
     L = np.sum(n_rank * x_i)
     top = pow(12 * L - (3 * k_subjects * n_conditions * pow(n_conditions + 1, 2)), 2)
-    bottom = (
-        k_subjects
-        * pow(n_conditions, 2)
-        * (pow(n_conditions, 2) - 1)
-        * (n_conditions + 1)
-    )
+    bottom = k_subjects * pow(n_conditions, 2) * (pow(n_conditions, 2) - 1) * (n_conditions + 1)
     x = top / bottom
     p = (1 - chi2.cdf(x, 1)) / 2
     return L, p
@@ -318,9 +305,7 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
     """
     k = len(args)
     if k < 2:
-        raise AttributeError(
-            "Cannot perform Fligner-Kileen Test with less than 2 groups"
-        )
+        raise AttributeError("Cannot perform Fligner-Kileen Test with less than 2 groups")
     if "center" in kwargs:
         center = kwargs.get("center").casefold()
         if center not in ["median", "mean"]:
@@ -460,6 +445,7 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
 #             p = norm.cdf(z)
 #     return ab, p
 
+
 def mood_test(
     data_1: Union[Sequence, np.ndarray],
     data_2: Union[Sequence, np.ndarray],
@@ -486,9 +472,7 @@ def mood_test(
         The likelihood that our rank dispersion would occur from two datasets drawn from the same
         distribution
     """
-    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
-        data_2, only_count=False
-    )
+    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
         raise ValueError("Cannot determine method for alternative hypothesis")
     len_1, len_2 = len(data_1), len(data_2)
@@ -546,9 +530,7 @@ def cucconi_test(
     """
 
     def calculate_c(data_1, data_2):
-        data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
-            data_2, only_count=False
-        )
+        data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
         all_data = np.concatenate([data_1, data_2])
         rank_data = rankdata(all_data)
         n, n_1, n_2 = len(all_data), len(data_1), len(data_2)
@@ -556,9 +538,9 @@ def cucconi_test(
         u = (6 * np.sum(np.power(r_1, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(
             n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5
         )
-        v = (
-            6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)
-        ) / sqrt(n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5)
+        v = (6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(
+            n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5
+        )
         rho = 2 * (pow(n, 2) - 4) / ((2 * n + 1) * (8 * n + 11)) - 1
         c = (pow(u, 2) + pow(v, 2) - 2 * rho * u * v) / (2 * (1 - pow(rho, 2)))
         return c

@@ -28,9 +28,7 @@ def shapiro_wilk_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     data = _check_table(data, only_count=False)
     n = len(data)
     if n < 3:
-        raise AttributeError(
-            "Cannot run Shapiro-Wilks Test with less than 3 datapoints"
-        )
+        raise AttributeError("Cannot run Shapiro-Wilks Test with less than 3 datapoints")
     zeroes = np.zeros(n // 2)
     data = np.sort(data)
     a, w, p, ifault = shapiro(data, zeroes, 0)
@@ -233,14 +231,10 @@ def skew_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     """
     data = _check_table(data, only_count=False)
     if len(data) < 8:
-        raise AttributeError(
-            "Skew Test is not reliable on datasets with less than 8 observations"
-        )
+        raise AttributeError("Skew Test is not reliable on datasets with less than 8 observations")
     n = len(data)
     skew = _skew(data)
-    y2 = (36 * (n - 7) * (pow(n, 2) + 2 * n - 5)) / (
-        (n - 2) * (n + 5) * (n + 7) * (n + 9)
-    )
+    y2 = (36 * (n - 7) * (pow(n, 2) + 2 * n - 5)) / ((n - 2) * (n + 5) * (n + 7) * (n + 9))
     u2 = 6 * (n - 2) / ((n + 1) * (n + 3))
     w2 = sqrt(2 * y2 + 4) - 1
     delta = 1 / sqrt(log(sqrt(w2)))
@@ -270,9 +264,7 @@ def kurtosis_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     """
     data = _check_table(data, only_count=False)
     if len(data) < 20:
-        raise AttributeError(
-            "Kurtosis Test is not reliable on datasets with less than 20 observations"
-        )
+        raise AttributeError("Kurtosis Test is not reliable on datasets with less than 20 observations")
     n = len(data)
     kurtosis = _kurtosis(data) - 3
     mean_kurt = -6 / (n + 1)
@@ -283,9 +275,7 @@ def kurtosis_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     a = 6 + ((8 / skew_kurt) * (2 / skew_kurt + sqrt(1 + 4 / pow(skew_kurt, 2))))
     z_top = 1 - 2 / a
     z_bottom = 1 + ((kurtosis - mean_kurt) / sqrt(var_kurt)) * sqrt(2 / (a - 4))
-    z = sqrt(9 * a / 2) * (
-        1 - 2 / (9 * a) - np.sign(z_bottom) * np.power(z_top / abs(z_bottom), 1 / 3.0)
-    )
+    z = sqrt(9 * a / 2) * (1 - 2 / (9 * a) - np.sign(z_bottom) * np.power(z_top / abs(z_bottom), 1 / 3.0))
     p = 2 * (1 - norm.cdf(abs(z)))
     return z, p
 
@@ -316,9 +306,7 @@ def k_squared_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     return k2, p
 
 
-def lilliefors_test(
-    data: Union[Sequence, np.ndarray], alpha: float = 0.05
-) -> Tuple[float, bool]:
+def lilliefors_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> Tuple[float, bool]:
     """Found in statsmodels as lilliefors.
 
     Used to determine if the data follows a normal distribution
@@ -343,9 +331,7 @@ def lilliefors_test(
     data = _check_table(data)
     n = len(data)
     if n < 4:
-        raise AttributeError(
-            "Cannot perform Lilliefors Test on less than 4 observations"
-        )
+        raise AttributeError("Cannot perform Lilliefors Test on less than 4 observations")
     if alpha not in [0.01, 0.05, 0.10, 0.15, 0.20]:
         raise ValueError("Cannot determine alpha level for Lilleifors Test")
     index = n - 4 if n <= 50 else 47

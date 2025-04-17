@@ -9,9 +9,7 @@ from scipy.special import erfc
 from StatsTest.utils import _check_table
 
 
-def tukey_fence_test(
-    data: Union[Sequence, np.ndarray], coef: float = 1.5
-) -> np.ndarray:
+def tukey_fence_test(data: Union[Sequence, np.ndarray], coef: float = 1.5) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels
 
     Used to determine outliers in a normally distributed dataset.
@@ -36,7 +34,9 @@ def tukey_fence_test(
 
 
 def grubbs_test(
-    data: Union[Sequence, np.ndarray],alternative: str = "two-sided",alpha: float = 0.05,
+    data: Union[Sequence, np.ndarray],
+    alternative: str = "two-sided",
+    alpha: float = 0.05,
 ) -> Optional[Union[float, int]]:
     """Not found in either scipy.stats or statsmodels
 
@@ -82,9 +82,7 @@ def grubbs_test(
             return_val = np.max(data)
         t_value = t.isf(alpha / n, n - 2)
     g = val / s
-    rejection_stat = ((n - 1) / sqrt(n)) * sqrt(
-        pow(t_value, 2) / (n - 2 + pow(t_value, 2))
-    )
+    rejection_stat = ((n - 1) / sqrt(n)) * sqrt(pow(t_value, 2) / (n - 2 + pow(t_value, 2)))
     if g > rejection_stat:
         return return_val
     else:
@@ -127,18 +125,14 @@ def extreme_studentized_deviate_test(
     data_copy = np.copy(data)
     n = len(data)
     if num_outliers > n:
-        raise ValueError(
-            "Cannot have number of outliers greater than number of observations"
-        )
+        raise ValueError("Cannot have number of outliers greater than number of observations")
     for i in range(1, num_outliers + 1):
         y_bar = np.mean(data_copy)
         s = np.std(data_copy, ddof=1)
         abs_resids = np.abs(data_copy - y_bar)
         r_i = np.max(abs_resids) / s
         p = 1 - (alpha / (2 * (n - i + 1)))
-        lambda_i = ((n - i) * t.isf(p, n - i - 1)) / sqrt(
-            (n - i - 1 + pow(t.isf(p, n - i - 1), 2)) * (n - i + 1)
-        )
+        lambda_i = ((n - i) * t.isf(p, n - i - 1)) / sqrt((n - i - 1 + pow(t.isf(p, n - i - 1), 2)) * (n - i + 1))
         r[i - 1] = r_i > abs(lambda_i)
         outliers.append(data_copy[np.argsort(abs_resids)][-1:][0])
         data_copy = data_copy[np.argsort(abs_resids)][:-1]
@@ -182,9 +176,7 @@ def tietjen_moore_test(
     n = len(data)
     sort_data = np.sort(data)
     if num_outliers > n:
-        raise ValueError(
-            "Cannot have number of outliers greater than number of observations"
-        )
+        raise ValueError("Cannot have number of outliers greater than number of observations")
 
     def teitjen(data, num_outliers=1, alternative="two-sided", simulation=True):
         y_bar = np.mean(data)
@@ -192,16 +184,12 @@ def tietjen_moore_test(
             data_large = sort_data[:-num_outliers]
             outliers = sort_data[len(data) - num_outliers :]
             y_bar_large = np.mean(data_large)
-            l_var = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(
-                np.power(data - y_bar, 2)
-            )
+            l_var = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(np.power(data - y_bar, 2))
         elif alternative.casefold() == "less":
             data_small = sort_data[num_outliers:]
             outliers = sort_data[:num_outliers]
             y_bar_small = np.mean(data_small)
-            l_var = np.sum(np.power(data_small - y_bar_small, 2)) / np.sum(
-                np.power(data - y_bar, 2)
-            )
+            l_var = np.sum(np.power(data_small - y_bar_small, 2)) / np.sum(np.power(data - y_bar, 2))
         else:
             abs_resids = np.abs(data - y_bar)
             z = data[np.argsort(abs_resids)]
@@ -290,26 +278,16 @@ def peirce_test(
         raise ValueError("Length of observed and expected need to be the same")
     n = len(observed)
     if num_outliers > n:
-        raise ValueError(
-            "Cannot have number of outliers greater than number of observations"
-        )
+        raise ValueError("Cannot have number of outliers greater than number of observations")
     if num_coef > n:
-        raise Warning(
-            "Number of regressor variables is greater than number of observations"
-        )
-    q = (
-        pow(num_outliers, num_outliers / n)
-        * pow(n - num_outliers, (n - num_outliers) / n)
-        / n
-    )
+        raise Warning("Number of regressor variables is greater than number of observations")
+    q = pow(num_outliers, num_outliers / n) * pow(n - num_outliers, (n - num_outliers) / n) / n
     r_new, r_old = 1.0, 0.0
     x2 = 0
     while abs(r_new - r_old) > (n * 2.0e-16):
         ldiv = pow(r_new, num_outliers) if pow(r_new, num_outliers) != 0 else 1.0e-6
         lambda1 = pow(q, n) / pow(ldiv, 1 / (n - num_coef))
-        x2 = 1 + (n - num_coef - num_outliers) / (
-            num_outliers * (1.0 - pow(lambda1, 2))
-        )
+        x2 = 1 + (n - num_coef - num_outliers) / (num_outliers * (1.0 - pow(lambda1, 2)))
         if x2 < 0:
             x2 = 0.0
             r_old = r_new
@@ -340,9 +318,7 @@ def dixon_q_test(data: Union[Sequence, np.ndarray], alpha: float = 0.01) -> np.n
     if n < 3:
         raise AttributeError("Cannot run Dixon's Q Test with less than 3 observations")
     if n > 30:
-        raise AttributeError(
-            "Too many observations, cannot determine critical score for Q test"
-        )
+        raise AttributeError("Too many observations, cannot determine critical score for Q test")
     if alpha not in [0.01, 0.05, 0.1]:
         raise ValueError("Cannot determine alpha level for critical value")
     sort_data = np.sort(data)
@@ -474,11 +450,7 @@ def thompson_tau_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) ->
     while outlier_exist:
         n, mu, s = len(data_copy), np.mean(data_copy), np.std(data_copy, ddof=1)
         ab_resid = np.abs(data_copy - mu) / s
-        rejection = (
-            t.isf(alpha / 2, n - 2)
-            * (n - 1)
-            / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))
-        )
+        rejection = t.isf(alpha / 2, n - 2) * (n - 1) / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))
         is_outlier = ab_resid > rejection
         if np.sum(is_outlier) != 0:
             outlier_table.append(data_copy[np.argsort(ab_resid)][-1:][0])

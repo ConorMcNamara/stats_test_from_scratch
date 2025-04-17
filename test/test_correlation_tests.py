@@ -2,12 +2,16 @@ import numpy as np
 import pytest
 from scipy.stats import pearsonr, spearmanr, kendalltau, pointbiserialr
 
-from StatsTest.correlation_tests import pearson_test, spearman_test, kendall_tau_test, point_biserial_correlation_test, \
-    rank_biserial_correlation_test
+from StatsTest.correlation_tests import (
+    pearson_test,
+    spearman_test,
+    kendall_tau_test,
+    point_biserial_correlation_test,
+    rank_biserial_correlation_test,
+)
 
 
 class TestCorrelationTests:
-
     # Pearson Test
 
     def test_pearsonTest_wrongLength_Error(self) -> None:
@@ -69,34 +73,34 @@ class TestCorrelationTests:
         x1 = [12, 2, 1, 12, 2]
         x2 = [1, 4, 7, 1, 0]
         with pytest.raises(AttributeError, match="Cannot run exact test when ties are present"):
-            kendall_tau_test(x1, x2, method='exact')
+            kendall_tau_test(x1, x2, method="exact")
 
     def test_kendallTau_exact_pResult(self) -> None:
         x = [4, 10, 3, 1, 9, 2, 6, 7, 8, 5]
         y = [5, 8, 6, 2, 10, 3, 9, 4, 7, 1]
-        t1, p1 = kendall_tau_test(x, y, method='exact')
-        t2, p2 = kendalltau(x, y, method='exact')
+        t1, p1 = kendall_tau_test(x, y, method="exact")
+        t2, p2 = kendalltau(x, y, method="exact")
         assert pytest.approx(p2) == p1
 
     def test_kendallTau_exact_tResult(self) -> None:
         x = [4, 10, 3, 1, 9, 2, 6, 7, 8, 5]
         y = [5, 8, 6, 2, 10, 3, 9, 4, 7, 1]
-        t1, p1 = kendall_tau_test(x, y, method='exact')
-        t2, p2 = kendalltau(x, y, method='exact')
+        t1, p1 = kendall_tau_test(x, y, method="exact")
+        t2, p2 = kendalltau(x, y, method="exact")
         assert pytest.approx(t2) == t1
 
     def test_kendallTau_ties_pResult(self) -> None:
         x1 = [12, 2, 1, 12, 2]
         x2 = [1, 4, 7, 1, 0]
-        t1, p1 = kendall_tau_test(x1, x2, method='significance')
-        t2, p2 = kendalltau(x1, x2, method='asymptotic')
+        t1, p1 = kendall_tau_test(x1, x2, method="significance")
+        t2, p2 = kendalltau(x1, x2, method="asymptotic")
         assert pytest.approx(p2) == p1
 
     def test_kendallTau_ties_tResult(self) -> None:
         x1 = [12, 2, 1, 12, 2]
         x2 = [1, 4, 7, 1, 0]
-        t1, p1 = kendall_tau_test(x1, x2, method='significance')
-        t2, p2 = kendalltau(x1, x2, method='asymptotic')
+        t1, p1 = kendall_tau_test(x1, x2, method="significance")
+        t2, p2 = kendalltau(x1, x2, method="asymptotic")
         assert pytest.approx(t2) == t1
 
     # Point Biserial Test
@@ -142,5 +146,5 @@ class TestCorrelationTests:
             rank_biserial_correlation_test(b, a)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

@@ -3,18 +3,27 @@ import pytest
 from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
 from statsmodels.sandbox.stats.runs import runstest_1samp
 
-from StatsTest.sample_tests import one_sample_z_test, one_sample_t_test, two_sample_t_test, two_sample_z_test, \
-    two_sample_f_test, trinomial_test, trimmed_means_test, yeun_welch_test, binomial_sign_test, wald_wolfowitz_test, \
-    fligner_policello_test
+from StatsTest.sample_tests import (
+    one_sample_z_test,
+    one_sample_t_test,
+    two_sample_t_test,
+    two_sample_z_test,
+    two_sample_f_test,
+    trinomial_test,
+    trimmed_means_test,
+    yeun_welch_test,
+    binomial_sign_test,
+    wald_wolfowitz_test,
+    fligner_policello_test,
+)
 
 
 class TestSampleTest:
-
     # One Sample Z Test
 
     def test_OneSampleZTest_popMeanString_Error(self) -> None:
         sample_data = [10, 20, 30]
-        pop_mean = 's'
+        pop_mean = "s"
         with pytest.raises(TypeError, match="Population mean is not of numeric type"):
             one_sample_z_test(sample_data, pop_mean)
 
@@ -26,7 +35,7 @@ class TestSampleTest:
 
     def test_OneSampleZTest_popMeanDict_Error(self) -> None:
         sample_data = [10, 20, 30]
-        pop_mean = {'s', 10}
+        pop_mean = {"s", 10}
         with pytest.raises(TypeError, match="Population mean is not of numeric type"):
             one_sample_z_test(sample_data, pop_mean)
 
@@ -40,7 +49,7 @@ class TestSampleTest:
         sample_data = [10, 20, 30]
         pop_mean = 10
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            one_sample_z_test(sample_data, pop_mean, alternative='higher')
+            one_sample_z_test(sample_data, pop_mean, alternative="higher")
 
     def test_OneSampleZTest_tooFewObservations_Error(self) -> None:
         sample_data = [10, 20, 30]
@@ -65,7 +74,7 @@ class TestSampleTest:
     def test_TwoSampleZTest_alternativeWrong_Error(self) -> None:
         sample_data = [10, 20, 30]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            two_sample_z_test(sample_data, sample_data, alternative='more')
+            two_sample_z_test(sample_data, sample_data, alternative="more")
 
     def test_TwoSampleZTest_tooFewObservations_Error(self) -> None:
         sample_data = [10, 20, 30]
@@ -82,7 +91,7 @@ class TestSampleTest:
 
     def test_OneSampleTTest_popMeanString_Error(self) -> None:
         sample_data = [10, 20, 30]
-        pop_mean = 's'
+        pop_mean = "s"
         with pytest.raises(TypeError, match="Population mean is not of numeric type"):
             one_sample_t_test(sample_data, pop_mean)
 
@@ -94,7 +103,7 @@ class TestSampleTest:
 
     def test_OneSampleTTest_popMeanDict_Error(self) -> None:
         sample_data = [10, 20, 30]
-        pop_mean = {'s', 10}
+        pop_mean = {"s", 10}
         with pytest.raises(TypeError, match="Population mean is not of numeric type"):
             one_sample_t_test(sample_data, pop_mean)
 
@@ -108,7 +117,7 @@ class TestSampleTest:
         sample_data = [10, 20, 30]
         pop_mean = 10
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            one_sample_t_test(sample_data, pop_mean, alternative='higher')
+            one_sample_t_test(sample_data, pop_mean, alternative="higher")
 
     def test_OneSampleTTest_result(self) -> None:
         sample_data = np.random.normal(50, 25, 1000)
@@ -128,7 +137,7 @@ class TestSampleTest:
     def test_TwoSampleTTest_alternativeWrong_Error(self) -> None:
         sample_data = [10, 20, 30]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            two_sample_t_test(sample_data, sample_data, alternative='more')
+            two_sample_t_test(sample_data, sample_data, alternative="more")
 
     def test_TwoSampleTTest_notPaired_Error(self) -> None:
         data_1 = [10, 20, 30]
@@ -164,12 +173,12 @@ class TestSampleTest:
 
     def test_TrimmedMeans_alternativeWrong_Error(self) -> None:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            trimmed_means_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
+            trimmed_means_test([1, 2, 3], [4, 5, 6], p=10, alternative="moar")
 
     def test_TrimmedMeans_result(self) -> None:
         data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
         data_2 = [2, 8, 6, 22, 11, 27, 10, 25, 30, 38]
-        t, p = trimmed_means_test(data_1, data_2, p=20, alternative='two-sided')
+        t, p = trimmed_means_test(data_1, data_2, p=20, alternative="two-sided")
         assert pytest.approx(-0.741422, 0.00001) == t
         assert pytest.approx(0.469887, 0.00001) == p
 
@@ -185,12 +194,12 @@ class TestSampleTest:
 
     def test_YeunWelch_alternativeWrong_Error(self) -> None:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            yeun_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
+            yeun_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative="moar")
 
     def test_YeunWelch_result(self) -> None:
         data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
         data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
-        t, p = yeun_welch_test(data_1, data_2, p=20, alternative='two-sided')
+        t, p = yeun_welch_test(data_1, data_2, p=20, alternative="two-sided")
         assert pytest.approx(0.739002, 0.00001) == p
         assert pytest.approx(0.34365, 0.0001) == t
 
@@ -206,7 +215,7 @@ class TestSampleTest:
         data_1 = [100, 200, 300]
         data_2 = [10, 20]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            two_sample_f_test(data_1, data_2, alternative='moar')
+            two_sample_f_test(data_1, data_2, alternative="moar")
 
     def test_twoSampleFTest_result(self) -> None:
         data_1 = [560, 530, 570, 490, 510, 550, 550, 530]
@@ -225,7 +234,7 @@ class TestSampleTest:
     def test_BinomialSignTest_alternativeWrong_Error(self) -> None:
         n_success, n_failure, success_prob = [10, 20], [30, 40], 0.5
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            binomial_sign_test(n_success, n_failure, alternative='moar', success_prob=success_prob)
+            binomial_sign_test(n_success, n_failure, alternative="moar", success_prob=success_prob)
 
     def test_BinomialSignTest_successProbNotFloat_Error(self) -> None:
         n_success, n_failure, success_prob = [10, 20], [30, 40], "0.5"
@@ -263,26 +272,26 @@ class TestSampleTest:
     def test_WaldWolfowitzTest_pResultMedian(self) -> None:
         x = np.random.randint(0, 100, 50)
         x1, p1 = wald_wolfowitz_test(x)
-        x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
+        x2, p2 = runstest_1samp(x, cutoff="median", correction=False)
         assert pytest.approx(p2) == p1
 
     def test_WaldWolfowitzTest_resultMedian(self) -> None:
         x = np.random.randint(0, 100, 50)
         x1, p1 = wald_wolfowitz_test(x)
-        x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
+        x2, p2 = runstest_1samp(x, cutoff="median", correction=False)
         assert pytest.approx(x2) == x1
         assert pytest.approx(p2) == p1
 
     def test_WaldWolfowitzTest_resultMean(self) -> None:
         x = np.random.randint(0, 100, 50)
-        x1, p1 = wald_wolfowitz_test(x, cutoff='mean')
-        x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
+        x1, p1 = wald_wolfowitz_test(x, cutoff="mean")
+        x2, p2 = runstest_1samp(x, cutoff="mean", correction=False)
         assert pytest.approx(x2) == x1
         assert pytest.approx(p2) == p1
 
     # Trinomial Test
     def test_TrinomialTest_notPaired_Error(self) -> None:
-        a = [10, 20 ,30]
+        a = [10, 20, 30]
         b = [5, 10]
         with pytest.raises(AttributeError, match="Cannot perform Trinomial Test on unpaired data"):
             trinomial_test(a, b)
@@ -290,13 +299,13 @@ class TestSampleTest:
     def test_TrinomialTest_alternativeWrong_Error(self) -> None:
         a = [10, 20, 30]
         with pytest.raises(ValueError, match="Cannot determine alternative hypothesis"):
-            trinomial_test(a, a, 'MOAR')
+            trinomial_test(a, a, "MOAR")
 
     def test_TrinomialTest_pResult(self) -> None:
         a = [30, 15, 35, 12, 35, 8, 21, 8, 29, 17]
         b = [23, 13, 31, 15, 35, 8, 18, 7, 22, 13]
-        expected = .049362
-        t, p = trinomial_test(a, b, 'two-sided')
+        expected = 0.049362
+        t, p = trinomial_test(a, b, "two-sided")
         assert pytest.approx(expected, 1e-05) == p
 
     # Fligner-Policello Test
@@ -315,5 +324,5 @@ class TestSampleTest:
         assert pytest.approx(p_expected, 1e-05) == p
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

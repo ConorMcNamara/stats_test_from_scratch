@@ -8,9 +8,7 @@ from scipy.stats import t, rankdata, norm
 from StatsTest.utils import _check_table
 
 
-def pearson_test(
-    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
-) -> Tuple[float, float]:
+def pearson_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     """Found in scipy.stats as pearsonr
 
     Used to evaluate the pearson correlation between X and Y.
@@ -31,22 +29,17 @@ def pearson_test(
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
     if len(x) != len(y):
-        raise ValueError(
-            "Cannot calculate correlation with datasets of different lengths"
-        )
+        raise ValueError("Cannot calculate correlation with datasets of different lengths")
     n = len(x)
     rho = (n * np.sum(x * y) - np.sum(x) * np.sum(y)) / (
-        sqrt(n * np.sum(np.power(x, 2)) - pow(np.sum(x), 2))
-        * sqrt(n * np.sum(np.power(y, 2)) - pow(np.sum(y), 2))
+        sqrt(n * np.sum(np.power(x, 2)) - pow(np.sum(x), 2)) * sqrt(n * np.sum(np.power(y, 2)) - pow(np.sum(y), 2))
     )
     t_stat = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
     p = 2 * (1 - t.cdf(abs(t_stat), n - 2))
     return rho, p
 
 
-def spearman_test(
-    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
-) -> Tuple[float, float]:
+def spearman_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     """Found in scipy.stats as spearmanr
 
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
@@ -68,9 +61,7 @@ def spearman_test(
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
     if len(x) != len(y):
-        raise ValueError(
-            "Cannot calculate correlation with datasets of different lengths"
-        )
+        raise ValueError("Cannot calculate correlation with datasets of different lengths")
     df = len(x) - 2
     rank_x, rank_y = rankdata(x), rankdata(y)
     std_x, std_y = np.std(rank_x, ddof=1), np.std(rank_y, ddof=1)
@@ -109,9 +100,7 @@ def kendall_tau_test(
     """
     x, y = _check_table(x, only_count=True), _check_table(y, only_count=True)
     if len(x) != len(y):
-        raise ValueError(
-            "Cannot calculate correlation with datasets of different lengths"
-        )
+        raise ValueError("Cannot calculate correlation with datasets of different lengths")
     n = len(x)
     denom = n * (n - 1) / 2
     if method.casefold() not in ["hypothesis", "significance", "exact"]:
@@ -125,14 +114,8 @@ def kendall_tau_test(
         for i in np.arange(len(x) - 1):
             x_data, y_data = x[i + 1 :], y[i + 1 :]
             x_val, y_val = x[i], y[i]
-            concordant += len(
-                np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0])
-            )
-            discordant += len(
-                np.intersect1d(
-                    np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]
-                )
-            )
+            concordant += len(np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0]))
+            discordant += len(np.intersect1d(np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]))
         return concordant, discordant, t_var, u
 
     x, y = x[np.argsort(x)], y[np.argsort(x)]
@@ -171,11 +154,7 @@ def kendall_tau_test(
         v_0 = n * (n - 1) * (2 * n + 5)
         v_t, v_u = np.sum(t * (t - 1) * (2 * t + 5)), np.sum(u * (u - 1) * (2 * u + 5))
         v_1 = np.sum(t * (t - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
-        v_2 = (
-            np.sum(t * (t - 1) * (t - 2))
-            * np.sum(u * (u - 1) * (u - 2))
-            / (9 * n * (n - 1) * (n - 2))
-        )
+        v_2 = np.sum(t * (t - 1) * (t - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
         v = (v_0 - v_t - v_u) / 18 + v_1 + v_2
         p = 2 * (1 - norm.cdf(abs(concordant - discordant) / sqrt(v)))
     return tau, p

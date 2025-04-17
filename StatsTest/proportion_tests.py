@@ -46,13 +46,8 @@ def one_sample_proportion_z_test(
     sample_data = _check_table(sample_data)
     if not np.array_equal(sample_data, sample_data.astype(bool)):
         raise AttributeError("Cannot perform a proportion test on non-binary data")
-    if (
-        len(np.where(sample_data == 1)[0]) < 10
-        or len(np.where(sample_data == 0)[0]) < 10
-    ):
-        raise AttributeError(
-            "Too few instances of success or failure to run proportion test"
-        )
+    if len(np.where(sample_data == 1)[0]) < 10 or len(np.where(sample_data == 0)[0]) < 10:
+        raise AttributeError("Too few instances of success or failure to run proportion test")
     p = np.mean(sample_data)
     q = 1 - p
     n = len(sample_data)
@@ -97,13 +92,9 @@ def two_sample_proportion_z_test(
     """
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
     if not np.array_equal(data_1, data_1.astype(bool)):
-        raise AttributeError(
-            "Cannot perform a proportion test on non-binary data for data_1"
-        )
+        raise AttributeError("Cannot perform a proportion test on non-binary data for data_1")
     if not np.array_equal(data_2, data_2.astype(bool)):
-        raise AttributeError(
-            "Cannot perform a proportion test on non-binary data for data_2"
-        )
+        raise AttributeError("Cannot perform a proportion test on non-binary data for data_2")
     if not isinstance(alternative, str):
         raise TypeError("Alternative Hypothesis is not of string type")
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
@@ -168,9 +159,7 @@ def binomial_test(
     elif not isinstance(success_prob, float):
         raise TypeError("Probability of success needs to be a decimal value")
     if success_prob > 1 or success_prob < 0:
-        raise ValueError(
-            "Cannot calculate probability of success, needs to be between 0 and 1"
-        )
+        raise ValueError("Cannot calculate probability of success, needs to be between 0 and 1")
     if alternative.casefold() == "greater":
         p = _right_extreme(num_success, total, success_prob)
     elif alternative.casefold() == "less":
@@ -221,9 +210,7 @@ def chi_square_proportion_test(
     p : float, 0 <= p <= 1
         The likelihood that we would observe these differences if each group was sampled from the same population
     """
-    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(
-        n_total, only_count=True
-    )
+    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(n_total, only_count=True)
     if len(success_prob) != len(n_total):
         raise ValueError("Success probability and N Total are not of same length")
     if expected is None:
@@ -245,9 +232,9 @@ def chi_square_proportion_test(
     n_expected_success = expected * n_total
     n_expected_failure = (1 - expected) * n_total
     df = len(n_total) - 1
-    X = np.sum(
-        np.power(n_success - n_expected_success, 2) / n_expected_success
-    ) + np.sum(np.power(n_failure - n_expected_failure, 2) / n_expected_failure)
+    X = np.sum(np.power(n_success - n_expected_success, 2) / n_expected_success) + np.sum(
+        np.power(n_failure - n_expected_failure, 2) / n_expected_failure
+    )
     p = 1 - chi2.cdf(X, df)
     return X, p
 
@@ -282,9 +269,7 @@ def g_proportion_test(
     p : float, 0 <= p <= 1
         The likelihood that we would observe these differences if each group was sampled from the same population
     """
-    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(
-        n_total, only_count=True
-    )
+    success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(n_total, only_count=True)
     if len(success_prob) != len(n_total):
         raise ValueError("Success probability and N Total are not of same length")
     if expected is None:

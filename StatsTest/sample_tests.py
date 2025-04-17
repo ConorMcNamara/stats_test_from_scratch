@@ -52,9 +52,7 @@ def one_sample_z_test(
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
         raise ValueError("Cannot determine method for alternative hypothesis")
     if len(sample_data) < 30:
-        raise AttributeError(
-            "Too few observations for z-test to be reliable, use t-test instead"
-        )
+        raise AttributeError("Too few observations for z-test to be reliable, use t-test instead")
     sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     sample_std = np.std(sample_data, ddof=1)
@@ -99,15 +97,12 @@ def two_sample_z_test(
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
         raise ValueError("Cannot determine method for alternative hypothesis")
     if len(data_1) < 30 or len(data_2) < 30:
-        raise AttributeError(
-            "Too few observations for z-test to be reliable, use t-test instead"
-        )
+        raise AttributeError("Too few observations for z-test to be reliable, use t-test instead")
     data_1, data_2 = _check_table(data_1, False), _check_table(data_2, False)
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
     z_score = (data_1_mean - data_2_mean) / sqrt(
-        _standard_error(data_1_std, len(data_1))
-        + _standard_error(data_2_std, len(data_2))
+        _standard_error(data_1_std, len(data_1)) + _standard_error(data_2_std, len(data_2))
     )
     if alternative.casefold() == "two-sided":
         p = 2 * (1 - norm.cdf(abs(z_score)))
@@ -221,9 +216,7 @@ def two_sample_t_test(
             (np.power(data_1_var, 2) / (np.power(data_1_n, 2) * data_1_n - 1))
             + (np.power(data_2_var, 2) / (np.power(data_2_n, 2) * data_2_n - 1))
         )
-        standard_error_difference = sqrt(
-            (data_1_var / data_1_n) + (data_2_var / data_2_n)
-        )
+        standard_error_difference = sqrt((data_1_var / data_1_n) + (data_2_var / data_2_n))
     t_value = (data_1_mean - data_2_mean) / standard_error_difference
     p = 1.0 - t.cdf(abs(t_value), df)
     if alternative.casefold() == "two-sided":
@@ -276,12 +269,11 @@ def trimmed_means_test(
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
-    winsor_values_1, winsor_values_2 = np.append(
-        trim_data_1[0] * n_1, trim_data_1[-1] * n_1
-    ), np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2)
-    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(
-        trim_data_2, winsor_values_2
+    winsor_values_1, winsor_values_2 = (
+        np.append(trim_data_1[0] * n_1, trim_data_1[-1] * n_1),
+        np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2),
     )
+    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(trim_data_2, winsor_values_2)
     s_x, s_y = np.var(winsor_data_1, ddof=1), np.var(winsor_data_2, ddof=1)
     x_bar, y_bar = np.mean(trim_data_1), np.mean(trim_data_2)
     pooled_var = ((n_x - 1) * s_x + (n_y - 1) * s_y) / ((m_x - 1) + (m_y - 1))
@@ -338,12 +330,11 @@ def yeun_welch_test(
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
-    winsor_values_1, winsor_values_2 = np.append(
-        trim_data_1[0] * n_1, trim_data_1[-1] * n_1
-    ), np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2)
-    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(
-        trim_data_2, winsor_values_2
+    winsor_values_1, winsor_values_2 = (
+        np.append(trim_data_1[0] * n_1, trim_data_1[-1] * n_1),
+        np.append(trim_data_2[0] * n_2, trim_data_2[-1] * n_2),
     )
+    winsor_data_1, winsor_data_2 = np.append(trim_data_1, winsor_values_1), np.append(trim_data_2, winsor_values_2)
     s_x, s_y = np.var(winsor_data_1, ddof=1), np.var(winsor_data_2, ddof=1)
     x_bar, y_bar = np.mean(trim_data_1), np.mean(trim_data_2)
     d_x, d_y = (n_x - 1) * s_x / (m_x * (m_x - 1)), (n_y - 1) * s_y / (m_y * (m_y - 1))
@@ -442,9 +433,7 @@ def binomial_sign_test(
     if not isinstance(success_prob, float):
         raise TypeError("Probability of success needs to be a decimal value")
     if success_prob > 1 or success_prob < 0:
-        raise ValueError(
-            "Cannot calculate probability of success, needs to be between 0 and 1"
-        )
+        raise ValueError("Cannot calculate probability of success, needs to be between 0 and 1")
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
     diff = data_1 - data_2
     pos_diff, neg_diff = np.sum(diff > 0), np.sum(diff < 0)
@@ -454,9 +443,7 @@ def binomial_sign_test(
     elif alternative.casefold() == "less":
         p = _left_extreme(pos_diff, total, success_prob)
     else:
-        p = _left_extreme(neg_diff, total, success_prob) + _right_extreme(
-            pos_diff, total, success_prob
-        )
+        p = _left_extreme(neg_diff, total, success_prob) + _right_extreme(pos_diff, total, success_prob)
     return p
 
 
@@ -500,9 +487,7 @@ def wald_wolfowitz_test(
     else:
         expected = _check_table(expected)
         if len(expected) != len(data_1):
-            raise AttributeError(
-                "Cannot perform Wald-Wolfowitz with unequal array lengths"
-            )
+            raise AttributeError("Cannot perform Wald-Wolfowitz with unequal array lengths")
         plus_minus = np.greater_equal(data_1, expected)
     runs, _, loc = _rle(plus_minus)
     n_runs = len(runs)
@@ -510,13 +495,7 @@ def wald_wolfowitz_test(
     run_pos, run_neg = runs[loc], runs[~loc]
     n_plus, n_minus = np.sum(run_pos), np.sum(run_neg)
     mu = (2 * n_plus * n_minus) / runs_length + 1
-    var = (
-        2
-        * n_plus
-        * n_minus
-        * (2 * n_plus * n_minus - runs_length)
-        / (pow(runs_length, 2) * (runs_length - 1))
-    )
+    var = 2 * n_plus * n_minus * (2 * n_plus * n_minus - runs_length) / (pow(runs_length, 2) * (runs_length - 1))
     z = (n_runs - mu) / sqrt(var)
     p = 2 * (1 - norm.cdf(abs(z)))
     return z, p

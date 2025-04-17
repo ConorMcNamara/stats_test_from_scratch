@@ -1,13 +1,21 @@
 import numpy as np
 import pytest
-from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, mood #ansari
+from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, mood  # ansari
 
-from StatsTest.rank_tests import two_sample_wilcoxon_test, two_sample_mann_whitney_test, friedman_test, page_trend_test, \
-    quade_test, kruskal_wallis_test, fligner_kileen_test, mood_test, cucconi_test
+from StatsTest.rank_tests import (
+    two_sample_wilcoxon_test,
+    two_sample_mann_whitney_test,
+    friedman_test,
+    page_trend_test,
+    quade_test,
+    kruskal_wallis_test,
+    fligner_kileen_test,
+    mood_test,
+    cucconi_test,
+)
 
 
 class TestRankTest:
-
     # Mann-Whitney U Test
 
     def test_twoSampleMannWhitneyTest_wrongAlternative_Error(self) -> None:
@@ -17,8 +25,8 @@ class TestRankTest:
 
     def test_twoSampleMannWhitneyTest_result(self) -> None:
         sample_data = np.repeat([1, 2, 3], 10)
-        u_1, p_1 = two_sample_mann_whitney_test(sample_data, sample_data, alternative='two-sided')
-        u_2, p_2 = mannwhitneyu(sample_data, sample_data, use_continuity=False, alternative='two-sided')
+        u_1, p_1 = two_sample_mann_whitney_test(sample_data, sample_data, alternative="two-sided")
+        u_2, p_2 = mannwhitneyu(sample_data, sample_data, use_continuity=False, alternative="two-sided")
         assert pytest.approx(0.0) == p_1 - p_2
         assert pytest.approx(0.0, 0.01) == u_1 - u_2
 
@@ -27,7 +35,7 @@ class TestRankTest:
     def test_twoSampleWilcoxon_wrongAlternative_Error(self) -> None:
         sample_data = [1, 2, 3]
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            two_sample_wilcoxon_test(sample_data, sample_data, alternative='more')
+            two_sample_wilcoxon_test(sample_data, sample_data, alternative="more")
 
     def test_twoSampleWilcoxon_wrongHandleZero_Error(self) -> None:
         sample_data = [1, 2, 3]
@@ -43,7 +51,7 @@ class TestRankTest:
     def test_twoSampleWilcoxonTest_Wilcox_result(self) -> None:
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
-        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='wilcox')
+        w, p = two_sample_wilcoxon_test(x1, x2, alternative="two-sided", handle_zero="wilcox")
         w2, p2 = wilcoxon(x1, x2)
         assert pytest.approx(p2, 0.001) == p
         assert pytest.approx(9) == w
@@ -51,7 +59,7 @@ class TestRankTest:
     def test_twoSampleWilcoxonTest_Pratt_pResult(self) -> None:
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
-        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='pratt')
+        w, p = two_sample_wilcoxon_test(x1, x2, alternative="two-sided", handle_zero="pratt")
         w2, p2 = wilcoxon(x1, x2, zero_method="pratt")
         assert pytest.approx(p2, 0.01) == p
         assert pytest.approx(10) == w
@@ -93,7 +101,9 @@ class TestRankTest:
         sample_data1 = [1, 2, 3]
         sample_data2 = [1, 2, 3]
         sample_data3 = [1, 2]
-        with pytest.raises(AttributeError, match="Page Test requires that each level have the same number of observations"):
+        with pytest.raises(
+            AttributeError, match="Page Test requires that each level have the same number of observations"
+        ):
             page_trend_test(sample_data1, sample_data2, sample_data3)
 
     def test_pageTrendTest_alternativeInt_Error(self) -> None:
@@ -111,7 +121,13 @@ class TestRankTest:
             page_trend_test(sample_data1, sample_data2, sample_data3, alternative="two-sided")
 
     def test_pageTrendTest_result(self) -> None:
-        data1, data2, data3, data4, data5 = [100, 200, 121, 90], [90, 150, 130, 75], [105, 80, 75, 76], [70, 50, 20, 54], [5, 10, 25, 32]
+        data1, data2, data3, data4, data5 = (
+            [100, 200, 121, 90],
+            [90, 150, 130, 75],
+            [105, 80, 75, 76],
+            [70, 50, 20, 54],
+            [5, 10, 25, 32],
+        )
         l_var, p = page_trend_test(data1, data2, data3, data4, data5)
         assert pytest.approx(0.00033692926567685522) == p
         assert pytest.approx(214) == l_var
@@ -136,12 +152,12 @@ class TestRankTest:
 
     def test_flignerKileenTest_kLessTwo_Error(self) -> None:
         sample_data = [1, 2, 3]
-        with pytest.raises(AttributeError, match='Cannot perform Fligner-Kileen Test with less than 2 groups'):
+        with pytest.raises(AttributeError, match="Cannot perform Fligner-Kileen Test with less than 2 groups"):
             fligner_kileen_test(sample_data)
 
     def test_flignerKileenTest_centerWrong_Error(self) -> None:
         sample_data = [1, 2, 3]
-        with pytest.raises(ValueError, match='Cannot discern how to center the data'):
+        with pytest.raises(ValueError, match="Cannot discern how to center the data"):
             fligner_kileen_test(sample_data, sample_data, center="center")
 
     def test_flignerKileenTest_pResult(self) -> None:
@@ -149,8 +165,8 @@ class TestRankTest:
         data_2 = [82, 91, 92, 80, 52, 79, 73, 74]
         data_4 = [85, 80, 65, 71, 67, 51, 63, 93]
         data_3 = [79, 84, 74, 98, 63, 83, 85, 58]
-        x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
-        x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
+        x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center="median")
+        x2, p2 = fligner(data_1, data_2, data_3, data_4, center="median")
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
@@ -208,7 +224,7 @@ class TestRankTest:
     def test_moodTest_alternativeWrong_Error(self) -> None:
         data_1 = np.arange(1, 100)
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            mood_test(data_1, data_1, alternative='moar')
+            mood_test(data_1, data_1, alternative="moar")
 
     def test_moodTest_nLessThree_Error(self) -> None:
         data_1 = [1]
@@ -228,10 +244,10 @@ class TestRankTest:
         data_1 = np.random.randint(0, 100, 50)
         data_2 = np.random.randint(0, 10, 50)
         with pytest.raises(ValueError, match="Cannot identify method for calculating p-value"):
-            cucconi_test(data_1, data_2, how='moar')
+            cucconi_test(data_1, data_2, how="moar")
 
     # Lepage Test
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()
