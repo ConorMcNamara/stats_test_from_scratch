@@ -48,15 +48,12 @@ class TestSampleTest:
         with pytest.raises(AttributeError, match="Too few observations for z-test to be reliable, use t-test instead"):
             one_sample_z_test(sample_data, pop_mean)
 
-    def test_OneSampleZTest_pResult(self) -> None:
+    def test_OneSampleZTest_result(self) -> None:
         sample_data = np.arange(30)
         pop_mean = 5
-        assert pytest.approx(0.0, 0.01) == one_sample_z_test(sample_data, pop_mean)[1]
-
-    def test_OneSampleZTest_zResult(self) -> None:
-        sample_data = np.arange(30)
-        pop_mean = 5
-        assert pytest.approx(11.389, 0.01) == one_sample_z_test(sample_data, pop_mean)[0]
+        z_val, p_val = one_sample_z_test(sample_data, pop_mean)
+        assert pytest.approx(0.0, 0.01) == p_val
+        assert pytest.approx(11.389, 0.01) == z_val
 
     # Two Sample Z Test
 
@@ -75,13 +72,11 @@ class TestSampleTest:
         with pytest.raises(AttributeError, match="Too few observations for z-test to be reliable, use t-test instead"):
             two_sample_z_test(sample_data, sample_data)
 
-    def test_TwoSampleZTest_pResult(self) -> None:
+    def test_TwoSampleZTest_result(self) -> None:
         sample_data = np.arange(30)
-        assert pytest.approx(1.0, 0.01) == two_sample_z_test(sample_data, sample_data)[1]
-
-    def test_TwoSampleZTest_zResult(self) -> None:
-        sample_data = np.arange(30)
-        assert pytest.approx(0.0, 0.01) == two_sample_z_test(sample_data, sample_data)[0]
+        z_val, p_val = two_sample_z_test(sample_data, sample_data)
+        assert pytest.approx(1.0, 0.01) == p_val
+        assert pytest.approx(0.0, 0.01) == z_val
 
     # One Sample T Test
 
@@ -115,18 +110,12 @@ class TestSampleTest:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             one_sample_t_test(sample_data, pop_mean, alternative='higher')
 
-    def test_OneSampleTTest_pResult(self) -> None:
+    def test_OneSampleTTest_result(self) -> None:
         sample_data = np.random.normal(50, 25, 1000)
         pop_mean = 10
         t1, p1 = one_sample_t_test(sample_data, pop_mean)
         t2, p2 = ttest_1samp(sample_data, pop_mean)
         assert pytest.approx(p2) == p1
-
-    def test_OneSampleTTest_tResult(self) -> None:
-        sample_data = np.random.normal(25, 10, 1000)
-        pop_mean = 10
-        t1, p1 = one_sample_t_test(sample_data, pop_mean)
-        t2, p2 = ttest_1samp(sample_data, pop_mean)
         assert pytest.approx(t2) == t1
 
     # Two Sample T Test
@@ -153,12 +142,6 @@ class TestSampleTest:
         t1, p1 = two_sample_t_test(data_1, data_2, paired=True)
         t2, p2 = ttest_rel(data_1, data_2)
         assert pytest.approx(p2) == p1
-
-    def test_TwoSampleTTest_paired_tResult(self) -> None:
-        data_1 = np.random.normal(20, 30, 1000)
-        data_2 = np.random.normal(50, 25, 1000)
-        t1, p1 = two_sample_t_test(data_1, data_2, paired=True)
-        t2, p2 = ttest_rel(data_1, data_2)
         assert pytest.approx(t2) == t1
 
     def test_TwoSampleTTest_pResult(self) -> None:
@@ -167,12 +150,6 @@ class TestSampleTest:
         t1, p1 = two_sample_t_test(data_1, data_2)
         t2, p2 = ttest_ind(data_1, data_2, equal_var=False)
         assert pytest.approx(p2) == p1
-
-    def test_TwoSampleTTest_tResult(self) -> None:
-        data_1 = np.random.normal(20, 30, 1000)
-        data_2 = np.random.normal(65, 37, 250)
-        t1, p1 = two_sample_t_test(data_1, data_2)
-        t2, p2 = ttest_ind(data_1, data_2, equal_var=False)
         assert pytest.approx(t2) == t1
 
     # Two Sample Trimmed Means T Test
@@ -189,17 +166,12 @@ class TestSampleTest:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             trimmed_means_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
 
-    def test_TrimmedMeans_pResult(self) -> None:
-        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
-        data_2 = [2, 8, 6, 22, 11, 27, 10, 25, 30, 38]
-        t, p = trimmed_means_test(data_1, data_2, p=20, alternative='two-sided')
-        assert pytest.approx(0.469887, 0.00001) == p
-
-    def test_TrimmedMeans_tResult(self) -> None:
+    def test_TrimmedMeans_result(self) -> None:
         data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
         data_2 = [2, 8, 6, 22, 11, 27, 10, 25, 30, 38]
         t, p = trimmed_means_test(data_1, data_2, p=20, alternative='two-sided')
         assert pytest.approx(-0.741422, 0.00001) == t
+        assert pytest.approx(0.469887, 0.00001) == p
 
     # Yeun - Welch Test
 
@@ -215,16 +187,11 @@ class TestSampleTest:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             yeun_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative='moar')
 
-    def test_YeunWelch_pResult(self) -> None:
+    def test_YeunWelch_result(self) -> None:
         data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
         data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
         t, p = yeun_welch_test(data_1, data_2, p=20, alternative='two-sided')
         assert pytest.approx(0.739002, 0.00001) == p
-
-    def test_YeunWelch_tResult(self) -> None:
-        data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
-        data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
-        t, p = yeun_welch_test(data_1, data_2, p=20, alternative='two-sided')
         assert pytest.approx(0.34365, 0.0001) == t
 
     # Two Sample F Test
@@ -241,16 +208,11 @@ class TestSampleTest:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             two_sample_f_test(data_1, data_2, alternative='moar')
 
-    def test_twoSampleFTest_pResult(self) -> None:
+    def test_twoSampleFTest_result(self) -> None:
         data_1 = [560, 530, 570, 490, 510, 550, 550, 530]
         data_2 = [600, 590, 590, 630, 610, 630]
         f, p = two_sample_f_test(data_1, data_2)
         assert pytest.approx(p, 0.0001) == 0.4263
-
-    def test_twoSampleFTest_fResult(self) -> None:
-        data_1 = [560, 530, 570, 490, 510, 550, 550, 530]
-        data_2 = [600, 590, 590, 630, 610, 630]
-        f, p = two_sample_f_test(data_1, data_2)
         assert pytest.approx(f, 0.0001) == 2.1163
 
     # Binomial Sign Test
@@ -304,23 +266,19 @@ class TestSampleTest:
         x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
         assert pytest.approx(p2) == p1
 
-    def test_WaldWolfowitzTest_xResultMedian(self) -> None:
+    def test_WaldWolfowitzTest_resultMedian(self) -> None:
         x = np.random.randint(0, 100, 50)
         x1, p1 = wald_wolfowitz_test(x)
         x2, p2 = runstest_1samp(x, cutoff='median', correction=False)
         assert pytest.approx(x2) == x1
-
-    def test_WaldWolfowitzTest_pResultMean(self) -> None:
-        x = np.random.randint(0, 100, 50)
-        x1, p1 = wald_wolfowitz_test(x, cutoff='mean')
-        x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
         assert pytest.approx(p2) == p1
 
-    def test_WaldWolfowitzTest_xResultMean(self) -> None:
+    def test_WaldWolfowitzTest_resultMean(self) -> None:
         x = np.random.randint(0, 100, 50)
         x1, p1 = wald_wolfowitz_test(x, cutoff='mean')
         x2, p2 = runstest_1samp(x, cutoff='mean', correction=False)
         assert pytest.approx(x2) == x1
+        assert pytest.approx(p2) == p1
 
     # Trinomial Test
     def test_TrinomialTest_notPaired_Error(self) -> None:
@@ -339,7 +297,7 @@ class TestSampleTest:
         b = [23, 13, 31, 15, 35, 8, 18, 7, 22, 13]
         expected = .049362
         t, p = trinomial_test(a, b, 'two-sided')
-        assert pytest.approx(expected, 0.00001) == p
+        assert pytest.approx(expected, 1e-05) == p
 
     # Fligner-Policello Test
 
@@ -348,19 +306,13 @@ class TestSampleTest:
         with pytest.raises(ValueError, match="Cannot determine alternative hypothesis"):
             fligner_policello_test(x, x, "MOAR")
 
-    def test_FlignerPolicelloTest_zResult(self) -> None:
+    def test_FlignerPolicelloTest_result(self) -> None:
         x = np.array([4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 20])
         y = np.array([12, 8, 6, 16, 12, 14, 10, 18, 4, 11])
-        expected = .703046
+        z_expected, p_expected = 0.703046, 0.482027
         z, p = fligner_policello_test(x, y)
-        assert pytest.approx(expected, 0.00001) == z
-
-    def test_FlignerPolicelloTest_pResult(self) -> None:
-        x = np.array([4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 20])
-        y = np.array([12, 8, 6, 16, 12, 14, 10, 18, 4, 11])
-        expected = .482027
-        z, p = fligner_policello_test(x, y)
-        assert pytest.approx(expected, 0.00001) == p
+        assert pytest.approx(z_expected, 1e-05) == z
+        assert pytest.approx(p_expected, 1e-05) == p
 
 
 if __name__ == '__main__':

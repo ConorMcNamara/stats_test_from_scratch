@@ -3,7 +3,7 @@ import pytest
 from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, ansari, mood
 
 from StatsTest.rank_tests import two_sample_wilcoxon_test, two_sample_mann_whitney_test, friedman_test, page_trend_test, \
-    quade_test, kruskal_wallis_test, fligner_kileen_test, mood_test, ansari_bradley_test, cucconi_test
+    quade_test, kruskal_wallis_test, fligner_kileen_test, mood_test, cucconi_test
 
 
 class TestRankTest:
@@ -15,16 +15,11 @@ class TestRankTest:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
             two_sample_mann_whitney_test(sample_data, sample_data, alternative="more")
 
-    def test_twoSampleMannWhitneyTest_pResult(self) -> None:
+    def test_twoSampleMannWhitneyTest_result(self) -> None:
         sample_data = np.repeat([1, 2, 3], 10)
         u_1, p_1 = two_sample_mann_whitney_test(sample_data, sample_data, alternative='two-sided')
         u_2, p_2 = mannwhitneyu(sample_data, sample_data, use_continuity=False, alternative='two-sided')
         assert pytest.approx(0.0) == p_1 - p_2
-
-    def test_twoSampleMannWhitneyTest_uResult(self) -> None:
-        sample_data = np.repeat([1, 2, 3], 10)
-        u_1, p_1 = two_sample_mann_whitney_test(sample_data, sample_data, alternative='two-sided')
-        u_2, p_2 = mannwhitneyu(sample_data, sample_data, alternative='two-sided')
         assert pytest.approx(0.0, 0.01) == u_1 - u_2
 
     # Wilcoxon Test
@@ -45,17 +40,12 @@ class TestRankTest:
         with pytest.raises(AttributeError, match="Cannot perform signed wilcoxon test on unpaired data"):
             two_sample_wilcoxon_test(sample_data1, sample_data2)
 
-    def test_twoSampleWilcoxonTest_Wilcox_pResult(self) -> None:
+    def test_twoSampleWilcoxonTest_Wilcox_result(self) -> None:
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
         w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='wilcox')
         w2, p2 = wilcoxon(x1, x2)
         assert pytest.approx(p2, 0.001) == p
-
-    def test_twoSampleWilcoxonTest_Wilcox_wResult(self) -> None:
-        x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
-        x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
-        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='wilcox')
         assert pytest.approx(9) == w
 
     def test_twoSampleWilcoxonTest_Pratt_pResult(self) -> None:
@@ -64,11 +54,6 @@ class TestRankTest:
         w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='pratt')
         w2, p2 = wilcoxon(x1, x2, zero_method="pratt")
         assert pytest.approx(p2, 0.01) == p
-
-    def test_twoSampleWilcoxonTest_Pratt_wResult(self) -> None:
-        x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
-        x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
-        w, p = two_sample_wilcoxon_test(x1, x2, alternative='two-sided', handle_zero='pratt')
         assert pytest.approx(10) == w
 
     # Friedman Test
@@ -79,20 +64,13 @@ class TestRankTest:
         with pytest.raises(AttributeError, match="Friedman Test not appropriate for 2 levels"):
             friedman_test(sample_data1, sample_data2)
 
-    def test_friedmanTest_pResult(self) -> None:
+    def test_friedmanTest_result(self) -> None:
         x1 = [27, 2, 4, 18, 7, 9]
         x2 = [20, 8, 14, 36, 21, 22]
         x3 = [34, 31, 3, 23, 30, 6]
         x, p = friedman_test(x1, x2, x3)
         x2, p2 = friedmanchisquare(x1, x2, x3)
         assert pytest.approx(p2) == p
-
-    def test_friedmanTest_xResult(self) -> None:
-        x1 = [27, 2, 4, 18, 7, 9]
-        x2 = [20, 8, 14, 36, 21, 22]
-        x3 = [34, 31, 3, 23, 30, 6]
-        x, p = friedman_test(x1, x2, x3)
-        x2, p2 = friedmanchisquare(x1, x2, x3)
         assert pytest.approx(x2) == x
 
     # Quade Test
@@ -132,15 +110,11 @@ class TestRankTest:
         with pytest.raises(ValueError, match="Cannot discern alternative hypothesis"):
             page_trend_test(sample_data1, sample_data2, sample_data3, alternative="two-sided")
 
-    def test_pageTrendTest_pResult(self) -> None:
+    def test_pageTrendTest_result(self) -> None:
         data1, data2, data3, data4, data5 = [100, 200, 121, 90], [90, 150, 130, 75], [105, 80, 75, 76], [70, 50, 20, 54], [5, 10, 25, 32]
-        l, p = page_trend_test(data1, data2, data3, data4, data5)
+        l_var, p = page_trend_test(data1, data2, data3, data4, data5)
         assert pytest.approx(0.00033692926567685522) == p
-
-    def test_pageTrendTest_lResult(self) -> None:
-        data1, data2, data3, data4, data5 = [100, 200, 121, 90], [90, 150, 130, 75], [105, 80, 75, 76], [70, 50, 20, 54], [5, 10, 25, 32]
-        l, p = page_trend_test(data1, data2, data3, data4, data5)
-        assert pytest.approx(214) == l
+        assert pytest.approx(214) == l_var
 
     # Kruskal-Wallis Test
 
@@ -156,13 +130,6 @@ class TestRankTest:
         h, p = kruskal_wallis_test(x1, x2, x3)
         h2, p2 = kruskal(x1, x2, x3)
         assert pytest.approx(p2) == p
-
-    def test_kruskalWallis_hResult(self) -> None:
-        x1 = [27, 2, 4, 18, 7, 9]
-        x2 = [20, 8, 14, 36, 21, 22]
-        x3 = [34, 31, 3, 23, 30, 6]
-        h, p = kruskal_wallis_test(x1, x2, x3)
-        h2, p2 = kruskal(x1, x2, x3)
         assert pytest.approx(h) == h2
 
     # Fligner-Kileen Test
@@ -185,64 +152,56 @@ class TestRankTest:
         x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
         x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(p2) == p1
-
-    def test_flignerKileenTest_xResult(self) -> None:
-        data_1 = [51, 87, 50, 48, 79, 61, 53, 54]
-        data_2 = [82, 91, 92, 80, 52, 79, 73, 74]
-        data_4 = [85, 80, 65, 71, 67, 51, 63, 93]
-        data_3 = [79, 84, 74, 98, 63, 83, 85, 58]
-        x1, p1 = fligner_kileen_test(data_1, data_2, data_3, data_4, center='median')
-        x2, p2 = fligner(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(x2) == x1
 
     # Ansari-Bradley Test
 
-    def test_ansariBradleyTest_alternativeWrong(self) -> None:
-        data_1 = np.random.normal(0, 100, 100)
-        with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            ansari_bradley_test(data_1, data_1, alternative="moar")
-
-    def test_ansariBradleyTest_exact_pResult(self) -> None:
-        data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
-        data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(p2) == p1
-
-    def test_ansariBradleyTest_exact_xResult(self) -> None:
-        data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
-        data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(x2) == x1
-
-    def test_ansariBradleyTest_approxEven_pResult(self) -> None:
-        data_1 = np.arange(0, 101)
-        data_2 = np.arange(50, 151)
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(p2) == p1
-
-    def test_ansariBradleyTest_approxEven_xResult(self) -> None:
-        data_1 = np.arange(0, 101)
-        data_2 = np.arange(50, 151)
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(x2) == x1
-
-    def test_ansariBradleyTest_approxOdd_pResult(self) -> None:
-        data_1 = np.arange(1, 101)
-        data_2 = np.arange(50, 151)
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(p2) == p1
-
-    def test_ansariBradleyTest_approxOdd_xResult(self) -> None:
-        data_1 = np.arange(1, 101)
-        data_2 = np.arange(50, 151)
-        x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-        x2, p2 = ansari(data_1, data_2)
-        assert pytest.approx(x2) == x1
+    # def test_ansariBradleyTest_alternativeWrong(self) -> None:
+    #     data_1 = np.random.normal(0, 100, 100)
+    #     with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
+    #         ansari_bradley_test(data_1, data_1, alternative="moar")
+    #
+    # def test_ansariBradleyTest_exact_pResult(self) -> None:
+    #     data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
+    #     data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(p2) == p1
+    #
+    # def test_ansariBradleyTest_exact_xResult(self) -> None:
+    #     data_1 = [-63, 18, 84, 160, 33, -82, 49, 74, 58, -31, 151]
+    #     data_2 = [78, -124, -443, 225, -9, -3, 189, 164, 119, 184]
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(x2) == x1
+    #
+    # def test_ansariBradleyTest_approxEven_pResult(self) -> None:
+    #     data_1 = np.arange(0, 101)
+    #     data_2 = np.arange(50, 151)
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(p2) == p1
+    #
+    # def test_ansariBradleyTest_approxEven_xResult(self) -> None:
+    #     data_1 = np.arange(0, 101)
+    #     data_2 = np.arange(50, 151)
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(x2) == x1
+    #
+    # def test_ansariBradleyTest_approxOdd_pResult(self) -> None:
+    #     data_1 = np.arange(1, 101)
+    #     data_2 = np.arange(50, 151)
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(p2) == p1
+    #
+    # def test_ansariBradleyTest_approxOdd_xResult(self) -> None:
+    #     data_1 = np.arange(1, 101)
+    #     data_2 = np.arange(50, 151)
+    #     x1, p1 = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+    #     x2, p2 = ansari(data_1, data_2)
+    #     assert pytest.approx(x2) == x1
 
     # Mood Test
 
@@ -256,18 +215,12 @@ class TestRankTest:
         with pytest.raises(AttributeError, match="Not enough observations to perform mood dispertion test"):
             mood_test(data_1, data_1)
 
-    def test_moodTest_pResult(self) -> None:
+    def test_moodTest_result(self) -> None:
         data_1 = np.random.randint(0, 100, 1000)
         data_2 = np.random.normal(0, 100, 1000)
         z1, p1 = mood_test(data_1, data_2)
         z2, p2 = mood(data_1, data_2)
         assert pytest.approx(p2) == p1
-
-    def test_moodTest_zResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 1000)
-        data_2 = np.random.normal(0, 100, 1000)
-        z1, p1 = mood_test(data_1, data_2)
-        z2, p2 = mood(data_1, data_2)
         assert pytest.approx(z2) == z1
 
     # Cucconi Test

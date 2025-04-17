@@ -3055,6 +3055,8 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
             q = np.array(q_10)[index][np.arange(col - idx + 1)]
         elif alpha == 0.05:
             q = np.array(q_05)[index][np.arange(col - idx + 1)]
+        elif alpha == 0.01:
+            q = np.array(q_01)[index][np.arange(col - idx + 1)]
         else:
             q = np.array(q_10)[index][np.arange(col - idx + 1)]
         r = se * q

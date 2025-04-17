@@ -194,14 +194,14 @@ def tietjen_moore_test(
             data_large = sort_data[:-num_outliers]
             outliers = sort_data[len(data) - num_outliers :]
             y_bar_large = np.mean(data_large)
-            l = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(
+            l_var = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(
                 np.power(data - y_bar, 2)
             )
         elif alternative.casefold() == "less":
             data_small = sort_data[num_outliers:]
             outliers = sort_data[:num_outliers]
             y_bar_small = np.mean(data_small)
-            l = np.sum(np.power(data_small - y_bar_small, 2)) / np.sum(
+            l_var = np.sum(np.power(data_small - y_bar_small, 2)) / np.sum(
                 np.power(data - y_bar, 2)
             )
         else:
@@ -210,11 +210,11 @@ def tietjen_moore_test(
             outliers = z[len(data) - num_outliers :]
             z_large = z[:-num_outliers]
             z_bar = np.mean(z_large)
-            l = np.sum(np.power(z_large - z_bar, 2)) / np.sum(np.power(z - y_bar, 2))
+            l_var = np.sum(np.power(z_large - z_bar, 2)) / np.sum(np.power(z - y_bar, 2))
         if simulation:
-            return l, outliers
+            return l_var, outliers
         else:
-            return l
+            return l_var
 
     l, outliers = teitjen(data, num_outliers, alternative, simulation=True)
     E_norm = np.random.normal(size=(10000, n))
@@ -305,6 +305,7 @@ def peirce_test(
         / n
     )
     r_new, r_old = 1.0, 0.0
+    x2 = 0
     while abs(r_new - r_old) > (n * 2.0e-16):
         ldiv = pow(r_new, num_outliers) if pow(r_new, num_outliers) != 0 else 1.0e-6
         lambda1 = pow(q, n) / pow(ldiv, 1 / (n - num_coef))

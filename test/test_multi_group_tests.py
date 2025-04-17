@@ -16,7 +16,7 @@ class TestMultiGroupTests:
         with pytest.raises(AttributeError, match="Need at least two groups to perform a Levene Test"):
             levene_test(sample_data)
 
-    def test_leveneTest_pResult(self) -> None:
+    def test_leveneTest_result(self) -> None:
         data_1 = np.random.randint(0, 100, 10)
         data_2 = np.random.randint(500, 550, 10)
         data_3 = np.random.randint(0, 10, 10)
@@ -24,14 +24,6 @@ class TestMultiGroupTests:
         w1, p1 = levene_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='mean')
         assert pytest.approx(p2) == p1
-
-    def test_leveneTest_wResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 10)
-        data_2 = np.random.randint(500, 550, 10)
-        data_3 = np.random.randint(0, 10, 10)
-        data_4 = np.random.randint(0, 50, 10)
-        w1, p1 = levene_test(data_1, data_2, data_3, data_4)
-        w2, p2 = levene(data_1, data_2, data_3, data_4, center='mean')
         assert pytest.approx(w2) == w1
 
     # Brown-Forsythe Test
@@ -41,7 +33,7 @@ class TestMultiGroupTests:
         with pytest.raises(AttributeError, match="Need at least two groups to perform a Brown-Forsythe Test"):
             brown_forsythe_test(sample_data)
 
-    def test_brownForsytheTest_pResult(self) -> None:
+    def test_brownForsytheTest_result(self) -> None:
         data_1 = np.random.randint(0, 100, 10)
         data_2 = np.random.randint(500, 550, 10)
         data_3 = np.random.randint(0, 10, 10)
@@ -49,14 +41,6 @@ class TestMultiGroupTests:
         w1, p1 = brown_forsythe_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(p2) == p1
-
-    def test_brownForsytheTest_wResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 10)
-        data_2 = np.random.randint(500, 550, 10)
-        data_3 = np.random.randint(0, 10, 10)
-        data_4 = np.random.randint(0, 50, 10)
-        w1, p1 = brown_forsythe_test(data_1, data_2, data_3, data_4)
-        w2, p2 = levene(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(w2) == w1
 
     # One Way F Test
@@ -74,14 +58,6 @@ class TestMultiGroupTests:
         f1, p1 = one_way_f_test(data_1, data_2, data_3, data_4)
         f2, p2 = f_oneway(data_1, data_2, data_3, data_4)
         assert pytest.approx(p2) == p1
-
-    def test_oneWayFTest_fResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 10)
-        data_2 = np.random.randint(500, 550, 10)
-        data_3 = np.random.randint(0, 10, 10)
-        data_4 = np.random.randint(0, 50, 10)
-        f1, p1 = one_way_f_test(data_1, data_2, data_3, data_4)
-        f2, p2 = f_oneway(data_1, data_2, data_3, data_4)
         assert pytest.approx(f2) == f1
 
     # Bartlett Test
@@ -99,14 +75,6 @@ class TestMultiGroupTests:
         x1, p1 = bartlett_test(data_1, data_2, data_3, data_4)
         x2, p2 = bartlett(data_1, data_2, data_3, data_4)
         assert pytest.approx(p2) == p1
-
-    def test_barlettTest_xResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 10)
-        data_2 = np.random.randint(500, 550, 10)
-        data_3 = np.random.randint(0, 10, 10)
-        data_4 = np.random.randint(0, 50, 10)
-        x1, p1 = bartlett_test(data_1, data_2, data_3, data_4)
-        x2, p2 = bartlett(data_1, data_2, data_3, data_4)
         assert pytest.approx(x2) == x1
 
     # Cochran Test
@@ -127,11 +95,6 @@ class TestMultiGroupTests:
         t1, p1 = cochran_q_test(x1, x2, x3, x4)
         t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(p1) == p2
-
-    def test_cochranTest_tResult(self) -> None:
-        x1, x2, x3, x4 = [1, 0, 1, 0, 1], [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 1, 0, 1, 0]
-        t1, p1 = cochran_q_test(x1, x2, x3, x4)
-        t2, p2, df = cochrans_q(np.vstack([x1, x2, x3, x4]).T, return_object=False)
         assert pytest.approx(t1) == t2
 
     # Jonckheere Trend Test
@@ -157,14 +120,10 @@ class TestMultiGroupTests:
         with pytest.raises(ValueError, match="Cannot discern alternative hypothesis"):
             jonckheere_trend_test(sample_data, sample_data, alternative="two-sided")
 
-    def test_jonckheereTest_pResult(self) -> None:
+    def test_jonckheereTest_result(self) -> None:
         data_1, data_2, data_3 = [10, 12, 14, 16], [12, 18, 20, 22], [20, 25, 27, 30]
         z, p = jonckheere_trend_test(data_1, data_2, data_3)
         assert pytest.approx(0.0016454416431436192) == p
-
-    def test_jonckheereTest_zResult(self) -> None:
-        data_1, data_2, data_3 = [10, 12, 14, 16], [12, 18, 20, 22], [20, 25, 27, 30]
-        z, p = jonckheere_trend_test(data_1, data_2, data_3)
         assert pytest.approx(2.939, 0.001) == z
 
     # Median Test
@@ -194,20 +153,13 @@ class TestMultiGroupTests:
         with pytest.raises(ValueError, match="Cannot discern how to handle median value"):
             mood_median_test(data_1, data_2, handle_med="moar")
 
-    def test_medianTest_pResult(self) -> None:
+    def test_medianTest_result(self) -> None:
         g1 = [10, 14, 14, 18, 20, 22, 24, 25, 31, 31, 32, 39, 43, 43, 48, 49]
         g2 = [28, 30, 31, 33, 34, 35, 36, 40, 44, 55, 57, 61, 91, 92, 99]
         g3 = [0, 3, 9, 22, 23, 25, 25, 33, 34, 34, 40, 45, 46, 48, 62, 67, 84]
         x1, p1 = mood_median_test(g1, g2, g3, alternative='less')
         x2, p2, med, tbl = median_test(g1, g2, g3)
         assert pytest.approx(p2) == p1
-
-    def test_medianTest_xResult(self) -> None:
-        g1 = [10, 14, 14, 18, 20, 22, 24, 25, 31, 31, 32, 39, 43, 43, 48, 49]
-        g2 = [28, 30, 31, 33, 34, 35, 36, 40, 44, 55, 57, 61, 91, 92, 99]
-        g3 = [0, 3, 9, 22, 23, 25, 25, 33, 34, 34, 40, 45, 46, 48, 62, 67, 84]
-        x1, p1 = mood_median_test(g1, g2, g3, alternative='less')
-        x2, p2, med, tbl = median_test(g1, g2, g3)
         assert pytest.approx(x2) == x1
 
 

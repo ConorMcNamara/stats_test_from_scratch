@@ -37,15 +37,12 @@ class TestProportionTest:
         with pytest.raises(AttributeError, match="Too few instances of success or failure to run proportion test"):
             one_sample_proportion_z_test(sample_data, pop_mean)
 
-    def test_OneSampleZProp_pResult(self) -> None:
+    def test_OneSampleZProp_result(self) -> None:
         sample_data = [0, 1] * 15
         pop_mean = 0.5
-        assert pytest.approx(1.0, 0.01) == one_sample_proportion_z_test(sample_data, pop_mean)[1]
-
-    def test_OneSampleZProp_zResult(self) -> None:
-        sample_data = [0, 1] * 15
-        pop_mean = 0.5
-        assert pytest.approx(0.0, 0.01) == one_sample_proportion_z_test(sample_data, pop_mean)[0]
+        z_val, p_val = one_sample_proportion_z_test(sample_data, pop_mean)
+        assert pytest.approx(1.0, 0.01) == p_val
+        assert pytest.approx(0, 0.01) == z_val
 
     # Two Sample Proportion Test
 
@@ -61,13 +58,11 @@ class TestProportionTest:
         with pytest.raises(AttributeError, match="Cannot perform a proportion test on non-binary data for data_2"):
             two_sample_proportion_z_test(sample_data1, sample_data2)
 
-    def test_TwoSampleZProp_pResult(self) -> None:
+    def test_TwoSampleZProp_result(self) -> None:
         sample_data = [0, 1] * 15
-        assert pytest.approx(1.0, 0.01) == two_sample_proportion_z_test(sample_data, sample_data)[1]
-
-    def test_TwoSampleZProp_zResult(self) -> None:
-        sample_data = [0, 1] * 15
-        assert pytest.approx(0.0, 0.01) == two_sample_proportion_z_test(sample_data, sample_data)[0]
+        z_val, p_val = two_sample_proportion_z_test(sample_data, sample_data)
+        assert pytest.approx(1.0, 0.01) == p_val
+        assert pytest.approx(0.0, 0.01) == z_val
 
     # Binomial Test
 
@@ -151,16 +146,11 @@ class TestProportionTest:
         with pytest.raises(ValueError, match="Cannot have negative percentage of success"):
             chi_square_proportion_test(prob, n_total, expected)
 
-    def test_chiSquareProportionTest_pResult(self) -> None:
+    def test_chiSquareProportionTest_result(self) -> None:
         prob = [0.41025641025, 0.53773584605]
         n_total = [156, 212]
         x1, p1 = chi_square_proportion_test(prob, n_total)
         assert pytest.approx(0.01559, 0.001) == p1
-
-    def test_chiSquareProportionTest_xResult(self) -> None:
-        prob = [0.4102564, 0.5377358]
-        n_total = [156, 212]
-        x1, p1 = chi_square_proportion_test(prob, n_total)
         assert pytest.approx(5.8481, 0.00001) == x1
 
     # G Proportion Test
@@ -206,16 +196,11 @@ class TestProportionTest:
         with pytest.raises(ValueError, match="Cannot have negative percentage of success"):
             g_proportion_test(prob, n_total, expected)
 
-    def test_gSquareProportionTest_pResult(self) -> None:
+    def test_gSquareProportionTest_result(self) -> None:
         prob = [0.41025641025, 0.53773584605]
         n_total = [156, 212]
         x1, p1 = g_proportion_test(prob, n_total)
         assert pytest.approx(0.0154, 0.001) == p1
-
-    def test_gSquareProportionTest_xResult(self) -> None:
-        prob = [0.41025641025, 0.53773584605]
-        n_total = [156, 212]
-        x1, p1 = g_proportion_test(prob, n_total)
         assert pytest.approx(5.8703, 0.00001) == x1
 
 

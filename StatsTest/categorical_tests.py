@@ -12,7 +12,7 @@ def chi_squared_test(
 ) -> Tuple[float, float]:
     """Found in scipy.stats as chi2_contingency.
 
-    Determines the difference between what we expect the count of a group to be versus what what was observed in our
+    Determines the difference between what we expect the count of a group to be versus what was observed in our
     contingency table. Assuming our data follows a chi distribution (i.e., observations are independent), if the observed
     variances are found to be very high given the number of observations, then we reject our null hypothesis and
     conclude that this difference could not occur due to chance.
