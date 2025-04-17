@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -30,6 +30,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff autopep8 docformatter # Install required tools
 
+      - name: Auto-format code with ruff
+        run: |
+          ruff format .
+
       - name: Auto-format code with autopep8
         run: |
           autopep8 --in-place --aggressive --max-line-length 120 **/*.py  # Fix formatting issues with autopep8
@@ -38,9 +42,8 @@ jobs:
         run: |
           find . -name "*.py" -print -exec docformatter --in-place --wrap-summaries 120 --wrap-descriptions 120 {} \;
 
-      - name: Check code style with ruff
+      - name: Lint with ruff
         run: |
-          ruff format .
           ruff check --output-format=github .  # Check code style with ruff
 
       # - name: Check type hints with mypy
