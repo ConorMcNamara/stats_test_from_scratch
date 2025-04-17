@@ -40,7 +40,7 @@ jobs:
 
       - name: Check code style with ruff
         run: |
-          ruff format --check
+          ruff format .
           ruff check --output-format=github .  # Check code style with ruff
 
       # - name: Check type hints with mypy
