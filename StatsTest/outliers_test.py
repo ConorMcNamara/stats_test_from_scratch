@@ -182,7 +182,7 @@ def tietjen_moore_test(
         y_bar = np.mean(data)
         if alternative.casefold() == "greater":
             data_large = sort_data[:-num_outliers]
-            outliers = sort_data[len(data) - num_outliers :]
+            outliers = sort_data[len(data) - num_outliers:]
             y_bar_large = np.mean(data_large)
             l_var = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(np.power(data - y_bar, 2))
         elif alternative.casefold() == "less":
@@ -193,7 +193,7 @@ def tietjen_moore_test(
         else:
             abs_resids = np.abs(data - y_bar)
             z = data[np.argsort(abs_resids)]
-            outliers = z[len(data) - num_outliers :]
+            outliers = z[len(data) - num_outliers:]
             z_large = z[:-num_outliers]
             z_bar = np.mean(z_large)
             l_var = np.sum(np.power(z_large - z_bar, 2)) / np.sum(np.power(z - y_bar, 2))

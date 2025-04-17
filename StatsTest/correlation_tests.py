@@ -112,7 +112,7 @@ def kendall_tau_test(
         unique_y, counts_y = np.unique(y, return_counts=True)
         t_var, u = counts_x[counts_x != 1], counts_y[counts_y != 1]
         for i in np.arange(len(x) - 1):
-            x_data, y_data = x[i + 1 :], y[i + 1 :]
+            x_data, y_data = x[i + 1:], y[i + 1:]
             x_val, y_val = x[i], y[i]
             concordant += len(np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0]))
             discordant += len(np.intersect1d(np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]))

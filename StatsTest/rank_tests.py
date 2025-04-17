@@ -40,7 +40,7 @@ def two_sample_mann_whitney_test(
     combined_data_len = len(combined_data)
     data_1_len, data_2_len = len(data_1), len(data_2)
     data_1_rank = np.sum(combined_data[: len(data_1)])
-    data_2_rank = np.sum(combined_data[len(data_1) :])
+    data_2_rank = np.sum(combined_data[len(data_1):])
     u1 = data_1_rank - ((data_1_len * (data_1_len + 1)) / 2)
     u2 = data_2_rank - ((data_2_len * (data_2_len + 1)) / 2)
     u_mean = (u1 + u2) / 2
@@ -275,7 +275,7 @@ def kruskal_wallis_test(*args) -> Tuple[float, float]:
     r_bar = np.mean(rank_data)
     n_i = [len(arg) for arg in args]
     n = np.sum(n_i)
-    rank_data_split = np.split(rank_data, np.cumsum(n_i)[0 : len(n_i) - 1])
+    rank_data_split = np.split(rank_data, np.cumsum(n_i)[0: len(n_i) - 1])
     rank_data_s_mean = np.mean(rank_data_split, axis=1)
     top = np.sum(n_i * np.power(rank_data_s_mean - r_bar, 2))
     bottom = np.sum(np.power(rank_data_split - r_bar, 2))
@@ -322,7 +322,7 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
     all_resids = np.hstack([resid for resid in resids])
     rank_all_resids = rankdata(all_resids)
     normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)
-    normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0 : len(n_i) - 1])
+    normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0: len(n_i) - 1])
     var_nr = np.var(normalized_rank, ddof=1)
     x_bar = np.mean(normalized_rank)
     x_j = np.mean(normalized_split, axis=1)

@@ -264,8 +264,8 @@ def trimmed_means_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1 : len(sort_data_1) - n_1],
-        sort_data_2[n_2 : len(sort_data_2) - n_2],
+        sort_data_1[n_1: len(sort_data_1) - n_1],
+        sort_data_2[n_2: len(sort_data_2) - n_2],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -325,8 +325,8 @@ def yeun_welch_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1 : len(sort_data_1) - n_1],
-        sort_data_2[n_2 : len(sort_data_2) - n_2],
+        sort_data_1[n_1: len(sort_data_1) - n_1],
+        sort_data_2[n_2: len(sort_data_2) - n_2],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -555,9 +555,9 @@ def trinomial_test(
         probs.append(calculate_probs(n, z, k, p_0))
     d = pos_diff - neg_diff
     if alternative.casefold() == "two-sided":
-        p = np.sum(probs[abs(d) :]) * 2
+        p = np.sum(probs[abs(d):]) * 2
     elif alternative.casefold() == "greater":
-        p = np.sum(probs[abs(d) :])
+        p = np.sum(probs[abs(d):])
     else:
         p = np.sum(probs[: abs(d)])
     return d, p
