@@ -216,7 +216,7 @@ def tietjen_moore_test(
         else:
             return l_var
 
-    l, outliers = teitjen(data, num_outliers, alternative, simulation=True)
+    l_var, outliers = teitjen(data, num_outliers, alternative, simulation=True)
     E_norm = np.random.normal(size=(10000, n))
     tietjen_E = np.apply_along_axis(
         teitjen,
@@ -227,7 +227,7 @@ def tietjen_moore_test(
         simulation=False,
     )
     critical_value = np.percentile(tietjen_E, alpha * 100)
-    if l < critical_value:
+    if l_var < critical_value:
         return outliers
     else:
         return None
