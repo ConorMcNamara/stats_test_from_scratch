@@ -36,9 +36,7 @@ def tukey_fence_test(
 
 
 def grubbs_test(
-    data: Union[Sequence, np.ndarray],
-    alternative: str = "two-sided",
-    alpha: float = 0.05,
+    data: Union[Sequence, np.ndarray],alternative: str = "two-sided",alpha: float = 0.05,
 ) -> Optional[Union[float, int]]:
     """Not found in either scipy.stats or statsmodels
 
