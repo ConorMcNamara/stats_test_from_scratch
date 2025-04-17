@@ -19,11 +19,11 @@ def dunnett_test(
 
     Parameters
     ----------
-    control: list or numpy array
+    control : list or numpy array
         A list or array containing data pertaining to our control group
-    alpha: float, {0.01, 0.05, 0.10}, default=0.05
+    alpha : float, {0.01, 0.05, 0.10}, default=0.05
         Our alpha level for determining level of significant difference
-    args: list or numpy arrays
+    args : list or numpy arrays
         List or numpy arrays, where each array corresponds to data for a treatment group
 
     Returns
@@ -1780,9 +1780,9 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
 
     Parameters
     ----------
-    alpha: float, {0.01, 0.05, 0.10}, default=0.05
+    alpha : float, {0.01, 0.05, 0.10}, default=0.05
         Our alpha level for determining level of significant difference
-    args: list or numpy arrays
+    args : list or numpy arrays
         List or numpy arrays, where each array corresponds to data for a treatment group
 
     Returns
@@ -3073,12 +3073,12 @@ def tukey_range_test(*args) -> List[List]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy arrays
 
     Returns
     -------
-    results: list
+    results : list
         A list of lists containing 3 attributes:
             1) The groups being compared
             2) The Q Statistic
@@ -3115,12 +3115,12 @@ def scheffe_test(*args) -> List[List]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy arrays
 
     Returns
     -------
-    results: list
+    results : list
         A list of lists containing 2 attributes:
             1) The groups being compared
             2) The observed scheffe value

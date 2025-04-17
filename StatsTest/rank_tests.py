@@ -19,18 +19,18 @@ def two_sample_mann_whitney_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed sample for ordinal response variable 1
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed sample for ordinal response variable 2
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    u: float
+    u : float
         The U statistic for our observed differences in the two ordinal responses
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
     """
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
@@ -76,20 +76,20 @@ def two_sample_wilcoxon_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The first sample or repeated measure
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The second sample or repeated measure
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
-    handle_zero: {'wilcox', 'pratt'}
+    handle_zero : {'wilcox', 'pratt'}
         How we treat differences of zero. It can be either wilcox (ignore) or pratt
 
     Returns
     -------
-    w_value: float
+    w_value : float
         The W statistic for our observed differences in mean ranks
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed mean rank differences would be found in two datasets sampled from the same
         population
     """
@@ -135,15 +135,15 @@ def friedman_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy array, 1-D
+    args : list or numpy array, 1-D
         An array containing the observations for each treatment (In the example above, each array would represent one
         of the judges ratings for every k wine).
 
     Returns
     -------
-    q: float
+    q : float
         Our Q statistic, or a measure of if each treatment has identical effects
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed treatment effects would occur from a randomized block design
     """
     k = len(args)
@@ -168,15 +168,15 @@ def quade_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy array, 1-D
+    args : list or numpy array, 1-D
         An array containing the observations for each treatment. In this instance, each arg pertains to a specific
         treatment, with the indexes of each arg pertaining to a block
 
     Returns
     -------
-    q: float
+    q : float
         Our Q statistic, or a measure of if each treatment has identical effects
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed treatment effects would occur from a randomized block design
     """
     k = len(args)
@@ -204,13 +204,14 @@ def page_trend_test(*args, **kwargs) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy array, 1-D
+    args : list or numpy array, 1-D
         Here, each list/array represents a treatment/condition, where within each condition are the results of each
         subject in response to said treatment.
-    kwargs: str
+    kwargs : str
         Used to determine whether or not we are evaluating a monotonically increasing trend or a monotonically decreasing
         trend.
         Options for 'alternative' are greater [increasing trend] or less [decreasing trend]. Default is greater
+
     Return
     ------
     l: float
@@ -268,15 +269,15 @@ def kruskal_wallis_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         Each list/array represents a group or a sample, and within that array contains the measurements for said group
         or array
 
     Returns
     -------
-    H: float
+    H : float
         The statistic measuring the difference in distribution
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences could occur if they were randomly sampled from
         a population with the same distribution
     """
@@ -303,16 +304,16 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy array, 1-D
+    args : list or numpy array, 1-D
         Each list represents all observations in a group that we wish to test their variances on
-    kwargs: str
+    kwargs : str
         Whether we are measuring our residuals as distance from the mean or median. Default is center='median'
 
     Returns
     -------
-    x: float
+    x : float
         The test statistic measuring the differences in variances between all groups
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our differences would be observed if all groups were drawn from the same population
     """
     k = len(args)
@@ -470,18 +471,18 @@ def mood_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         A list or array containing all observations from our first dataset
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         A list or array containing all observations from our second dataset
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    z: float
+    z : float
         Our test statistic that measures the degree of normality of the rank dispersions
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our rank dispersion would occur from two datasets drawn from the same
         distribution
     """
@@ -524,17 +525,18 @@ def cucconi_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         A list or array containing all observations from our first dataset
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         A list or array containing all observations from our second dataset
-    how: {'bootstrap', 'permutation'}
+    how : {'bootstrap', 'permutation'}
         Method for calculating p-value
+
     Returns
     -------
-    c: float
+    c : float
         Our measure of central tendency and variability
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would find this level of central tendency and variability from two samples drawn from the
         same population
 
@@ -638,10 +640,6 @@ def conover_test(*args) -> Tuple[float, float]:
     Used to compare the equality of variances for multiple groups when we cannot assume that they all arise from the same
     distribution.
 
-    Notes
-    ------
-    Implementation based on: https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/PASS/Conover_Test_of_Variances-Simulation.pdf
-
     Parameters
     ----------
      args: list or numpy array, 1-D
@@ -649,11 +647,15 @@ def conover_test(*args) -> Tuple[float, float]:
 
     Returns
     -------
-    T: float
+    T : float
         Measure of the degree of variance variability between the groups
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that this observed variability would occur from random chance, i.e., the likelihood that we would
         observe this difference from randomly selecting k groups of unknown distribution.
+
+    Notes
+    -----
+    Implementation based on: https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/PASS/Conover_Test_of_Variances-Simulation.pdf
     """
     k = len(args)
     n_k = [len(arg) for arg in args]

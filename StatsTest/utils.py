@@ -13,9 +13,9 @@ def _standard_error(std: float, n: int) -> float:
 
     Parameters
     ----------
-    std: float
+    std : float
         The standard deviation of our data
-    n: int
+    n : int
         The length of our data
 
     Returns
@@ -44,13 +44,13 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
 
     Parameters
     ----------
-    a: int
+    a : int
         The top left corner value of our 2x2 matrix
-    b: int
+    b : int
         The top right corner value of our 2x2 matrix
-    c: int
+    c : int
         The bottom left corner of our 2x2 matrix
-    d: int
+    d : int
         The bottom right corner of our 2x2 matrix
 
     Returns
@@ -90,14 +90,14 @@ def _check_table(
 
     Parameters
     ----------
-    table: list or numpy array
+    table : list or numpy array
         The dataset we are applying our checks on
-    only_count: bool, default=False
+    only_count : bool, default=False
         Whether or not this dataset involves counts of instances
 
     Returns
     -------
-    table: numpy array
+    table : numpy array
         The dataset, converted to a numpy array
     """
     if isinstance(table, list):
@@ -138,16 +138,16 @@ def _sse(
 
     Parameters
     ----------
-    sum_data: list or numpy array
+    sum_data : list or numpy array
         An array containing the sum of each group of data.
-    square_data: list or numpy array
+    square_data : list or numpy array
         An array containing the sum of the squared differences of each group of data
-    n_data: list or numpy array
+    n_data : list or numpy array
         An array containing the length of each group of data
 
     Returns
     -------
-    sse: float
+    sse : float
         The sum of squares of the errors
     """
     sum_data, square_data, n_data = (
@@ -172,16 +172,16 @@ def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
 
     Parameters
     ----------
-    n_instances: int
+    n_instances : int
         The number of observed successes in our binomial problem
-    n_total: int
+    n_total : int
         The total number of observations
-    prob: float, 0<=p<=1
+    prob : float, 0<=p<=1
         The expected probability of success
 
     Returns
     -------
-    p: float
+    p : float
         The exact likelihood that we would find observations more extreme than our observed number of
         success
     """
@@ -196,16 +196,16 @@ def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
 
     Parameters
     ----------
-    n_instances: int
+    n_instances : int
         The number of observed successes in our binomial problem
-    n_total: int
+    n_total : int
         The total number of observations
-    prob: float, 0<=p<=1
+    prob : float, 0<=p<=1
         The expected probability of success
 
     Returns
     -------
-    p: float
+    p : float
         The exact likelihood that we would find observations less extreme than our observed number of
         success
     """
@@ -219,12 +219,12 @@ def _skew(data: Union[Sequence, np.ndarray]) -> float:
 
     Parameters
     ----------
-    data: list or numpy array
+    data : list or numpy array
         Contains all measured observations that we want to evaluate the skew on
 
     Returns
     -------
-    skew: float
+    skew : float
         Our measure of the asymmetry of the probability distribution of a real-valued random variable about its mean
     """
     x_bar = np.mean(data)
@@ -240,12 +240,12 @@ def _kurtosis(data: Union[Sequence, np.ndarray]) -> float:
 
     Parameters
     ----------
-    data: list or numpy array
+    data : list or numpy array
         Contains all measured observations that we want to evaluate the kurtosis on
 
     Returns
     -------
-    kurtosis: float
+    kurtosis : float
         The sharpness of the peak of a frequency-distribution curve in our data
     """
     x_bar = np.mean(data)
@@ -263,14 +263,14 @@ def _autocorr(
 
     Parameters
     ----------
-    data: list or numpy array
+    data : list or numpy array
         Observations from a time series dataset
-    lags: list or numpy array
+    lags : list or numpy array
         The length of our time lags that we wish to calculate the autocorrelation with
 
     Returns
     -------
-    corr: numpy array
+    corr : numpy array
         The autocorrelation for a dataset for each given lag
     """
     mean = np.mean(data)
@@ -290,16 +290,16 @@ def _rle(
 
      Parameters
      ----------
-     arr: list or numpy array
+     arr : list or numpy array
         Our observed binary sequence
 
     Returns
     -------
-    z: numpy array
+    z : numpy array
         The length of each run/sequence
-    p: numpy array
+    p : numpy array
         The starting position of each run/sequence
-    ia[i]: numpy array
+    ia[i] : numpy array
         Whether the run/sequence belonged to our False or True condition
     """
     ia = np.array(arr)  # force numpy

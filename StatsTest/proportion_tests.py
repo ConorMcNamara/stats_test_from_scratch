@@ -20,18 +20,18 @@ def one_sample_proportion_z_test(
 
     Parameters
     ----------
-    sample_data: list or numpy array, must be binary, 1-D
+    sample_data : list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success
-    pop_mean: float
+    pop_mean : float
         Our expected proportion of success
-    alternative: {'two-sided', 'greater', 'less}
+    alternative : {'two-sided', 'greater', 'less}
         Our alternative hypothesis. It can be two-sided, less or greater
 
     Returns
     -------
-    z_score: float
+    z_score : float
         Our z-statistic to analyze the likelihood that our observed difference is due to chance
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that the observed proportion differs from our population proportion, assuming a normal
         distribution, due to chance
     """
@@ -79,20 +79,20 @@ def two_sample_proportion_z_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, must be binary, 1-D
+    data_1 : list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
         data_2
-    data_2: list or numpy array, must be binary, 1-D
+    data_2 : list or numpy array, must be binary, 1-D
         An array containing all observations, marked as a 0 for failure and a 1 for success, that we are comparing to
         data_1
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis. It can be two-sided, less or greater
 
     Returns
     -------
-    z_score: float
+    z_score : float
         Our z-statistic to analyze the likelihood that our observed difference is due to chance
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that the differences between two samples, assuming a normal distribution, is due to chance
     """
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
@@ -137,19 +137,19 @@ def binomial_test(
 
     Parameters
     ----------
-    success: list or numpy array, 1-D,  or int
+    success : list or numpy array, 1-D,  or int
         If int, the number of successes. If list, then it is the count of all successes.
-    failure: list or numpy array, 1-D, or int
+    failure : list or numpy array, 1-D, or int
         If int, the number of failures. If list, then it is the count of all failures.
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis. It can be two-sided, less or greater
-    success_prob: float, default=None
+    success_prob : float, default=None
         The probability of success. If None is given, then probability of success is assumed to be
         length of data_1 / (length of data_1 + length of data_2)
 
     Returns
     -------
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed measurement would occur under a binomial distribution, given the success
         probability.
     """
@@ -203,22 +203,22 @@ def chi_square_proportion_test(
 
     Parameters
     ----------
-    success_prob: list or numpy array, 1-D
+    success_prob : list or numpy array, 1-D
         A list containing the percentage of success for each successive group. Needs to be the same size
         as n_total and expected
-    n_total: list or numpy array, 1-D
+    n_total : list or numpy array, 1-D
         A list containing the total count of each successive group. Needs to be the same size as success_prob and
         expected
-    expected: list or numpy array, 1-D
+    expected : list or numpy array, 1-D
         If None, then expected is the weighted average of success_prob
         Else, a list containing the expected probabilities of each success group. Needs to be the same size as success_prob
         and n_total
 
     Returns
     -------
-    X: float
+    X : float
         Our Chi measure of the difference between our observed and expected results
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe these differences if each group was sampled from the same population
     """
     success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(
@@ -264,22 +264,22 @@ def g_proportion_test(
 
     Parameters
     ----------
-    success_prob: list or numpy array, 1-D
+    success_prob : list or numpy array, 1-D
         A list containing the percentage of success for each successive group. Needs to be the same size
         as n_total and expected
-    n_total: list or numpy array, 1-D
+    n_total : list or numpy array, 1-D
         A list containing the total count of each successive group. Needs to be the same size as success_prob and
         expected
-    expected: (optional) list or numpy array, 1-D, default=None
+    expected : (optional) list or numpy array, 1-D, default=None
         If None, then expected is the weighted average of success_prob
         Else, a list containing the expected probabilities of each success group. Needs to be the same size as success_prob
         and n_total.
 
     Returns
     -------
-    g: float
+    g : float
         Our measure of the difference between our observed and expected results
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe these differences if each group was sampled from the same population
     """
     success_prob, n_total = _check_table(success_prob, only_count=False), _check_table(

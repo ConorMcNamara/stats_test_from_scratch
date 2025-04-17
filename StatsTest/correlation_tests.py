@@ -17,16 +17,16 @@ def pearson_test(
 
     Parameters
     ----------
-    x: list or numpy array, 1-D
+    x : list or numpy array, 1-D
         Our "X" variable for determining the strength of our pearson correlation with
-    y: list or numpy array, 1-D
+    y : list or numpy array, 1-D
         Our "Y" variable for determining the strength of our pearson correlation with
 
     Returns
     -------
-    rho: float, -1 <= rho <= 1
+    rho : float, -1 <= rho <= 1
         Our measure of pearson correlation between x and y
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         How significant our observed pearson correlation is
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
@@ -54,16 +54,16 @@ def spearman_test(
 
     Parameters
     ----------
-    x: list or numpy array, 1-D
+    x : list or numpy array, 1-D
         Our "X" variable for determining the strength of monotonic correlation with
-    y: list or numpy array, 1-D
+    y : list or numpy array, 1-D
         Our "Y" variable for determining the strength of monotonic correlation with
 
     Returns
     -------
-    rho: float, -1 <= t_stat <= 1
+    rho : float, -1 <= t_stat <= 1
         Our measure of monotonic correlation between x and y
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         How significant our observed monotonic correlation is
     """
     x, y = _check_table(x, only_count=False), _check_table(y, only_count=False)
@@ -92,19 +92,19 @@ def kendall_tau_test(
 
     Parameters
     ----------
-    x: list or numpy array, 1-D
+    x : list or numpy array, 1-D
         Our "X" ordinal variable
-    y: list or numpy array, 1-D
+    y : list or numpy array, 1-D
         Our "Y" ordinal variable
-    method: {'hypothesis', 'significance', 'exact'}
+    method : {'hypothesis', 'significance', 'exact'}
         Whether we want to run a hypothesis test, a significance test or an exact test.
 
     Returns
     -------
-    tau: float, -1 <= tau <= 1
+    tau : float, -1 <= tau <= 1
         Our measure of ordinal correlation, where +1 indicates that the two variables have identical rank while -1 indicates
         that the two variables have fully different ranks
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would see this exhibited difference
     """
     x, y = _check_table(x, only_count=True), _check_table(y, only_count=True)
@@ -188,16 +188,16 @@ def point_biserial_correlation_test(
 
     Parameters
     ----------
-    x: list or numpy array, 1-D
+    x : list or numpy array, 1-D
         Our observations. These are expected to be continuous.
-    y: list or numpy array, 1-D
+    y : list or numpy array, 1-D
         Our groupings variable, or masked array. Must only have two variables and be the same length as x
 
     Returns
     -------
-    rho: float
+    rho : float
         The measure of correlation between our two groups
-    p: float
+    p : float
         The likelihood that our two groups would be correlated if both were derived from a t (if point) distribution
     """
     x = _check_table(x, only_count=False)
@@ -223,16 +223,16 @@ def rank_biserial_correlation_test(
 
     Parameters
     ----------
-    x: list or numpy array, 1-D
+    x : list or numpy array, 1-D
         Our observations. These are expected to be ordinal
-    y: list or numpy array, 1-D
+    y : list or numpy array, 1-D
         Our groupings variable, or masked array. Must only have two variables and be the same length as x
 
     Returns
     -------
-    rho: float
+    rho : float
         The measure of correlation between our two groups
-    p: float
+    p : float
         The likelihood that our two groups would be correlated if both were derived from a normal distribution
     """
     x, y = _check_table(x, only_count=True), _check_table(y, only_count=True)

@@ -30,18 +30,18 @@ def one_sample_z_test(
 
     Parameters
     ----------
-    sample_data: list or numpy array, 1-D
+    sample_data : list or numpy array, 1-D
         Our observational data
-    pop_mean: float
+    pop_mean : float
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: {'two-sided', 'greater', 'less'}, default=two-sided
+    alternative : {'two-sided', 'greater', 'less'}, default=two-sided
         Our alternative hypothesis
 
     Returns
     -------
-    z_score: float
+    z_score : float
         The Z-score of our data
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed data differs from our population mean, assuming a normal distribution, due to
         chance
     """
@@ -80,18 +80,18 @@ def two_sample_z_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    z_score: number
+    z_score : number
         The Z-score of our observed differences
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed differences from data_1 to data_2 are due to chance
     """
     if not isinstance(alternative, str):
@@ -130,18 +130,18 @@ def one_sample_t_test(
 
     Parameters
     ----------
-    sample_data: list or numpy array, 1-D
+    sample_data : list or numpy array, 1-D
         The observed dataset we are comparing to the population mean
-    pop_mean: float
+    pop_mean : float
         The mean of our population, or what we expect the mean of our sample data to be
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    t_value: number
+    t_value : number
         The t statistic for the differences between the sample mean and population
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed data differs from the population mean due to chance
     """
     if not isinstance(pop_mean, Number):
@@ -179,20 +179,20 @@ def two_sample_t_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    alternative: str, {two-sided, greater, less}, default=two-sided
+    alternative : str, {two-sided, greater, less}, default=two-sided
         Our alternative hypothesis
-    paired: bool, default=False
+    paired : bool, default=False
         Whether or not data_1 and data_2 are paired observations
 
     Returns
     -------
-    t_value: number
+    t_value : number
         The t statistic for the difference between our datasets
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
     """
     if not isinstance(alternative, str):
@@ -247,20 +247,20 @@ def trimmed_means_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    p: float, 0 <= p <= 100, default=10
+    p : float, 0 <= p <= 100, default=10
         The percentage of data we wish to drop from each sample
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    t_value: number
+    t_value : number
         The t statistic for the difference between our datasets
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
     """
     if p < 0 or p > 100:
@@ -309,20 +309,20 @@ def yeun_welch_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed dataset we are comparing to data_2
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed dataset we are comparing to data_1
-    p: float, 0 <= p <= 100, default=10
+    p : float, 0 <= p <= 100, default=10
         The percentage of data we wish to drop from each sample
-    alternative: str, {two-sided, greater, less}, default=two-sided
+    alternative : str, {two-sided, greater, less}, default=two-sided
         Our alternative hypothesis
 
     Returns
     -------
-    t_value: number
+    t_value : number
         The t statistic for the difference between our datasets
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that the observed differences are due to chance
     """
     if p < 0 or p > 100:
@@ -373,18 +373,18 @@ def two_sample_f_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed measurements for our first sample
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed measurements for our second sample
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    f_statistic: float
+    f_statistic : float
         A ratio of the variance of data_1 to data_2
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that this ratio could occur from two two samples with equal variances, due to chance
     """
     if not isinstance(alternative, str):
@@ -418,18 +418,18 @@ def binomial_sign_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         A list of all observations for group X.
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         A list of all observations for group Y.
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
-    success_prob: float, 0 <= success_prob <= 1
+    success_prob : float, 0 <= success_prob <= 1
         The probability of success. default=0.5
 
     Returns
     -------
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that our observed differences would happen under a binomial distribution, assuming the given
         success probability.
     """
@@ -470,20 +470,20 @@ def wald_wolfowitz_test(
     Used to determine if the elements of a dataset/sequence are mutually independent
 
     Parameters
-    ---------
-    data_1: list or numpy array, 1-D
+    ----------
+    data_1 : list or numpy array, 1-D
         Our dataset that we are checking for mutual independence
-    expected: list or numpy array, 1-D, default=None
+    expected : list or numpy array, 1-D, default=None
         Contains the expected results from a given function. For example, if we expect our data to follow pow(x, 2), it
         would follow something like [1, 4, 9, 16, 25, ....]
-    cutoff: {'median', 'mean'}
+    cutoff : {'median', 'mean'}
         If expected is None, then our cutoff point for what we regard as greater or less than.
 
     Returns
     -------
-    x: float
+    x : float
         Our measure of mutual independence for each data point
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         How likely we would observe this amount of mutal dependence assuming our data was derived from a mutually
         independent population
     """
@@ -534,19 +534,18 @@ def trinomial_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed measurements for our first sample
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed measurements for our first sample
         alternative: {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
-
     Returns
     -------
-    d: int
+    d : int
         The number of positive instances minus the number of negative instances
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe these sign differences due to random chance
     """
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
@@ -596,18 +595,18 @@ def fligner_policello_test(
 
     Parameters
     ----------
-    data_1: list or numpy array, 1-D
+    data_1 : list or numpy array, 1-D
         The observed measurements for our first sample
-    data_2: list or numpy array, 1-D
+    data_2 : list or numpy array, 1-D
         The observed measurements for our first sample
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Our alternative hypothesis
 
     Returns
     -------
-    z: float
+    z : float
         The z-score of our observed median differences
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe these differences due to chance
     """
     data_1, data_2 = _check_table(data_1), _check_table(data_2)

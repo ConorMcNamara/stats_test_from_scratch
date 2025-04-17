@@ -19,15 +19,15 @@ def chi_squared_test(
 
     Parameters
     ----------
-    cont_table: list or numpy array, 2 x 2
+    cont_table : list or numpy array, 2 x 2
         A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
         confusion matrix for predicting a binary variable.
 
     Returns
     -------
-    X: float
+    X : float
         The Chi test statistic, or the variance of the difference of our observed results versus expected results.
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe our X value given the number of observations we had.
     """
     cont_table = _check_table(cont_table, only_count=True)
@@ -49,15 +49,15 @@ def g_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
 
     Parameters
     ----------
-    cont_table: list or numpy array, 2 x 2
+    cont_table : list or numpy array, 2 x 2
         A contingency table containing 2 counts of 2, or 4 counts total. As an example of expected output, refer to a
         confusion matrix for predicting a binary variable.
 
     Returns
     -------
-    g: float
+    g : float
         The G statistic, or the likelihood ratio of the difference between observed and expected
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     cont_table = _check_table(cont_table, True)
@@ -81,14 +81,14 @@ def fisher_test(
 
     Parameters
     ----------
-    cont_table: list or numpy array, 2 x 2
+    cont_table : list or numpy array, 2 x 2
         A 2x2 contingency table
-    alternative: str, {two-sided, greater, less}, default=two-sided
+    alternative : str, {two-sided, greater, less}, default=two-sided
         Our alternative hypothesis
 
     Returns
     -------
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The exact likelihood of finding a more extreme measurement than our observed data
     """
     if alternative.casefold() not in ["two-sided", "greater", "less"]:
@@ -146,14 +146,14 @@ def mcnemar_test(
 
     Parameters
     ----------
-    cont_table: list or numpy array, 2 x 2
+    cont_table : list or numpy array, 2 x 2
         A 2x2 contingency table
 
     Returns
     -------
-    chi_squared: float
+    chi_squared : float
         Our Chi statistic, or the sum of differences between b and c
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that b and c aren't equivalent due to chance
     """
     cont_table = _check_table(cont_table, True)
@@ -181,14 +181,14 @@ def cmh_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, floa
 
     Parameters
     ----------
-    tables: list or numpy array, 2 x 2
+    tables : list or numpy array, 2 x 2
         A group of 2x2 contingency tables, where each group represents a strata
 
     Returns
     -------
-    epsilon: float
+    epsilon : float
         Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our common odds ratio would not equal one if we were to randomly sample strata from the same
         population
     """
@@ -222,14 +222,14 @@ def woolf_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
 
     Parameters
     ----------
-    tables: list or numpy array, 2 x 2
+    tables : list or numpy array, 2 x 2
         A group of 2x2 contingency tables, where each group represents a strata
 
     Returns
     -------
-    epsilon: float
+    epsilon : float
         Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our common odds ratio would not be equivalent if we were to randomly sample strata from the
         same population
     """
@@ -268,14 +268,14 @@ def breslow_day_test(
 
     Parameters
     ----------
-    tables: list or numpy array, 2 x 2
+    tables : list or numpy array, 2 x 2
         A group of 2x2 contingency tables, where each group represents a strata
 
     Returns
     -------
-    x: float
+    x : float
         Our test statistic, used to evaluate the likelihood that all strata have the same common odds ratio
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our common odds ratio would not be equivalent if we were to randomly generate a from the
         pooled odds ratio
     """
@@ -318,14 +318,14 @@ def bowker_test(
 
     Parameters
     ----------
-    cont_table: list or numpy array, n x n
+    cont_table : list or numpy array, n x n
         A nxn contingency table
 
     Returns
     -------
-    x: float
+    x : float
         Our Chi statistic, oor a measure of symmetry for our contingency table
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that our table isn't symmetric due to chance
     """
     cont_table = _check_table(cont_table, only_count=True)

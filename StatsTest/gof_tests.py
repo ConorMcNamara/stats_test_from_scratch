@@ -15,14 +15,14 @@ def shapiro_wilk_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Our sample data
 
     Returns
     -------
-    w: float
+    w : float
         Our test statistic for measuring the degree of normality in our data
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would observe our data from a normally distributed population
     """
     data = _check_table(data, only_count=False)
@@ -48,16 +48,16 @@ def chi_goodness_of_fit_test(
 
     Parameters
     ----------
-    observed: list or numpy array, 1-D
+    observed : list or numpy array, 1-D
         Our observed data points
-    expected: list or numpy array, 1-D, default=None
+    expected : list or numpy array, 1-D, default=None
         What we expected the results to be. If None given, then we expect all data points to be equally likely
 
     Returns
     -------
-    X: float
+    X : float
         The Chi statistic, or the sum of squared differences between observed and expected
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences, given the amount of data, can be attributed to chance
     """
     observed = _check_table(observed, False)
@@ -82,16 +82,16 @@ def g_goodness_of_fit_test(
 
     Parameters
     ----------
-    observed: list or numpy array, 1-D
+    observed : list or numpy array, 1-D
         Our observed data
-    expected: list or numpy array, default=None
+    expected : list or numpy array, default=None
         What we expected the results to be. If None given, then we expect all data points to be equally likely
 
     Returns
     -------
-    g: float
+    g : float
         The G statistic, or the likelihood ratio of the difference between observed and expected
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     observed = _check_table(observed, False)
@@ -112,15 +112,15 @@ def jarque_bera_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         An array containing all observations from our data
 
     Returns
     -------
-    jb: float
+    jb : float
         Our test statistic, tells us how close our data is to matching a normal distribution. The closer to 0, the more
         normal the data is
-    p_value: float, 0 <= p <= 1
+    p_value : float, 0 <= p <= 1
         The likelihood that we would see this skew and kurtosis from a normal distribution due to chance
     """
     data = _check_table(data, only_count=False)
@@ -142,18 +142,18 @@ def ljung_box_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         The time series dataset we are performing our test on
-    num_lags: int or list, default=None
+    num_lags : int or list, default=None
         If int, the maximum number of time lags
         If list, then the series of time lags we are performing
         If None, then use np.arange(1, 10)
 
     Returns
     -------
-    q: float
+    q : float
         The Ljung-Box statistic, or our measure of autocorrelations differing from zero
-    p: float
+    p : float
         The likelihood that our observed autocorrelations would differ from zero due to chance
     """
     if num_lags is None:
@@ -184,18 +184,18 @@ def box_pierce_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         The time series dataset we are performing our test on
-    num_lags: int or list, default=None
+    num_lags : int or list, default=None
         If int, the maximum number of time lags
         If list, then the series of time lags we are performing
         If None, then use np.arange(1, 11)
 
     Returns
     -------
-    q: float
+    q : float
         The Box-Pierce statistic, or our measure of autocorrelations differing from zero
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed autocorrelations would differ from zero due to chance
     """
     if num_lags is None:
@@ -220,14 +220,14 @@ def skew_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Contains all observations from our sample to measure departure from normality
 
     Returns
     -------
-    z: float
+    z : float
         Our test statistic, or the measure of difference of our skewness compared to a normal distribution
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would see the observed differences in skewness from a normal population due
         to chance
     """
@@ -257,14 +257,14 @@ def kurtosis_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Contains all observations from our sample to measure departure from normality
 
     Returns
     -------
-    z: float
+    z : float
         Our test statistic, or the measure of difference of our kurtosis compared to a normal distribution
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would see the observed differences in kurtosis from a normal population due
         to chance
     """
@@ -298,14 +298,14 @@ def k_squared_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Contains all observations from our sample to measure departure from normality
 
     Returns
     -------
-    k2: float
+    k2 : float
         Our test statistic, or the measure of difference of our skewness and kurtosis compared to a normal distribution
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that we would see the observed differences in skewness and kurtosis from a normal population due
         to chance
     """
@@ -325,16 +325,16 @@ def lilliefors_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Contains all observations from our sample to measure if it follows  a normal distribution
-    alpha: {0.01, 0.05, 0.10, 0.15, 0.20}, default=0.05
+    alpha : {0.01, 0.05, 0.10, 0.15, 0.20}, default=0.05
         Our alpha level for determining level of significant difference
 
     Returns
     -------
-    d_max: float
+    d_max : float
         The maximum difference between our actual and expected distribution values
-    bool: Whether our data follows a normal distribution or not
+    bool : Whether our data follows a normal distribution or not
     """
 
     def f(x):

@@ -15,14 +15,14 @@ def levene_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed variable/observations for each group, organized into lists or numpy array
 
     Returns
     -------
-    w: float
+    w : float
         The W statistic, our measure of difference in variability, which is approximately F-distributed.
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that our observed differences in variances could occur due to random sampling from a population
         of equal variance.
     """
@@ -54,14 +54,14 @@ def brown_forsythe_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed variable/observations for each group, organized into lists or numpy array
 
     Returns
     -------
-    w: float
+    w : float
         The W statistic, our measure of difference in variability, which is approximately F-distributed.
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that our observed differences in variances could occur due to random sampling from a population
         of equal variance.
     """
@@ -96,7 +96,7 @@ def one_way_f_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy array
 
     Return
@@ -134,14 +134,14 @@ def bartlett_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         The observed measurements for each group, organized into lists or numpy array
 
     Returns
     -------
-    X: float
+    X : float
         The Chi statistic, or a measure of the observed difference in variances
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The probability that our observed differences in variances could occur due to random sampling from a population
         of equal variance.
     """
@@ -171,15 +171,15 @@ def cochran_q_test(*args) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
         Each array corresponds to all observations from a single treatment. That is, each array corresponds to a
         column in our table (Treatment_k), if we were to look at https://en.wikipedia.org/wiki/Cochran%27s_Q_test
 
     Returns
     -------
-    T: float
+    T : float
         Our T statistic
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences are due to chance
     """
     k = len(args)
@@ -210,20 +210,20 @@ def jonckheere_trend_test(*args, **kwargs) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy array, 1-D
+    args : list or numpy array, 1-D
         List or numpy arrays, where each array constitutes a population/group, and within that group are their responses.
         For example, based on the numeric example found here: https://en.wikipedia.org/wiki/Jonckheere%27s_trend_test,
         the first array would be the measurements found in "contacted" and the second array would the measurements found
         in "bumped" and the third array would be the measurements found in "smashed"
-    kwargs: str
+    kwargs : str
         Our alternative hypothesis. The two options are "greater" and "less", indicating the a priori ordering. Default
         is less
 
     Returns
     -------
-    z_statistic: float
+    z_statistic : float
         A measure of the difference in trends for the median of each group
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our trend could be found if each group were randomly sampled from a population with the same
         medians.
     """
@@ -283,9 +283,9 @@ def mood_median_test(*args, **kwargs) -> Tuple[float, float]:
 
     Parameters
     ----------
-    args: list or numpy arrays, 1-D
+    args : list or numpy arrays, 1-D
        List or numpy arrays, where each array constitutes a number of observations in a population/group.
-    kwargs: str
+    kwargs : str
         "alternative": Our alternative hypothesis. The three options are "greater", "less" or "two-sided', used to determine
         whether we expect our data to favor being greater, less than or different from the median.
         Default is two-sided.
@@ -295,9 +295,9 @@ def mood_median_test(*args, **kwargs) -> Tuple[float, float]:
 
     Returns
     -------
-    X: float
+    X : float
         Our Chi Statistic measuring the difference of our groups compared to the median
-    p: float, 0 <= p <= 1
+    p : float, 0 <= p <= 1
         The likelihood that our observed differences in medians are due to chance
     """
     if len(args) < 2:

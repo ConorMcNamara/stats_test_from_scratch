@@ -18,9 +18,9 @@ def tukey_fence_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         The data we are analyzing for outliers
-    coef: float, default=1.5
+    coef : float, default=1.5
         The coefficent we are multiplying IQR by to determine outliers
 
     Returns
@@ -47,11 +47,11 @@ def grubbs_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         The sample dataset we are evaluating for outliers
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Whether we are evaluating only minimum values, maximum values or both
-    alpha: float, default=0.05
+    alpha : float, default=0.05
         Our alpha level for determining significant difference
 
     Returns
@@ -103,18 +103,18 @@ def extreme_studentized_deviate_test(
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         The data we are analyzing for outliers
-    num_outliers: int, default=1
+    num_outliers : int, default=1
         The maximum number of outliers we are checking for
-    alpha: float, default=0.05
+    alpha : float, default=0.05
         The level of significance for determining outliers
 
     Returns
     -------
-    max_outliers: int
+    max_outliers : int
         The maximum number of outliers that out test found to exist
-    outliers: list
+    outliers : list
         The outliers corresponding to num_outliers
     """
     data = _check_table(data, only_count=False)
@@ -160,14 +160,14 @@ def tietjen_moore_test(
     dispersion from the mean. Note that this assumes that the data is normally distributed.
 
     Parameters
-    ---------
-    data: list or numpy array
+    ----------
+    data : list or numpy array
         The dataset we are evaluating for outliers
-    num_outliers: int
+    num_outliers : int
         The number of outliers we suspect to exist in the dataset
-    alternative: {'two-sided', 'greater', 'less'}
+    alternative : {'two-sided', 'greater', 'less'}
         Whether we are looking at outliers that maximal, minimal or a mixture of both
-    alpha: float
+    alpha : float
         Our level of confidence for rejecting the null that no outliers exist
 
     Returns
@@ -241,7 +241,7 @@ def chauvenet_test(data: Union[Sequence, np.ndarray]) -> np.ndarray:
 
     Parameters
     ----------
-    data: list or numpy array
+    data : list or numpy array
         The data we are evaluating for outliers
 
     Returns
@@ -266,13 +266,13 @@ def peirce_test(
 
     Parameters
     ----------
-    observed: list or numpy array
+    observed : list or numpy array
         Our observed observations
-    expected: list or numpy array
+    expected : list or numpy array
         Our expected observations, or what the model outputted for "Y"
-    num_outliers: int, default=1
+    num_outliers : int, default=1
         The number of outliers we are trying to identify.
-    num_coef: int, default=1
+    num_coef : int, default=1
         The number of regression variables we are thinking of including
 
     Returns
@@ -328,9 +328,9 @@ def dixon_q_test(data: Union[Sequence, np.ndarray], alpha: float = 0.01) -> np.n
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Our observations we are analyzing to check for outliers
-    alpha: float, options are 0.01, 0.05 and 0.1
+    alpha : float, options are 0.01, 0.05 and 0.1
         Our alpha level for checking critical values.
 
     Returns
@@ -458,14 +458,14 @@ def thompson_tau_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) ->
 
     Parameters
     ----------
-    data: list or numpy array, 1-D
+    data : list or numpy array, 1-D
         Our dataset we are evaluating for outliers
-    alpha: float, default=0.05
+    alpha : float, default=0.05
         Our level of significance for detecting outliers
 
     Returns
     -------
-    outliers_list: list
+    outliers_list : list
         A list containing all datapoints that we found to be an outlier by Thompson-Tau's criteria
     """
     data = _check_table(data, only_count=False)
@@ -497,9 +497,9 @@ def mad_median_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> L
 
     Parameters
     ----------
-    data: list or numpy array
+    data : list or numpy array
         Our dataset we are evaluating for outliers
-    alpha: float, default=0.05
+    alpha : float, default=0.05
         Our level of confidence for detecting outliers
 
     Returns
