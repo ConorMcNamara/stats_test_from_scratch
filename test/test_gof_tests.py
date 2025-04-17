@@ -1,8 +1,11 @@
-from StatsTest.gof_tests import *
+import numpy as np
 import pytest
 from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, skewtest, shapiro
-from statsmodels.stats.stattools import jarque_bera
 from statsmodels.stats.diagnostic import acorr_ljungbox
+from statsmodels.stats.stattools import jarque_bera
+
+from StatsTest.gof_tests import shapiro_wilk_test, chi_goodness_of_fit_test, g_goodness_of_fit_test, jarque_bera_test, \
+    ljung_box_test, box_pierce_test, skew_test, kurtosis_test, k_squared_test, lilliefors_test
 
 
 class TestGOFTests:

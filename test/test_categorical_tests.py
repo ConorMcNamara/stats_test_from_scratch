@@ -1,8 +1,11 @@
+import numpy as np
 import pytest
-from StatsTest.categorical_tests import *
+import statsmodels.api as sm
 from scipy.stats import chi2_contingency, fisher_exact
 from statsmodels.stats.contingency_tables import mcnemar, SquareTable
-import statsmodels.api as sm
+
+from StatsTest.categorical_tests import fisher_test, mcnemar_test, chi_squared_test, g_test, cmh_test, woolf_test, \
+    breslow_day_test, bowker_test
 
 
 class TestCategoricalTests:

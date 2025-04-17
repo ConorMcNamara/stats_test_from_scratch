@@ -46,7 +46,7 @@ def pearson_test(
 
 def spearman_test(
     x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
-) -> Tuplee[float, float]:
+) -> Tuple[float, float]:
     """Found in scipy.stats as spearmanr
 
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
@@ -121,7 +121,7 @@ def kendall_tau_test(
         concordant, discordant = 0, 0
         unique_x, counts_x = np.unique(x, return_counts=True)
         unique_y, counts_y = np.unique(y, return_counts=True)
-        t, u = counts_x[counts_x != 1], counts_y[counts_y != 1]
+        t_var, u = counts_x[counts_x != 1], counts_y[counts_y != 1]
         for i in np.arange(len(x) - 1):
             x_data, y_data = x[i + 1 :], y[i + 1 :]
             x_val, y_val = x[i], y[i]
@@ -133,11 +133,11 @@ def kendall_tau_test(
                     np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]
                 )
             )
-        return concordant, discordant, t, u
+        return concordant, discordant, t_var, u
 
     x, y = x[np.argsort(x)], y[np.argsort(x)]
-    concordant, discordant, t, u = find_concordant_pairs(x, y)
-    n1 = np.sum(t * (t - 1) / 2)
+    concordant, discordant, t_var, u = find_concordant_pairs(x, y)
+    n1 = np.sum(t * (t_var - 1) / 2)
     n2 = np.sum(u * (u - 1) / 2)
     tau = (concordant - discordant) / sqrt((denom - n1) * (denom - n2))
     if method.casefold() == "hypothesis":

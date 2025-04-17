@@ -1,6 +1,6 @@
 import pytest
-from StatsTest.proportion_test import *
-from scipy.stats import binom_test
+from StatsTest.proportion_tests import one_sample_proportion_z_test, two_sample_proportion_z_test, binomial_test, chi_square_proportion_test, g_proportion_test
+from scipy.stats import binomtest
 
 
 class TestProportionTest:
@@ -99,13 +99,13 @@ class TestProportionTest:
     def test_BinomialTest_rightSide_pResult(self) -> None:
         n_success, n_failure, success_prob = 50, 100, 0.66
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
-        p2 = binom_test(n_success, n_success + n_failure, success_prob)
+        p2 = binomtest(n_success, n_success + n_failure, success_prob)
         assert pytest.approx(p2) == p1
 
     def test_BinomialTest_leftSide_pResult(self) -> None:
         n_success, n_failure, success_prob = 50, 100, 0.25
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
-        p2 = binom_test(n_success, n_success + n_failure, success_prob)
+        p2 = binomtest(n_success, n_success + n_failure, success_prob)
         assert pytest.approx(p2) == p1
 
     # Chi Square Proportion Test

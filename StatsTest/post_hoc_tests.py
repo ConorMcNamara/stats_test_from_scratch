@@ -1766,6 +1766,8 @@ def dunnett_test(
         t = np.array(q_05)[index][col]
     elif alpha == 0.1:
         t = np.array(q_10)[index][col]
+    else:
+        raise NotImplementedError("alpha must be one of `0.01`, `0.05` or `0.1`")
     a = t * se
     group_diffs = np.abs(np.mean(args, axis=1) - np.mean(control)) > a
     return group_diffs

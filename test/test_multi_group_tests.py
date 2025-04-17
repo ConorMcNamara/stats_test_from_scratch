@@ -1,8 +1,10 @@
+import numpy as np
 import pytest
-from StatsTest.multi_group_tests import *
 from scipy.stats import levene, f_oneway, bartlett, median_test
-from numpy.random import randint
 from statsmodels.stats.contingency_tables import cochrans_q
+
+from StatsTest.multi_group_tests import levene_test, brown_forsythe_test, one_way_f_test, bartlett_test, cochran_q_test, \
+    jonckheere_trend_test, mood_median_test
 
 
 class TestMultiGroupTests:
@@ -15,19 +17,19 @@ class TestMultiGroupTests:
             levene_test(sample_data)
 
     def test_leveneTest_pResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         w1, p1 = levene_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='mean')
         assert pytest.approx(p2) == p1
 
     def test_leveneTest_wResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         w1, p1 = levene_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='mean')
         assert pytest.approx(w2) == w1
@@ -40,19 +42,19 @@ class TestMultiGroupTests:
             brown_forsythe_test(sample_data)
 
     def test_brownForsytheTest_pResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         w1, p1 = brown_forsythe_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(p2) == p1
 
     def test_brownForsytheTest_wResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         w1, p1 = brown_forsythe_test(data_1, data_2, data_3, data_4)
         w2, p2 = levene(data_1, data_2, data_3, data_4, center='median')
         assert pytest.approx(w2) == w1
@@ -65,19 +67,19 @@ class TestMultiGroupTests:
             one_way_f_test(sample_data)
 
     def test_oneWayFTest_pResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         f1, p1 = one_way_f_test(data_1, data_2, data_3, data_4)
         f2, p2 = f_oneway(data_1, data_2, data_3, data_4)
         assert pytest.approx(p2) == p1
 
     def test_oneWayFTest_fResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         f1, p1 = one_way_f_test(data_1, data_2, data_3, data_4)
         f2, p2 = f_oneway(data_1, data_2, data_3, data_4)
         assert pytest.approx(f2) == f1
@@ -90,19 +92,19 @@ class TestMultiGroupTests:
             bartlett_test(sample_data)
 
     def test_bartlettTest_pResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         x1, p1 = bartlett_test(data_1, data_2, data_3, data_4)
         x2, p2 = bartlett(data_1, data_2, data_3, data_4)
         assert pytest.approx(p2) == p1
 
     def test_barlettTest_xResult(self) -> None:
-        data_1 = randint(0, 100, 10)
-        data_2 = randint(500, 550, 10)
-        data_3 = randint(0, 10, 10)
-        data_4 = randint(0, 50, 10)
+        data_1 = np.random.randint(0, 100, 10)
+        data_2 = np.random.randint(500, 550, 10)
+        data_3 = np.random.randint(0, 10, 10)
+        data_4 = np.random.randint(0, 50, 10)
         x1, p1 = bartlett_test(data_1, data_2, data_3, data_4)
         x2, p2 = bartlett(data_1, data_2, data_3, data_4)
         assert pytest.approx(x2) == x1

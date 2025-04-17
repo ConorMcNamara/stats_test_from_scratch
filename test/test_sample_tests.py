@@ -1,8 +1,11 @@
-from StatsTest.sample_tests import *
-import pytest
 import numpy as np
+import pytest
 from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
 from statsmodels.sandbox.stats.runs import runstest_1samp
+
+from StatsTest.sample_tests import one_sample_z_test, one_sample_t_test, two_sample_t_test, two_sample_z_test, \
+    two_sample_f_test, trinomial_test, trimmed_means_test, yeun_welch_test, binomial_sign_test, wald_wolfowitz_test, \
+    fligner_policello_test
 
 
 class TestSampleTest:

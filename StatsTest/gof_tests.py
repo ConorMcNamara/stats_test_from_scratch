@@ -3,7 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 
-from scipy.stats import chi2, norm, statlib
+from scipy.stats import chi2, norm, shapiro
 
 from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
 
@@ -33,7 +33,7 @@ def shapiro_wilk_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
         )
     zeroes = np.zeros(n // 2)
     data = np.sort(data)
-    a, w, p, ifault = statlib.swilk(data, zeroes, 0)
+    a, w, p, ifault = shapiro(data, zeroes, 0)
     return w, p
 
 

@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 from scipy.stats import pearsonr, spearmanr, kendalltau, pointbiserialr
 
-from StatsTest.correlation_tests import *
+from StatsTest.correlation_tests import pearson_test, spearman_test, kendall_tau_test, point_biserial_correlation_test, \
+    rank_biserial_correlation_test
 
 
 class TestCorrelationTests:

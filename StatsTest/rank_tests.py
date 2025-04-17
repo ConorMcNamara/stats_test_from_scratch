@@ -4,7 +4,6 @@ from typing import Sequence, Tuple, Union
 import numpy as np
 
 from scipy.stats import rankdata, norm, chi2, f
-from scipy.stats.statlib import gscale
 
 from StatsTest.utils import _check_table
 
@@ -346,120 +345,119 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
     return x, p
 
 
-def ansari_bradley_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: Union[Sequence, np.ndarray],
-    alternative: str = "two-sided",
-) -> Tuple[float, float]:
-    """Found in scipy.stats as ansari
-
-    Used to measure the level of dispersion (the distance from the median) between two datasets. Note that this is
-    based off of the assumptions that the two datasets have the same median.
-
-    Parameters
-    ----------
-    data_1: list or numpy array, 1-D
-        A list or array containing all observations from our first dataset
-    data_2: list or numpy array, 1-D
-        A list or array containing all observations from our second dataset
-    alternative: {'two-sided', 'greater', 'less'}
-        Our alternative hypothesis
-
-    Returns
-    -------
-    ab: float
-        The sum of ranks of our first dataset, or our test statistic
-    p: float, 0 <= p <= 1
-        The likelihood that our observed  dispersion would be likely if the two datasets were sampled from the same
-        population
-    """
-    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
-        data_2, only_count=False
-    )
-    if alternative.casefold() not in ["two-sided", "greater", "less"]:
-        raise ValueError("Cannot determine method for alternative hypothesis")
-    n, m = len(data_1), len(data_2)
-    all_data = np.concatenate([data_1, data_2])
-    n_obs = n + m
-    if len(np.unique(all_data)) != n_obs:
-        ties = True
-    else:
-        ties = False
-    rank_data = rankdata(all_data)
-    re_rank = -rank_data[rank_data > np.median(rank_data)] + np.max(rank_data) + 1
-    np.place(rank_data, rank_data > np.median(rank_data), re_rank)
-    ab = np.sum(rank_data[:n])
-    # exact p-value
-    if n < 55 and m < 55 and not ties:
-        a_start, a_1, i_fault = gscale(n, m)
-        ind = ab - a_start
-        total = np.sum(a_1)
-        if ind < len(a_1) / 2:
-            top_index = int(np.ceil(ind))
-            if ind == top_index:
-                if alternative.casefold() == "two-sided":
-                    p = 2 * np.sum(a_1[: top_index + 1]) / total
-                elif alternative.casefold() == "less":
-                    p = np.sum(a_1[: top_index + 1]) / total
-                else:
-                    p = np.sum(a_1[top_index + 2 :]) / total
-            else:
-                if alternative.casefold() == "two-sided":
-                    p = 2 * np.sum(a_1[:top_index]) / total
-                elif alternative.casefold() == "less":
-                    p = np.sum(a_1[:top_index]) / total
-                else:
-                    p = np.sum(a_1[top_index + 1 :]) / total
-        else:
-            bottom_index = int(np.floor(ind))
-            if ind == bottom_index:
-                if alternative.casefold() == "two-sided":
-                    p = 2 * np.sum(a_1[bottom_index:]) / total
-                elif alternative.casefold() == "less":
-                    p = np.sum(a_1[bottom_index:]) / total
-                else:
-                    p = np.sum(a_1[: bottom_index + 1]) / total
-            else:
-                if alternative.casefold() == "two-sided":
-                    p = 2 * np.sum(a_1[bottom_index + 1 :]) / total
-                elif alternative.casefold() == "less":
-                    p = np.sum(a_1[bottom_index + 1 :]) / total
-                else:
-                    p = np.sum(a_1[: bottom_index + 2]) / total
-    else:
-        # even
-        if n_obs % 2 == 0:
-            mu_c = n * (n_obs + 2) / 4
-            if ties:
-                var_c = (
-                    m
-                    * n
-                    * (16 * np.sum(np.power(rank_data, 2)) - n_obs * pow(n_obs + 2, 2))
-                    / (16 * n_obs * (n_obs - 1))
-                )
-            else:
-                var_c = m * n * (n_obs + 2) * (n_obs - 2) / 48 / (n_obs - 1)
-        # odd
-        else:
-            mu_c = n * pow(n_obs + 1, 2) / 4 / n_obs
-            if ties:
-                var_c = (
-                    m
-                    * n
-                    * (16 * n_obs * np.sum(np.power(rank_data, 2)) - pow(n_obs + 1, 4))
-                    / (16 * pow(n_obs, 2) * (n_obs - 1))
-                )
-            else:
-                var_c = m * n * (n_obs + 1) * (3 + pow(n_obs, 2)) / (48 * pow(n_obs, 2))
-        z = (ab - mu_c) / sqrt(var_c)
-        if alternative.casefold() == "two-sided":
-            p = 2 * (1 - norm.cdf(abs(z)))
-        elif alternative.casefold() == "greater":
-            p = 1 - norm.cdf(z)
-        else:
-            p = norm.cdf(z)
-    return ab, p
-
+# def ansari_bradley_test(
+#     data_1: Union[Sequence, np.ndarray],
+#     data_2: Union[Sequence, np.ndarray],
+#     alternative: str = "two-sided",
+# ) -> Tuple[float, float]:
+#     """Found in scipy.stats as ansari
+#
+#     Used to measure the level of dispersion (the distance from the median) between two datasets. Note that this is
+#     based off of the assumptions that the two datasets have the same median.
+#
+#     Parameters
+#     ----------
+#     data_1: list or numpy array, 1-D
+#         A list or array containing all observations from our first dataset
+#     data_2: list or numpy array, 1-D
+#         A list or array containing all observations from our second dataset
+#     alternative: {'two-sided', 'greater', 'less'}
+#         Our alternative hypothesis
+#
+#     Returns
+#     -------
+#     ab: float
+#         The sum of ranks of our first dataset, or our test statistic
+#     p: float, 0 <= p <= 1
+#         The likelihood that our observed  dispersion would be likely if the two datasets were sampled from the same
+#         population
+#     """
+#     data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
+#         data_2, only_count=False
+#     )
+#     if alternative.casefold() not in ["two-sided", "greater", "less"]:
+#         raise ValueError("Cannot determine method for alternative hypothesis")
+#     n, m = len(data_1), len(data_2)
+#     all_data = np.concatenate([data_1, data_2])
+#     n_obs = n + m
+#     if len(np.unique(all_data)) != n_obs:
+#         ties = True
+#     else:
+#         ties = False
+#     rank_data = rankdata(all_data)
+#     re_rank = -rank_data[rank_data > np.median(rank_data)] + np.max(rank_data) + 1
+#     np.place(rank_data, rank_data > np.median(rank_data), re_rank)
+#     ab = np.sum(rank_data[:n])
+#     # exact p-value
+#     if n < 55 and m < 55 and not ties:
+#         a_start, a_1, i_fault = gscale(n, m)
+#         ind = ab - a_start
+#         total = np.sum(a_1)
+#         if ind < len(a_1) / 2:
+#             top_index = int(np.ceil(ind))
+#             if ind == top_index:
+#                 if alternative.casefold() == "two-sided":
+#                     p = 2 * np.sum(a_1[: top_index + 1]) / total
+#                 elif alternative.casefold() == "less":
+#                     p = np.sum(a_1[: top_index + 1]) / total
+#                 else:
+#                     p = np.sum(a_1[top_index + 2 :]) / total
+#             else:
+#                 if alternative.casefold() == "two-sided":
+#                     p = 2 * np.sum(a_1[:top_index]) / total
+#                 elif alternative.casefold() == "less":
+#                     p = np.sum(a_1[:top_index]) / total
+#                 else:
+#                     p = np.sum(a_1[top_index + 1 :]) / total
+#         else:
+#             bottom_index = int(np.floor(ind))
+#             if ind == bottom_index:
+#                 if alternative.casefold() == "two-sided":
+#                     p = 2 * np.sum(a_1[bottom_index:]) / total
+#                 elif alternative.casefold() == "less":
+#                     p = np.sum(a_1[bottom_index:]) / total
+#                 else:
+#                     p = np.sum(a_1[: bottom_index + 1]) / total
+#             else:
+#                 if alternative.casefold() == "two-sided":
+#                     p = 2 * np.sum(a_1[bottom_index + 1 :]) / total
+#                 elif alternative.casefold() == "less":
+#                     p = np.sum(a_1[bottom_index + 1 :]) / total
+#                 else:
+#                     p = np.sum(a_1[: bottom_index + 2]) / total
+#     else:
+#         # even
+#         if n_obs % 2 == 0:
+#             mu_c = n * (n_obs + 2) / 4
+#             if ties:
+#                 var_c = (
+#                     m
+#                     * n
+#                     * (16 * np.sum(np.power(rank_data, 2)) - n_obs * pow(n_obs + 2, 2))
+#                     / (16 * n_obs * (n_obs - 1))
+#                 )
+#             else:
+#                 var_c = m * n * (n_obs + 2) * (n_obs - 2) / 48 / (n_obs - 1)
+#         # odd
+#         else:
+#             mu_c = n * pow(n_obs + 1, 2) / 4 / n_obs
+#             if ties:
+#                 var_c = (
+#                     m
+#                     * n
+#                     * (16 * n_obs * np.sum(np.power(rank_data, 2)) - pow(n_obs + 1, 4))
+#                     / (16 * pow(n_obs, 2) * (n_obs - 1))
+#                 )
+#             else:
+#                 var_c = m * n * (n_obs + 1) * (3 + pow(n_obs, 2)) / (48 * pow(n_obs, 2))
+#         z = (ab - mu_c) / sqrt(var_c)
+#         if alternative.casefold() == "two-sided":
+#             p = 2 * (1 - norm.cdf(abs(z)))
+#         elif alternative.casefold() == "greater":
+#             p = 1 - norm.cdf(z)
+#         else:
+#             p = norm.cdf(z)
+#     return ab, p
 
 def mood_test(
     data_1: Union[Sequence, np.ndarray],
@@ -595,43 +593,43 @@ def cucconi_test(
     return c, p
 
 
-def lepage_test(
-    data_1: Union[Sequence, np.ndarray], data_2: Union[Sequence, np.ndarray]
-) -> Tuple[float, float]:
-    """Not found in either scipy.stats or statsmodels
-
-    Used to compare the central tendency and variability in two samples. A sum of the squared Euclidean distances of both
-    the Wilcoxon-Rank-Sum test and the Ansari-Bradley test.
-
-    Parameters
-    ----------
-    data_1: list or numpy array, 1-D
-        A list or array containing all observations from our first dataset
-    data_2: list or numpy array, 1-D
-        A list or array containing all observations from our second dataset
-
-    Returns
-    -------
-    d: float
-        Our measure of central tendency and variability among the two datasets
-    p: float, 0 <= p <= 1
-        The likelihood we would find this level of central tendency and variability among two datasets sampled from the
-        same population
-    """
-    data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
-        data_2, only_count=False
-    )
-    n, m = len(data_1), len(data_2)
-    N = n + m
-    c, _ = ansari_bradley_test(data_1, data_2, alternative="two-sided")
-    w, _ = two_sample_wilcoxon_test(data_1, data_2, alternative="two-sided")
-    expected_w = n * (N + 1) / 2
-    sd_w = sqrt(m * n * (N + 1) / 12)
-    expected_c = n * pow(N + 1, 2) / (4 * N)
-    sd_c = sqrt(m * n * (N + 1) * (3 + pow(N, 2)) / (48 * pow(N, 2)))
-    d = pow((w - expected_w) / sd_w, 2) + pow((c - expected_c) / sd_c, 2)
-    p = 1 - chi2.cdf(d, 2)
-    return d, p
+# def lepage_test(
+#     data_1: Union[Sequence, np.ndarray], data_2: Union[Sequence, np.ndarray]
+# ) -> Tuple[float, float]:
+#     """Not found in either scipy.stats or statsmodels
+#
+#     Used to compare the central tendency and variability in two samples. A sum of the squared Euclidean distances of both
+#     the Wilcoxon-Rank-Sum test and the Ansari-Bradley test.
+#
+#     Parameters
+#     ----------
+#     data_1: list or numpy array, 1-D
+#         A list or array containing all observations from our first dataset
+#     data_2: list or numpy array, 1-D
+#         A list or array containing all observations from our second dataset
+#
+#     Returns
+#     -------
+#     d: float
+#         Our measure of central tendency and variability among the two datasets
+#     p: float, 0 <= p <= 1
+#         The likelihood we would find this level of central tendency and variability among two datasets sampled from the
+#         same population
+#     """
+#     data_1, data_2 = _check_table(data_1, only_count=False), _check_table(
+#         data_2, only_count=False
+#     )
+#     n, m = len(data_1), len(data_2)
+#     N = n + m
+#     c, _ = ansari_bradley_test(data_1, data_2, alternative="two-sided")
+#     w, _ = two_sample_wilcoxon_test(data_1, data_2, alternative="two-sided")
+#     expected_w = n * (N + 1) / 2
+#     sd_w = sqrt(m * n * (N + 1) / 12)
+#     expected_c = n * pow(N + 1, 2) / (4 * N)
+#     sd_c = sqrt(m * n * (N + 1) * (3 + pow(N, 2)) / (48 * pow(N, 2)))
+#     d = pow((w - expected_w) / sd_w, 2) + pow((c - expected_c) / sd_c, 2)
+#     p = 1 - chi2.cdf(d, 2)
+#     return d, p
 
 
 def conover_test(*args) -> Tuple[float, float]:

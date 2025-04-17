@@ -538,6 +538,9 @@ def trinomial_test(
         The observed measurements for our first sample
     data_2: list or numpy array, 1-D
         The observed measurements for our first sample
+        alternative: {'two-sided', 'greater', 'less'}
+        Our alternative hypothesis
+
 
     Returns
     -------

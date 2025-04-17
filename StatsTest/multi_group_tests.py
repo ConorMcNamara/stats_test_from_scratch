@@ -2,7 +2,6 @@ from math import sqrt
 from typing import Tuple
 
 import numpy as np
-
 from scipy.stats import f, chi2, norm
 
 from StatsTest.utils import _check_table
@@ -205,7 +204,7 @@ def cochran_q_test(*args) -> Tuple[float, float]:
 def jonckheere_trend_test(*args, **kwargs) -> Tuple[float, float]:
     """This test is not found in scipy or statsmodels
 
-    This test is used to determine if the population medians for each groups have an a priori ordering.
+    This test is used to determine if the population medians for each group have an a priori ordering.
     Note that the default alternative hypothesis is that median_1 <= median_2 <= median_3 <= ... <= median_k, with at
     least one strict inequality.
 
@@ -288,7 +287,7 @@ def mood_median_test(*args, **kwargs) -> Tuple[float, float]:
        List or numpy arrays, where each array constitutes a number of observations in a population/group.
     kwargs: str
         "alternative": Our alternative hypothesis. The three options are "greater", "less" or "two-sided', used to determine
-        whether or not we expect our data to favor being greater, less than or different from the median.
+        whether we expect our data to favor being greater, less than or different from the median.
         Default is two-sided.
         "handle_med": How we handle the median value. The three options are "greater", "less' or "ignore". If greater,
         median value is added to values above median. If less, median value is added to values below median. If ignore,

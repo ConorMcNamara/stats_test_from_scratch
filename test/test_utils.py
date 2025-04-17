@@ -1,10 +1,11 @@
-import StatsTest.utils as utils
-import pytest
-import pandas as pd
-from numpy.testing import assert_array_equal
 import numpy as np
+import pandas as pd
+import pytest
+from numpy.testing import assert_array_equal
 from scipy.stats.mstats_basic import skew, kurtosis
 from statsmodels.tsa.stattools import acf
+
+import StatsTest.utils as utils
 
 
 class TestUtils:

@@ -3,7 +3,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
-from scipy.stats import t, median_absolute_deviation, chi2
+from scipy.stats import t, median_abs_deviation, chi2
 from scipy.special import erfc
 
 from StatsTest.utils import _check_table
@@ -509,6 +509,6 @@ def mad_median_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> L
     if alpha < 0 or alpha > 1:
         raise ValueError("Cannot have alpha level greater than 1 or less than 0")
     median = np.median(data)
-    mad = median_absolute_deviation(data)
+    mad = median_abs_deviation(data)
     mad_med_obs = np.abs(data - median) / mad
     return data[mad_med_obs > sqrt(chi2.ppf(1 - (alpha / 2.0), 1))]

@@ -1,7 +1,9 @@
-from StatsTest.rank_tests import *
+import numpy as np
 import pytest
 from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, ansari, mood
-import numpy as np
+
+from StatsTest.rank_tests import two_sample_wilcoxon_test, two_sample_mann_whitney_test, friedman_test, page_trend_test, \
+    quade_test, kruskal_wallis_test, fligner_kileen_test, mood_test, ansari_bradley_test, cucconi_test
 
 
 class TestRankTest:
