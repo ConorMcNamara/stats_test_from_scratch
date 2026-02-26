@@ -1,4 +1,4 @@
-from typing import Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -7,7 +7,7 @@ from scipy.stats import chi2, binom
 from StatsTest.utils import _check_table, _hypergeom_distribution
 
 
-def chi_squared_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def chi_squared_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as chi2_contingency.
 
     Determines the difference between what we expect the count of a group to be versus what was observed in our
@@ -37,7 +37,7 @@ def chi_squared_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple
     return X, p
 
 
-def g_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def g_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as chi2_contingency(lambda_="log-likelihood")
 
     A likelihood ratio test used for determine if the difference between our observed results and expected results in
@@ -65,7 +65,7 @@ def g_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
     return g, p
 
 
-def fisher_test(cont_table: Union[Sequence[Sequence], np.ndarray], alternative: str = "two-sided") -> float:
+def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = "two-sided") -> float:
     """Found in scipy.stats as fisher_exact
 
     Used to determine the exact likelihood that we would observe a measurement in our 2x2 contingency table that
@@ -127,7 +127,7 @@ def fisher_test(cont_table: Union[Sequence[Sequence], np.ndarray], alternative: 
         return p + np.sum([i for i in all_p if i <= p])
 
 
-def mcnemar_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def mcnemar_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as mcnemar
 
     Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
@@ -159,7 +159,7 @@ def mcnemar_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[flo
     return chi_squared, p
 
 
-def cmh_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def cmh_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as Stratified Table.test_null_odds()
 
     Used when we want to evaluate the association between a binary predictor/treatment and a binary outcome variable
@@ -200,7 +200,7 @@ def cmh_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, floa
     return epsilon, p
 
 
-def woolf_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def woolf_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
     Used to test the homogeneity of the odds ratio of each contingency table. Unlike Breslow-Day, compares
@@ -237,7 +237,7 @@ def woolf_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, fl
     return x, p
 
 
-def breslow_day_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def breslow_day_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as StratifiedTable.test_equal_odds()
 
     Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
@@ -291,7 +291,7 @@ def breslow_day_test(tables: Union[Sequence[Sequence], np.ndarray]) -> Tuple[flo
     return x, p
 
 
-def bowker_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[float, float]:
+def bowker_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as TableSymmetry or as bowker_symmetry
 
     Used to test if a given square table is symmetric about the main diagonal
@@ -304,7 +304,7 @@ def bowker_test(cont_table: Union[Sequence[Sequence], np.ndarray]) -> Tuple[floa
     Returns
     -------
     x : float
-        Our Chi statistic, oor a measure of symmetry for our contingency table
+        Our Chi statistic, or a measure of symmetry for our contingency table
     p : float, 0 <= p <= 1
         The probability that our table isn't symmetric due to chance
     """

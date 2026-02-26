@@ -1,5 +1,5 @@
 from math import sqrt, log, asinh
-from typing import Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -8,7 +8,7 @@ from scipy.stats import chi2, norm, shapiro
 from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
 
 
-def shapiro_wilk_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def shapiro_wilk_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as shapiro
 
     Used to determine if a sample comes from a normally distributed population
@@ -36,9 +36,9 @@ def shapiro_wilk_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
 
 def chi_goodness_of_fit_test(
-    observed: Union[Sequence, np.ndarray],
-    expected: Optional[Union[Sequence, np.ndarray]] = None,
-) -> Tuple[float, float]:
+    observed: Sequence | np.ndarray,
+    expected: Sequence | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Found in scipy.stats as chisquare
 
     Used when we cannot divide the data cleanly into a contingency table or when we have actual expected results to
@@ -70,9 +70,9 @@ def chi_goodness_of_fit_test(
 
 
 def g_goodness_of_fit_test(
-    observed: Union[Sequence, np.ndarray],
-    expected: Optional[Union[Sequence, np.ndarray]] = None,
-) -> Tuple[float, float]:
+    observed: Sequence | np.ndarray,
+    expected: Sequence | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
 
     Similar to chi_goodness_of_fit_test, used when we cannot divide the data cleanly into a contingency table or when we
@@ -103,7 +103,7 @@ def g_goodness_of_fit_test(
     return g, p
 
 
-def jarque_bera_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def jarque_bera_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as jarque_bera
 
     This test is used to evaluate whether the skew and kurtosis of said data follows that of a normal distribution
@@ -131,9 +131,9 @@ def jarque_bera_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
 
 
 def ljung_box_test(
-    data: Union[Sequence, np.ndarray],
-    num_lags: Optional[Union[int, Sequence, np.ndarray]] = None,
-) -> Tuple[float, float]:
+    data: Sequence | np.ndarray,
+    num_lags: int | Sequence | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Found in statsmodels as acorr_ljung(boxpierce=False)
 
     Used to determine if any group of autocorrelations in a time series dataset are different from zero
@@ -173,9 +173,9 @@ def ljung_box_test(
 
 
 def box_pierce_test(
-    data: Union[Sequence, np.ndarray],
-    num_lags: Optional[Union[int, Sequence, np.ndarray]] = None,
-) -> Tuple[int, int]:
+    data: Sequence | np.ndarray,
+    num_lags: int | Sequence | np.ndarray | None = None,
+) -> tuple[int, int]:
     """Found in statsmodels as acorr_ljung(boxpierce=True)
 
     Used to determine if any group of autocorrelations in a time series dataset are different from zero
@@ -211,7 +211,7 @@ def box_pierce_test(
     return q, p
 
 
-def skew_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def skew_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as skewtest.
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its skewness.
@@ -244,7 +244,7 @@ def skew_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     return z, p
 
 
-def kurtosis_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def kurtosis_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as kurtosistest.
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its kurtosis.
@@ -280,7 +280,7 @@ def kurtosis_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     return z, p
 
 
-def k_squared_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def k_squared_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as normaltest
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its
@@ -306,7 +306,7 @@ def k_squared_test(data: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
     return k2, p
 
 
-def lilliefors_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> Tuple[float, bool]:
+def lilliefors_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> tuple[float, bool]:
     """Found in statsmodels as lilliefors.
 
     Used to determine if the data follows a normal distribution

@@ -1,10 +1,9 @@
+from collections.abc import Sequence
+from math import factorial, sqrt
 from numbers import Number
-from math import sqrt, factorial
-from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
-
 from scipy.stats import binom
 
 
@@ -23,9 +22,9 @@ def _standard_error(std: float, n: int) -> float:
     The standard error, or our standard deviation divided by the square root of n.
     """
     if not isinstance(std, Number):
-        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(n)))
+        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(std)))
     if not isinstance(n, int):
-        raise TypeError("Cannot calculate standard error with n of type{}".format(type(n)))
+        raise TypeError("Cannot calculate standard error with n of type {}".format(type(n)))
     if n <= 0:
         raise ValueError("Cannot calculate standard error with n less than or equal to zero")
     return std / sqrt(n)
@@ -64,7 +63,7 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
 
 
 def _check_table(
-    table: Union[Sequence, np.ndarray, pd.Series, pd.DataFrame, pd.SparseDtype],
+    table: Sequence | np.ndarray | pd.Series | pd.DataFrame,
     only_count: bool = False,
 ) -> np.ndarray:
     """Performs checks on our table to ensure that it is suitable for our statistical tests
@@ -74,7 +73,7 @@ def _check_table(
     table : list or numpy array
         The dataset we are applying our checks on
     only_count : bool, default=False
-        Whether or not this dataset involves counts of instances
+        Whether this dataset involves counts of instances
 
     Returns
     -------
@@ -85,10 +84,7 @@ def _check_table(
         table = np.array([np.array(xi) for xi in table])
     elif isinstance(table, (np.ndarray, np.generic)):
         pass
-    elif isinstance(
-        table,
-        (pd.Series, pd.DataFrame, pd.SparseDataFrame, pd.SparseSeries, pd.SparseArray),
-    ):
+    elif isinstance(table, (pd.Series, pd.DataFrame)):
         table = np.array(table)
     else:
         raise TypeError("Data type {} is not supported".format(type(table)))
@@ -109,9 +105,9 @@ def _check_table(
 
 
 def _sse(
-    sum_data: Union[Sequence, np.ndarray],
-    square_data: Union[Sequence, np.ndarray],
-    n_data: Union[Sequence, np.ndarray],
+    sum_data: Sequence | np.ndarray,
+    square_data: Sequence | np.ndarray,
+    n_data: Sequence | np.ndarray,
 ) -> float:
     """Calculates the sum of squares for the errors
 
@@ -193,7 +189,7 @@ def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
     return p
 
 
-def _skew(data: Union[Sequence, np.ndarray]) -> float:
+def _skew(data: Sequence | np.ndarray) -> float:
     """Calculates the skew (third moment) of the data
 
     Parameters
@@ -214,7 +210,7 @@ def _skew(data: Union[Sequence, np.ndarray]) -> float:
     return skew
 
 
-def _kurtosis(data: Union[Sequence, np.ndarray]) -> float:
+def _kurtosis(data: Sequence | np.ndarray) -> float:
     """Calculates the kurtosis (fourth moment) of the data
 
     Parameters
@@ -235,7 +231,7 @@ def _kurtosis(data: Union[Sequence, np.ndarray]) -> float:
     return kurtosis
 
 
-def _autocorr(data: Union[Sequence, np.ndarray], lags: Union[Sequence, np.ndarray]) -> np.ndarray:
+def _autocorr(data: Sequence | np.ndarray, lags: Sequence | np.ndarray) -> np.ndarray:
     """Calculates the autocorrelation for a given time series dataset given a set amount of lags
 
     Parameters
@@ -257,12 +253,12 @@ def _autocorr(data: Union[Sequence, np.ndarray], lags: Union[Sequence, np.ndarra
     return np.array(corr)
 
 
-def _rle(arr: Union[Sequence, np.ndarray]) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray]]:
+def _rle(arr: Sequence | np.ndarray) -> tuple[np.ndarray | None, np.ndarray | None, np.ndarray | None]:
     """Similar to R rle function, runs length encoding for a binary sequence.
 
-     Parameters
-     ----------
-     arr : list or numpy array
+    Parameters
+    ----------
+    arr : list or numpy array
         Our observed binary sequence
 
     Returns

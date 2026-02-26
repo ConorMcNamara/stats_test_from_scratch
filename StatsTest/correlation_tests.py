@@ -1,5 +1,5 @@
 from math import sqrt, factorial
-from typing import Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -8,7 +8,7 @@ from scipy.stats import t, rankdata, norm
 from StatsTest.utils import _check_table
 
 
-def pearson_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def pearson_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as pearsonr
 
     Used to evaluate the pearson correlation between X and Y.
@@ -39,7 +39,7 @@ def pearson_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray])
     return rho, p
 
 
-def spearman_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]) -> Tuple[float, float]:
+def spearman_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as spearmanr
 
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
@@ -73,10 +73,10 @@ def spearman_test(x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
 
 
 def kendall_tau_test(
-    x: Union[Sequence, np.ndarray],
-    y: Union[Sequence, np.ndarray],
+    x: Sequence | np.ndarray,
+    y: Sequence | np.ndarray,
     method: str = "hypothesis",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Found in scipy.stats as kendalltau
 
     Used to evaluate if two ordinal variables are correlated to one another.
@@ -112,7 +112,7 @@ def kendall_tau_test(
         unique_y, counts_y = np.unique(y, return_counts=True)
         t_var, u = counts_x[counts_x != 1], counts_y[counts_y != 1]
         for i in np.arange(len(x) - 1):
-            x_data, y_data = x[i + 1:], y[i + 1:]
+            x_data, y_data = x[i + 1 :], y[i + 1 :]
             x_val, y_val = x[i], y[i]
             concordant += len(np.intersect1d(np.where(x_val < x_data)[0], np.where(y_val < y_data)[0]))
             discordant += len(np.intersect1d(np.where(x_val != x_data)[0], np.where(y_val > y_data)[0]))
@@ -160,9 +160,7 @@ def kendall_tau_test(
     return tau, p
 
 
-def point_biserial_correlation_test(
-    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
-) -> Tuple[float, float]:
+def point_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as pointbiserialr
 
     Parameters
@@ -195,9 +193,7 @@ def point_biserial_correlation_test(
     return rho, p
 
 
-def rank_biserial_correlation_test(
-    x: Union[Sequence, np.ndarray], y: Union[Sequence, np.ndarray]
-) -> Tuple[float, float]:
+def rank_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
 
     Parameters

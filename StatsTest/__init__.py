@@ -2,8 +2,6 @@
 
 __version__ = "0.1.0"
 
-from typing import List
-
 from StatsTest import (
     categorical_tests,
     correlation_tests,
@@ -17,7 +15,7 @@ from StatsTest import (
     utils,
 )
 
-__all__: List[str] = [
+__all__: list[str] = [
     "categorical_tests",
     "correlation_tests",
     "gof_tests",
@@ -31,5 +29,5 @@ __all__: List[str] = [
 ]
 
 
-def __dir__() -> List[str]:
+def __dir__() -> list[str]:
     return __all__

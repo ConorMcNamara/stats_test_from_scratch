@@ -2,7 +2,7 @@ import warnings
 
 from math import sqrt, factorial
 from numbers import Number
-from typing import Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -19,10 +19,10 @@ from StatsTest.utils import (
 
 
 def one_sample_z_test(
-    sample_data: Union[Sequence[Sequence], np.ndarray],
+    sample_data: Sequence[Sequence] | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """This test can be found in statsmodels as ztest
 
     Determines the likelihood that our sample mean differs from our population mean, assuming that the data follows a
@@ -67,10 +67,10 @@ def one_sample_z_test(
 
 
 def two_sample_z_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[Number, float]:
+) -> tuple[Number, float]:
     """This test can be found in statsmodels as ztest_ind
 
     Determines the likelihood that the distribution of two data points is significantly different, assuming that both
@@ -114,10 +114,10 @@ def two_sample_z_test(
 
 
 def one_sample_t_test(
-    sample_data: Union[Sequence[Sequence], np.ndarray],
+    sample_data: Sequence[Sequence] | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
-) -> Tuple[Number, float]:
+) -> tuple[Number, float]:
     """This test can be found in scipy.stats as ttest_1samp
 
     Used when we want to compare our sample mean to that of an expected population mean, and while we assume that the
@@ -162,11 +162,11 @@ def one_sample_t_test(
 
 
 def two_sample_t_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
     paired: bool = False,
-) -> Tuple[Number, float]:
+) -> tuple[Number, float]:
     """This test can be found in scipy.stats as either ttest_rel or ttest_ind
 
     Used when we want to compare the distributions of two samples, and while we assume that they both follow a normal
@@ -229,11 +229,11 @@ def two_sample_t_test(
 
 
 def trimmed_means_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     p: int = 10,
     alternative: str = "two-sided",
-) -> Tuple[Number, float]:
+) -> tuple[Number, float]:
     """Not found in scipy.stats or statsmodels.
     Used when we wish to perform a two-sample t-test, but suspect that the data is being heavily influenced by outliers,
     i.e., cannot assume normality.
@@ -264,8 +264,8 @@ def trimmed_means_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1: len(sort_data_1) - n_1],
-        sort_data_2[n_2: len(sort_data_2) - n_2],
+        sort_data_1[n_1 : len(sort_data_1) - n_1],
+        sort_data_2[n_2 : len(sort_data_2) - n_2],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -289,12 +289,12 @@ def trimmed_means_test(
     return t_value, p
 
 
-def yeun_welch_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+def yuen_welch_test(
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     p=10,
     alternative: str = "two-sided",
-) -> Tuple[Number, float]:
+) -> tuple[Number, float]:
     """Not found in scipy.stats or statsmodels.
 
     Used when we wish to perform a two-sample t-test, but cannot assume normality or equality of variances.
@@ -325,8 +325,8 @@ def yeun_welch_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1: len(sort_data_1) - n_1],
-        sort_data_2[n_2: len(sort_data_2) - n_2],
+        sort_data_1[n_1 : len(sort_data_1) - n_1],
+        sort_data_2[n_2 : len(sort_data_2) - n_2],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -351,10 +351,10 @@ def yeun_welch_test(
 
 
 def two_sample_f_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """No method in scipy or statsmodels to immediately calculate this.
 
     Used to determine if two populations/samples have the same variance. Note that, due to this being a ratio between
@@ -396,8 +396,8 @@ def two_sample_f_test(
 
 
 def binomial_sign_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
     success_prob: float = 0.5,
 ) -> float:
@@ -448,8 +448,8 @@ def binomial_sign_test(
 
 
 def wald_wolfowitz_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    expected: Optional[Union[Sequence[Sequence], np.ndarray]] = None,
+    data_1: Sequence[Sequence] | np.ndarray,
+    expected: Sequence[Sequence] | np.ndarray | None = None,
     cutoff: str = "median",
 ):
     """Found in statsmodels as runstest_1samp
@@ -502,10 +502,10 @@ def wald_wolfowitz_test(
 
 
 def trinomial_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
 
     Used on paired-data when the sign test loses power, that is, when there exists instances of "zero observations" or
@@ -555,19 +555,19 @@ def trinomial_test(
         probs.append(calculate_probs(n, z, k, p_0))
     d = pos_diff - neg_diff
     if alternative.casefold() == "two-sided":
-        p = np.sum(probs[abs(d):]) * 2
+        p = np.sum(probs[abs(d) :]) * 2
     elif alternative.casefold() == "greater":
-        p = np.sum(probs[abs(d):])
+        p = np.sum(probs[abs(d) :])
     else:
         p = np.sum(probs[: abs(d)])
     return d, p
 
 
 def fligner_policello_test(
-    data_1: Union[Sequence[Sequence], np.ndarray],
-    data_2: Union[Sequence[Sequence], np.ndarray],
+    data_1: Sequence[Sequence] | np.ndarray,
+    data_2: Sequence[Sequence] | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Not found in either scipy.stats or statsmodels.
 
     Used to determine whether the population medians corresponding to two independent samples are equal.

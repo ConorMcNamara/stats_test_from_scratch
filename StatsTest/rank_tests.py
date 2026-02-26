@@ -1,5 +1,5 @@
 from math import sqrt
-from typing import Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -9,10 +9,10 @@ from StatsTest.utils import _check_table
 
 
 def two_sample_mann_whitney_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: [Sequence, np.ndarray],
+    data_1: Sequence | np.ndarray,
+    data_2: Sequence | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """This test can be found in scipy.stats as mannwhitneyu
     Used when we want to test whether or not the distribution of two ordinal response variables are equal or not,
     assuming that each sample is independent of one another.
@@ -40,7 +40,7 @@ def two_sample_mann_whitney_test(
     combined_data_len = len(combined_data)
     data_1_len, data_2_len = len(data_1), len(data_2)
     data_1_rank = np.sum(combined_data[: len(data_1)])
-    data_2_rank = np.sum(combined_data[len(data_1):])
+    data_2_rank = np.sum(combined_data[len(data_1) :])
     u1 = data_1_rank - ((data_1_len * (data_1_len + 1)) / 2)
     u2 = data_2_rank - ((data_2_len * (data_2_len + 1)) / 2)
     u_mean = (u1 + u2) / 2
@@ -64,11 +64,11 @@ def two_sample_mann_whitney_test(
 
 
 def two_sample_wilcoxon_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: Union[Sequence, np.ndarray],
+    data_1: Sequence | np.ndarray,
+    data_2: Sequence | np.ndarray,
     alternative: str = "two-sided",
     handle_zero: str = "wilcox",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """This test can be found in scipy.stats as wilcoxon
 
     Used when we want to compare two related or paired samples, or repeated measurements, and see if their population
@@ -122,7 +122,7 @@ def two_sample_wilcoxon_test(
     return w_value, p
 
 
-def friedman_test(*args) -> Tuple[float, float]:
+def friedman_test(*args) -> tuple[float, float]:
     """This can be found in scipy.stats as friedmanchisquare
 
     Used to detect the differences in treatments across multiple test attempts. For example:
@@ -156,10 +156,10 @@ def friedman_test(*args) -> Tuple[float, float]:
     return q, p
 
 
-def quade_test(*args) -> Tuple[float, float]:
+def quade_test(*args) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
-    Used to determine if there is at least one treatment different than the others. Not that it does not tell us which
+    Used to determine if there is at least one treatment different than the others. Note that it does not tell us which
     treatment is different or how many differences there are.
 
     Parameters
@@ -191,7 +191,7 @@ def quade_test(*args) -> Tuple[float, float]:
     return q, p
 
 
-def page_trend_test(*args, **kwargs) -> Tuple[float, float]:
+def page_trend_test(*args, **kwargs) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
     Used to evaluate whether or not there is a monotonic trend within each treatment/condition. Note that the default
@@ -247,7 +247,7 @@ def page_trend_test(*args, **kwargs) -> Tuple[float, float]:
     return L, p
 
 
-def kruskal_wallis_test(*args) -> Tuple[float, float]:
+def kruskal_wallis_test(*args) -> tuple[float, float]:
     """Found in scipy.stats as kruskal
 
     This test is used to determine whether or not two or more samples originate from the same distribution.
@@ -275,7 +275,7 @@ def kruskal_wallis_test(*args) -> Tuple[float, float]:
     r_bar = np.mean(rank_data)
     n_i = [len(arg) for arg in args]
     n = np.sum(n_i)
-    rank_data_split = np.split(rank_data, np.cumsum(n_i)[0: len(n_i) - 1])
+    rank_data_split = np.split(rank_data, np.cumsum(n_i)[0 : len(n_i) - 1])
     rank_data_s_mean = np.mean(rank_data_split, axis=1)
     top = np.sum(n_i * np.power(rank_data_s_mean - r_bar, 2))
     bottom = np.sum(np.power(rank_data_split - r_bar, 2))
@@ -284,7 +284,7 @@ def kruskal_wallis_test(*args) -> Tuple[float, float]:
     return H, p
 
 
-def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
+def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
     """Found in scipy.stats as fligner
 
     Used to test the homogeneity of group variances, making no assumptions of the data distribution beforehand
@@ -322,7 +322,7 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
     all_resids = np.hstack([resid for resid in resids])
     rank_all_resids = rankdata(all_resids)
     normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)
-    normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0: len(n_i) - 1])
+    normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0 : len(n_i) - 1])
     var_nr = np.var(normalized_rank, ddof=1)
     x_bar = np.mean(normalized_rank)
     x_j = np.mean(normalized_split, axis=1)
@@ -332,10 +332,10 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
 
 
 # def ansari_bradley_test(
-#     data_1: Union[Sequence, np.ndarray],
-#     data_2: Union[Sequence, np.ndarray],
+#     data_1: Sequence | np.ndarray,
+#     data_2: Sequence | np.ndarray,
 #     alternative: str = "two-sided",
-# ) -> Tuple[float, float]:
+# ) -> tuple[float, float]:
 #     """Found in scipy.stats as ansari
 #
 #     Used to measure the level of dispersion (the distance from the median) between two datasets. Note that this is
@@ -447,10 +447,10 @@ def fligner_kileen_test(*args, **kwargs) -> Tuple[float, float]:
 
 
 def mood_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: Union[Sequence, np.ndarray],
+    data_1: Sequence | np.ndarray,
+    data_2: Sequence | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Found in scipy.stats as mood
 
     Used to measure the level of dispersion (difference from median) of the ranks of the two datasets.
@@ -478,7 +478,7 @@ def mood_test(
     len_1, len_2 = len(data_1), len(data_2)
     n_obs = len_1 + len_2
     if n_obs < 3:
-        raise AttributeError("Not enough observations to perform mood dispertion test")
+        raise AttributeError("Not enough observations to perform mood dispersion test")
     all_data = np.concatenate([data_1, data_2])
     rank_data = rankdata(all_data)
     r_1 = rank_data[:len_1]
@@ -499,10 +499,10 @@ def mood_test(
 
 
 def cucconi_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: Union[Sequence, np.ndarray],
+    data_1: Sequence | np.ndarray,
+    data_2: Sequence | np.ndarray,
     how: str = "bootstrap",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
 
     Used to compare the central tendency and variability in two samples.
@@ -557,7 +557,7 @@ def cucconi_test(
     def permutation(x, y, reps=1000):
         m, n = len(x), len(y)
         N = m + n
-        all_data = np.concatenate(x, y)
+        all_data = np.concatenate([x, y])
         reps_list = np.zeros(reps)
         for i in range(reps):
             perm_data = all_data[np.random.permutation(N)]
@@ -578,8 +578,8 @@ def cucconi_test(
 
 
 # def lepage_test(
-#     data_1: Union[Sequence, np.ndarray], data_2: Union[Sequence, np.ndarray]
-# ) -> Tuple[float, float]:
+#     data_1: Sequence | np.ndarray, data_2: Sequence | np.ndarray
+# ) -> tuple[float, float]:
 #     """Not found in either scipy.stats or statsmodels
 #
 #     Used to compare the central tendency and variability in two samples. A sum of the squared Euclidean distances of both
@@ -616,7 +616,7 @@ def cucconi_test(
 #     return d, p
 
 
-def conover_test(*args) -> Tuple[float, float]:
+def conover_test(*args) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels.
 
     Used to compare the equality of variances for multiple groups when we cannot assume that they all arise from the same

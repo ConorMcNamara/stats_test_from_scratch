@@ -1,6 +1,6 @@
 from itertools import chain
 from math import sqrt
-from typing import List, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -10,7 +10,7 @@ from StatsTest.utils import _sse
 from StatsTest.multi_group_tests import one_way_f_test
 
 
-def dunnett_test(control: Union[Sequence, np.ndarray], alpha: float = 0.05, *args) -> np.ndarray:
+def dunnett_test(control: Sequence | np.ndarray, alpha: float = 0.05, *args) -> np.ndarray:
     """Not found in either scipy or statsmodels
 
     This test is used to compare the means of several groups to a control and determine which groups are significant
@@ -70,9 +70,9 @@ def dunnett_test(control: Union[Sequence, np.ndarray], alpha: float = 0.05, *arg
             132.966,
             135.358,
             138.358,
-            1440.6454,
+            140.6454,
             142.721,
-            1444.621,
+            144.621,
             146.371,
             147.991,
             149.499,
@@ -1771,7 +1771,7 @@ def dunnett_test(control: Union[Sequence, np.ndarray], alpha: float = 0.05, *arg
     return group_diffs
 
 
-def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
+def duncan_multiple_range_test(alpha: float = 0.05, *args) -> list[tuple]:
     """Not found in either scipy or statsmodels
 
     This test is used to compare the means of several groups and determine which groups are significant
@@ -3056,7 +3056,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> List[Tuple]:
     return list(chain(*all_sig_diffs))
 
 
-def tukey_range_test(*args) -> List[List]:
+def tukey_range_test(*args) -> list[list]:
     """Found in statsmodels as pairwise_tukeyhsd
 
     This test compares all possible pairs of means and determines if there are any differences in these pairs.
@@ -3098,7 +3098,7 @@ def tukey_range_test(*args) -> List[List]:
     return results
 
 
-def scheffe_test(*args) -> List[List]:
+def scheffe_test(*args) -> list[list]:
     """Not found in scipy or statsmodels
 
     This test compares all possible means and determines which groups are significantly different.

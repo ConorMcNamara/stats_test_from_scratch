@@ -1,91 +1,414 @@
-# stats_test_from_scratch
-One issue with Python is that there is no unified source for statistical tests like there is for ML with scikit-learn or Deep Learning with Keras. 
+# StatsTest From Scratch
 
-You could have statistical tests in Scipy, Statsmodels or some other obscure Pthon package but it's not clear which libraries carry which tests (some even carry the same test on top of it!). Additionally, there are some tests that you can find in R that aren't currently supported by these libraries.
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
-My goal is two fold:
-1) Implement the statistical tests from scratch, with an emphasis on making the code as presentable and easy-to-understand as possible. This is so anyone can understand exactly how what the test is measuring and how it is measuring it, even if it means we are sacrificing computational speed in the process.
-2) Identify where in Python you can find these test(s), if at all. That way, for those who want the fastest implementation, they'll understand where to find the test.
+**Educational implementations of statistical tests in Python, built from scratch for clarity and understanding.**
 
-# Statistical Tests currently supported and where to find them:
-## Sample Tests
-1) One and two sample Z Tests: Statsmodels through [ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.weightstats.ztest.html). Used to determine if the sample differs significantly from the normally distributed population we are evaluating, or if the distribution of two samples from a normally distributed population differ. 
-2) One and two sample T Tests: Scipy through [ttest_1samp](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ttest_1samp.html) and [ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html). Used to determine if the sample differs significantly from the normally distributed population (with unknown sample variance), or if the means of two samples from a normally distributed population differ. 
-3) Trimmed Means T Test: Not found in either scipy or statsmodels. Used to measure central tendency when our two samples violate the assumption of normality.
-4) Yeun-Welch Test: Not found in either scipy or statsmodels. Used to measure central tendency when our two samples violate the assumption of normality and equality of variances.
-5) Two Sample F Test: Not found in either scipy or statsmodels. Used to determine if the variances of two populations are equal. 
-6) Binomial Sign Test: Statsmodels through [sign_test](https://www.statsmodels.org/stable/generated/statsmodels.stats.descriptivestats.sign_test.html#statsmodels.stats.descriptivestats.sign_test). Used to determine if there are consistent significant differences between pairs of data, such as before-and-after treatments.
-7) Wald-Wolfowitz Test: Statsmodels through [runstest_1samp](https://www.statsmodels.org/stable/generated/statsmodels.sandbox.stats.runs.runstest_1samp.html#statsmodels.sandbox.stats.runs.runstest_1samp). Used to determine if the elements of a dataset are mutually independent.
-8) Trinomial Test: Not found in either scipy or statsmodels. Used as a replacement to the sign test when there are ties in the data.
+---
 
-## Rank Tests
-1) Wilcoxon Rank-Sum Test: Scipy through [wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html). Used to determine if two related or paired samples have different mean ranks. 
-2) Mann-Whitney-U Test: Scipy through [mannwhitneyu](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html). Used to determine if a randomly selected value from one ordinal population will be less or greater than a randomly selected value from a second ordinal population.
-3) Friedman Test: Scipy through [friedmanchisquare](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.friedmanchisquare.html). Used to determine if there are any differences in treatments across multiple test attempts.
-4) Quade Test: Not found in either scipy or statsmodels. Used to determine if there is at least one treatment that is different from the others.
-5) Page's Trend Test: Not found in either scipy or statsmodels. Used to determine if the central tendency for all treatments is the same, or there is an order to them.
-6) Kruskal-Wallis Test: Scipy through [kruskal](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html). Used to determine if two or more samples originate from the same distribution.
-7) Fligner-Kileen Test: Scipy through [fligner](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fligner.html). Used to determine if two or more samples have the same variances without the assumption of normality.
-8) Ansari-Bradley Test: Scipy through [ansari](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.ansari.html). Used to determine if two samples have the same dispersion (distance from the median).
-9) Mood Test for Dispersion: Scipy through [mood](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mood.html). Used to determine if two samples have the same dispersion for their ranks.
-10) Cucconi Test: Not found in either scipy or statsmodels. Used to determine if the central tendency and variability of two samples are the same.
-11) Lepage Test: Not found in either scipy or statsmodels. Used to determine if the central tendency and variability of two samples are the same.
-12) Conover Test: Not found in either scipy or statsmodels. Used to determine if the variances of multiple groups are the same. 
+## 📋 Table of Contents
 
-## Categorical Tests
-1) Chi Square Test: Scipy through [chi2_contingency](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html). Used to determine if the distribution of our contingency table follows the row and column sum.
-2) G Test: Scipy through [chi2_contingency(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.stats.chi2_contingency.html). Used to determine the likelihood that our contingency follows the distribution of our row and column sum. 
-3) Fisher Test: Scipy through [fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html). Used to determine the exact likelihood that we would observe a measurement that is more extreme than our expected results.
-4) McNemar Test: Statsmodels through [mcnemar](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html). Used to determine if the marginal row and column probabilities are equal.
-5) Cochran–Mantel–Haenszel Test: Statsmodels through [StratifiedTable.test_null_odds](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_null_odds). Used to determine if there is an association between a binary predictor/treatment and a binary outcome across all strata. 
-6) Woolf Test: Not found in either scipy or statsmodels. Used to determine if there exists the same log odds across all strata.
-7) Breslow-Day Test: Found in statsmodels as [StratifiedTable.test_equal_odds()](https://www.statsmodels.org/dev/generated/generated/statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds.html#statsmodels.stats.contingency_tables.StratifiedTable.test_equal_odds). Used to determine if there exists the same odds ratio across all strata.
-8) Bowker Test: Found in statsmodels as [TableSymmetry or as bowker_symmetry](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.SquareTable.symmetry.html#statsmodels.stats.contingency_tables.SquareTable.symmetry). Used to determine if the proportions between two treatments are symmetrical. 
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Available Tests](#available-tests)
+- [Usage Examples](#usage-examples)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Multi-Group Tests
-1) Levene Test: Scipy through [levene(center='mean')](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.levene.html). Used to determine the equality of group variances using the distance from the mean.
-2) Brown-Forsythe Test: Scipy through [levene(center='median')](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.levene.html). Used to determine the equality of group variances using the distance from the median.
-3) One Way F-Test: Scipy through [f_oneway](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.f_oneway.html). Used to determine the equality of group means.
-4) Bartlett Test: Scipy through [bartlett](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bartlett.html). Used to determine the equality of group variances using the likelihood ratio. 
-5) Tukey Range Test: Statsmodels through [pairwise_tukeyhsd](https://www.statsmodels.org/stable/generated/statsmodels.stats.multicomp.pairwise_tukeyhsd.html). Used to determine the equality of means for all sample pairs.
-6) Cochran's Q Test: Statsmodels through [cochrans_q](https://www.statsmodels.org/devel/generated/statsmodels.stats.contingency_tables.cochrans_q.html). Used to determine if the treatments (as measured by a binary response variable) have identical effects/are equally effective.
-7) Jonckheere Trend Test: Not found in either scipy or statsmodels. Used to determine if the group medians have an a-priori ordering.
-8) Mood Median Test: Scipy through [median_test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.median_test.html). Used to test the equality of group medians.
-9) Dunnett Test: Not found in either scipy or statsmodels. Used as post-hoc to ANOVA analysis to determine which groups are significantly different to the control group.
-10) Duncan's New Multi-Range Test: Not found in either scipy or statsmodels. Used as post-hoc to ANOVA analysis to determine which group means are significantly different to one another.
+## 🎯 Overview
 
-## Proportion Tests
-1) One and two sample Proportion Z Tests: Statsmodels through  [proportions_ztest](https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html). Used to determine if one proportion is different to the population proportion mean, or if two proportions share the same mean. 
-2) Binomial Test: Scipy through [binom_test](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.binom_test.html). Used to determine if the sample follows a given binomial distribution. 
-3) Chi Square Proportion Test: Not found in either scipy or statsmodels. Used to determine if the proportion within groups follows a population distribution.
-4) G Proportion Test: Not found in either scipy or statsmodels. Used to determine if the distribution of groups follows a population distribution.
+One major issue with Python's statistical ecosystem is the lack of a unified source for statistical tests. While scikit-learn provides comprehensive machine learning tools and Keras unifies deep learning, statistical tests are scattered across SciPy, Statsmodels, and various other packages. This fragmentation makes it unclear:
 
-## Goodness of Fit Tests
-1) Shapiro-Wilk Test: Scipy through [shapiro](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html). Used to determine if a random sample is derived from a normal distribution.
-2) Chi Goodness of Fit Test: Scipy through [chisquare](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html). Used to determine if the distribution of groups follows an expected result.
-3) G Goodness of Fit Test: Scipy through [power_divergence(lambda_="log-likelihood")](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.power_divergence.html). Used to determine if the distribution of groups follows an expected result.
-4) Jarque-Bera Test: Statsmodels through [jarque_bera](https://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.jarque_bera.html). Used to determine if the sample's skew and kurtosis follow that of a normal distribution.
-5) Ljung-Box Test: Statsmodels through [acorr_ljung(boxpierce=False)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html). Used to determine if the autocorrelations are equal to 0.
-6) Box-Pierce Test: Statsmodels through [acorr_ljung(boxpierce=True)](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.acorr_ljungbox.html). Used to determine if the autocorrelations are equal to 0.
-7) Skew Test: Scipy through [skewtest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewtest.html). Used to determine if the sample is normally distributed through its skew.
-8) Kurtosis Test: Scipy through [kurtosistest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosistest.html). Used to determine if a sample is normally distributed through its kurtosis.
-9) K-Squared Test: Scipy through [normaltest](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html). Used to determine if a sample is normally distributed through its skew and kurtosis. 
-10) Lilliefors Test: Statsmodels through [lilliefors](https://www.statsmodels.org/stable/generated/statsmodels.stats.diagnostic.lilliefors.html). Used to determine if a sample is normally distributed.
+- Which library contains which test
+- How tests are actually implemented
+- Where to find tests that exist in R but not Python
 
-## Correlation Tests
-1) Pearson Test: Scipy through [pearsonr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pearsonr.html). Used to determine the correlation between two different data points.
-2) Spearman Rank Test: Scipy through [spearmanr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.spearmanr.html). Used to determine the correlation between the ranks of two different data points.
-3) Kendall-Tau Test: Scipy through [kendalltau](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html). Used to determine the correlation between two ordinal variables.
-4) Point Biserial Correlation: Scipy through [pointbiserialr](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.pointbiserialr.html). Used to determine the correlation between two variables when one of them is dichotomous.
-5) Rank Biserial Correlation: Not found in either scipy or statsmodels. Used to determine the correlation between two variables when one of them is dichotomous and the other consists of ranks.
+**StatsTest From Scratch** solves this by providing:
 
-## Outliers Tests
-1) Tukey's Fence Test: Not found in either scipy or statsmodels. Used to determine outliers based on their distance from the first or third quartile. 
-2) Grubb's Test: Not found in either scipy or statsmodels. Used to determine if there exists one outlier in the dataset.
-3) Extreme Studentized Deviant (ESD) Test: Not found in either scipy or statsmodels. Used to determine if there exists up to k outliers in the dataset, with k specified by the user. 
-4) Tietjen-Moore Test: Not found in either scipy or statsmodels. Used to determine if there exists k outliers in the dataset, with k specified by the user.
-5) Chauvenet Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Chauvenet criteria.
-6) Peirce Test: Not found in either scipy or statsmodels. Used to determine outliers based off of Peirce's criteria.
-7) Dixon's Q Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Q values.
-8) Thompson-Tau Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Thompson-Tau criteria.
-9) MAD-Median Test: Not found in either scipy or statsmodels. Used to determine outliers based on the Mean Absolute Deviation - Median criteria.
+1. **Clear, educational implementations** of statistical tests with emphasis on readability over performance
+2. **Complete documentation** of where each test can be found in SciPy/Statsmodels (if available)
+3. **Implementation of tests** that don't exist in mainstream Python libraries
+
+## ✨ Features
+
+- 🔬 **90+ statistical tests** implemented from scratch
+- 📚 **Educational focus** - understand exactly how each test works
+- 🔗 **Library reference** - find the fastest production implementations
+- 🐍 **Modern Python** - type hints, clean code, well-documented
+- ✅ **Fully tested** - comprehensive test suite
+- 📖 **NumPy-style docstrings** - clear API documentation
+
+## 📦 Installation
+
+**Requirements:** Python 3.13 or higher
+
+This project supports multiple installation methods: **pip**, **Poetry**, and **uv**.
+
+### Using pip (Standard)
+
+```bash
+# Clone the repository
+git clone https://github.com/ConorMcNamara/stats_test_from_scratch.git
+cd stats_test_from_scratch
+
+# Install the package
+pip install -e .
+
+# Or with development dependencies
+pip install -e ".[dev]"
+```
+
+### Using Poetry
+
+```bash
+# Clone the repository
+git clone https://github.com/ConorMcNamara/stats_test_from_scratch.git
+cd stats_test_from_scratch
+
+# Install with Poetry
+poetry install
+
+# Or with development dependencies
+poetry install --with dev
+
+# Activate the virtual environment
+poetry shell
+```
+
+### Using uv (Fast & Modern)
+
+```bash
+# Install uv if you haven't already
+pip install uv
+
+# Clone the repository
+git clone https://github.com/ConorMcNamara/stats_test_from_scratch.git
+cd stats_test_from_scratch
+
+# Install with uv
+uv pip install -e .
+
+# Or with development dependencies
+uv pip install -e ".[dev]"
+```
+
+### Post-Installation Setup
+
+```bash
+# Set up pre-commit hooks (recommended for contributors)
+pre-commit install
+
+# Run tests to verify installation
+pytest
+
+# Run tests with coverage
+pytest --cov=StatsTest --cov-report=html
+```
+
+## 🚀 Quick Start
+
+```python
+from StatsTest.sample_tests import one_sample_t_test, two_sample_t_test
+from StatsTest.rank_tests import two_sample_mann_whitney_test
+import numpy as np
+
+# One sample t-test
+sample = np.array([23, 25, 28, 29, 30, 32, 33])
+t_stat, p_value = one_sample_t_test(sample, pop_mean=25, alternative="two-sided")
+print(f"t-statistic: {t_stat:.3f}, p-value: {p_value:.3f}")
+
+# Two sample t-test
+group1 = np.array([12, 15, 18, 20, 22])
+group2 = np.array([14, 17, 19, 21, 25])
+t_stat, p_value = two_sample_t_test(group1, group2, alternative="two-sided")
+print(f"t-statistic: {t_stat:.3f}, p-value: {p_value:.3f}")
+
+# Mann-Whitney U test (non-parametric alternative)
+u_stat, p_value = two_sample_mann_whitney_test(group1, group2, alternative="two-sided")
+print(f"U-statistic: {u_stat:.3f}, p-value: {p_value:.3f}")
+```
+
+## 📊 Available Tests
+
+### Sample Tests (8 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| One/Two Sample Z Test | ✅ Statsmodels (`ztest`) | Normally distributed population with known variance |
+| One/Two Sample T Test | ✅ SciPy (`ttest_1samp`, `ttest_ind`) | Normally distributed population with unknown variance |
+| Trimmed Means T Test | ❌ Not available | Robust test when normality assumption is violated |
+| Yuen-Welch Test | ❌ Not available | Robust test for unequal variances and non-normality |
+| Two Sample F Test | ❌ Not available | Test equality of variances |
+| Binomial Sign Test | ✅ Statsmodels (`sign_test`) | Paired data comparisons |
+| Wald-Wolfowitz Test | ✅ Statsmodels (`runstest_1samp`) | Test for mutual independence |
+| Trinomial Test | ❌ Not available | Sign test alternative with ties |
+
+### Rank Tests (12 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Wilcoxon Rank-Sum Test | ✅ SciPy (`wilcoxon`) | Paired samples, non-parametric |
+| Mann-Whitney-U Test | ✅ SciPy (`mannwhitneyu`) | Independent samples, ordinal data |
+| Friedman Test | ✅ SciPy (`friedmanchisquare`) | Multiple related samples |
+| Quade Test | ❌ Not available | Alternative to Friedman for different variances |
+| Page's Trend Test | ❌ Not available | Detect monotonic trend across treatments |
+| Kruskal-Wallis Test | ✅ SciPy (`kruskal`) | Multiple independent samples |
+| Fligner-Kileen Test | ✅ SciPy (`fligner`) | Test homogeneity of variances |
+| Ansari-Bradley Test | ✅ SciPy (`ansari`) | Test equality of dispersions |
+| Mood Test | ✅ SciPy (`mood`) | Test equality of scale parameters |
+| Cucconi Test | ❌ Not available | Test location and scale simultaneously |
+| Lepage Test | ❌ Not available | Combined location and scale test |
+| Conover Test | ❌ Not available | Test equality of variances |
+
+### Categorical Tests (8 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Chi-Square Test | ✅ SciPy (`chi2_contingency`) | Test independence in contingency tables |
+| G Test | ✅ SciPy (`chi2_contingency`) | Likelihood ratio alternative to chi-square |
+| Fisher's Exact Test | ✅ SciPy (`fisher_exact`) | Exact test for 2x2 tables |
+| McNemar Test | ✅ Statsmodels (`mcnemar`) | Paired nominal data |
+| Cochran-Mantel-Haenszel | ✅ Statsmodels (`StratifiedTable`) | Stratified 2x2 tables |
+| Woolf Test | ❌ Not available | Homogeneity of odds ratios |
+| Breslow-Day Test | ✅ Statsmodels (`test_equal_odds`) | Test equal odds ratios |
+| Bowker Test | ✅ Statsmodels (`bowker_symmetry`) | Test symmetry in square tables |
+
+### Multi-Group Tests (10 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Levene Test | ✅ SciPy (`levene`) | Test equality of variances (mean-based) |
+| Brown-Forsythe Test | ✅ SciPy (`levene`) | Test equality of variances (median-based) |
+| One-Way F-Test (ANOVA) | ✅ SciPy (`f_oneway`) | Test equality of means |
+| Bartlett Test | ✅ SciPy (`bartlett`) | Test equality of variances (parametric) |
+| Tukey Range Test | ✅ Statsmodels (`pairwise_tukeyhsd`) | Post-hoc pairwise comparisons |
+| Cochran's Q Test | ✅ Statsmodels (`cochrans_q`) | Binary outcomes across treatments |
+| Jonckheere Trend Test | ❌ Not available | Test ordered alternatives |
+| Mood Median Test | ✅ SciPy (`median_test`) | Test equality of medians |
+| Dunnett Test | ❌ Not available | Compare treatments to control |
+| Duncan's Test | ❌ Not available | Multiple range test |
+
+### Proportion Tests (4 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| One/Two Sample Z Test | ✅ Statsmodels (`proportions_ztest`) | Test proportions |
+| Binomial Test | ✅ SciPy (`binom_test`) | Exact binomial probability |
+| Chi-Square Proportion | ❌ Not available | Test proportions across groups |
+| G Proportion Test | ❌ Not available | Likelihood ratio test for proportions |
+
+### Goodness-of-Fit Tests (10 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Shapiro-Wilk Test | ✅ SciPy (`shapiro`) | Test normality |
+| Chi-Square GOF | ✅ SciPy (`chisquare`) | Test distribution fit |
+| G Test GOF | ✅ SciPy (`power_divergence`) | Likelihood ratio GOF |
+| Jarque-Bera Test | ✅ Statsmodels (`jarque_bera`) | Test normality via skew/kurtosis |
+| Ljung-Box Test | ✅ Statsmodels (`acorr_ljungbox`) | Test autocorrelation |
+| Box-Pierce Test | ✅ Statsmodels (`acorr_ljungbox`) | Test autocorrelation |
+| Skewness Test | ✅ SciPy (`skewtest`) | Test normality via skew |
+| Kurtosis Test | ✅ SciPy (`kurtosistest`) | Test normality via kurtosis |
+| K-Squared Test | ✅ SciPy (`normaltest`) | Combined skew/kurtosis test |
+| Lilliefors Test | ✅ Statsmodels (`lilliefors`) | Modified Kolmogorov-Smirnov |
+
+### Correlation Tests (5 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Pearson Correlation | ✅ SciPy (`pearsonr`) | Linear correlation |
+| Spearman Rank Correlation | ✅ SciPy (`spearmanr`) | Monotonic correlation |
+| Kendall's Tau | ✅ SciPy (`kendalltau`) | Ordinal correlation |
+| Point-Biserial Correlation | ✅ SciPy (`pointbiserialr`) | Continuous vs. binary |
+| Rank-Biserial Correlation | ❌ Not available | Ranked vs. binary |
+
+### Outlier Tests (9 tests)
+| Test | Available in SciPy/Statsmodels? | Use Case |
+|------|--------------------------------|----------|
+| Tukey's Fence | ❌ Not available | IQR-based outlier detection |
+| Grubbs Test | ❌ Not available | Single outlier detection |
+| ESD Test | ❌ Not available | Multiple outlier detection (up to k) |
+| Tietjen-Moore Test | ❌ Not available | Detect exactly k outliers |
+| Chauvenet Criterion | ❌ Not available | Probability-based outlier detection |
+| Peirce's Criterion | ❌ Not available | Conservative outlier detection |
+| Dixon's Q Test | ❌ Not available | Small sample outlier detection |
+| Thompson Tau Test | ❌ Not available | Modified z-score approach |
+| MAD-Median Test | ❌ Not available | Median absolute deviation method |
+
+**Total: 90+ statistical tests** (30+ not available in SciPy/Statsmodels)
+
+## 💡 Usage Examples
+
+### Comparing Groups
+
+```python
+from StatsTest.sample_tests import two_sample_t_test
+from StatsTest.rank_tests import two_sample_mann_whitney_test
+import numpy as np
+
+# Parametric test (assumes normality)
+control = np.array([23, 25, 27, 29, 31])
+treatment = np.array([28, 30, 33, 35, 37])
+
+t_stat, p = two_sample_t_test(control, treatment, alternative="two-sided")
+print(f"T-test: t={t_stat:.3f}, p={p:.3f}")
+
+# Non-parametric alternative (no normality assumption)
+u_stat, p = two_sample_mann_whitney_test(control, treatment, alternative="two-sided")
+print(f"Mann-Whitney U: U={u_stat:.3f}, p={p:.3f}")
+```
+
+### Testing Proportions
+
+```python
+from StatsTest.proportion_tests import two_sample_proportion_z_test
+import numpy as np
+
+# Compare conversion rates between two groups
+group_a = np.array([1, 0, 1, 1, 0, 1, 1, 1, 0, 1])  # 7/10 = 70%
+group_b = np.array([1, 0, 0, 1, 0, 0, 1, 0, 0, 1])  # 4/10 = 40%
+
+z_stat, p = two_sample_proportion_z_test(group_a, group_b)
+print(f"Proportion test: z={z_stat:.3f}, p={p:.3f}")
+```
+
+### Detecting Outliers
+
+```python
+from StatsTest.outliers_test import grubbs_test
+import numpy as np
+
+data = np.array([2.1, 2.3, 2.5, 2.7, 2.8, 2.9, 3.0, 3.1, 15.0])
+
+outlier = grubbs_test(data, alternative="two-sided", alpha=0.05)
+if outlier is not None:
+    print(f"Outlier detected: {outlier}")
+else:
+    print("No outliers detected")
+```
+
+### Testing Normality
+
+```python
+from StatsTest.gof_tests import shapiro_wilk_test, jarque_bera_test
+import numpy as np
+
+# Generate some data
+data = np.random.normal(loc=50, scale=10, size=100)
+
+# Shapiro-Wilk test
+w_stat, p = shapiro_wilk_test(data)
+print(f"Shapiro-Wilk: W={w_stat:.3f}, p={p:.3f}")
+
+# Jarque-Bera test
+jb_stat, p = jarque_bera_test(data)
+print(f"Jarque-Bera: JB={jb_stat:.3f}, p={p:.3f}")
+```
+
+## 🛠️ Development
+
+### Setup Development Environment
+
+```bash
+# Clone and install
+git clone https://github.com/ConorMcNamara/stats_test_from_scratch.git
+cd stats_test_from_scratch
+pip install -e ".[dev]"
+
+# Set up pre-commit hooks
+pre-commit install
+```
+
+### Run Tests
+
+```bash
+# Using Make (recommended)
+make test              # Run all tests
+make test-cov          # Run with coverage report
+make test-verbose      # Run in verbose mode
+
+# Or directly with pytest
+pytest
+pytest --cov=StatsTest --cov-report=html
+pytest test/test_sample_tests.py
+```
+
+### Code Quality
+
+```bash
+# Using Make (recommended)
+make format            # Format code
+make lint              # Check for issues
+make type-check        # Type checking
+make check             # Run all checks
+
+# Or directly with tools
+ruff format .
+ruff check . --fix
+mypy StatsTest --ignore-missing-imports
+```
+
+### Project Structure
+
+```
+stats_test_from_scratch/
+├── StatsTest/              # Main package
+│   ├── sample_tests.py     # Z-tests, t-tests, F-tests, etc.
+│   ├── rank_tests.py       # Non-parametric tests
+│   ├── categorical_tests.py # Chi-square, Fisher, McNemar, etc.
+│   ├── multi_group_tests.py # ANOVA, Levene, etc.
+│   ├── proportion_tests.py  # Binomial, proportion tests
+│   ├── gof_tests.py        # Goodness-of-fit tests
+│   ├── correlation_tests.py # Correlation coefficients
+│   ├── outliers_test.py    # Outlier detection
+│   ├── post_hoc_tests.py   # Post-hoc comparisons
+│   └── utils.py            # Helper functions
+├── test/                   # Test suite
+├── pyproject.toml          # Project configuration
+└── README.md              # This file
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's:
+
+- 🐛 Bug reports
+- 💡 Feature requests
+- 📝 Documentation improvements
+- ✨ New test implementations
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+- Development setup
+- Coding standards
+- Testing requirements
+- Pull request process
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Set up development environment: `make dev`
+4. Make your changes and add tests
+5. Run checks: `make check`
+6. Commit with descriptive message: `git commit -m "feat: add new test"`
+7. Push and create a pull request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for complete details.
+
+## 📄 License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by the need for educational statistical implementations
+- References SciPy and Statsmodels for production alternatives
+- Built with modern Python best practices
+
+## 📚 Resources
+
+- [SciPy Statistics Documentation](https://docs.scipy.org/doc/scipy/reference/stats.html)
+- [Statsmodels Documentation](https://www.statsmodels.org/)
+- [Statistical Test Selection Guide](https://stats.oarc.ucla.edu/other/mult-pkg/whatstat/)
+
+---
+
+**Note**: This library prioritizes educational clarity over computational performance. For production use with large datasets, consider using SciPy or Statsmodels implementations where available.

@@ -1,5 +1,5 @@
 from math import sqrt
-from typing import List, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from scipy.special import erfc
 from StatsTest.utils import _check_table
 
 
-def tukey_fence_test(data: Union[Sequence, np.ndarray], coef: float = 1.5) -> np.ndarray:
+def tukey_fence_test(data: Sequence | np.ndarray, coef: float = 1.5) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels
 
     Used to determine outliers in a normally distributed dataset.
@@ -34,10 +34,10 @@ def tukey_fence_test(data: Union[Sequence, np.ndarray], coef: float = 1.5) -> np
 
 
 def grubbs_test(
-    data: Union[Sequence, np.ndarray],
+    data: Sequence | np.ndarray,
     alternative: str = "two-sided",
     alpha: float = 0.05,
-) -> Optional[Union[float, int]]:
+) -> float | int | None:
     """Not found in either scipy.stats or statsmodels
 
     Used to determine if there exists one outlier in the dataset based on their dispersion from the mean.
@@ -90,8 +90,8 @@ def grubbs_test(
 
 
 def extreme_studentized_deviate_test(
-    data: Union[Sequence, np.ndarray], num_outliers: int = 1, alpha: float = 0.05
-) -> Tuple[int, List]:
+    data: Sequence | np.ndarray, num_outliers: int = 1, alpha: float = 0.05
+) -> tuple[int, list]:
     """Not found in either scipy.stats or statsmodels
 
     Used when we think there are at most k outliers, as other tests such as Grubbs or Tietjen-Moore rely on there existing
@@ -141,11 +141,11 @@ def extreme_studentized_deviate_test(
 
 
 def tietjen_moore_test(
-    data: Union[Sequence, np.ndarray],
+    data: Sequence | np.ndarray,
     num_outliers: int = 1,
     alternative: str = "two-sided",
     alpha: float = 0.05,
-) -> Optional[List]:
+) -> list | None:
     """Not found in either scipy.stats or statsmodels
 
     An extension of Grubbs where it is used to determine if there exists exactly k outliers in the dataset based on their
@@ -182,7 +182,7 @@ def tietjen_moore_test(
         y_bar = np.mean(data)
         if alternative.casefold() == "greater":
             data_large = sort_data[:-num_outliers]
-            outliers = sort_data[len(data) - num_outliers:]
+            outliers = sort_data[len(data) - num_outliers :]
             y_bar_large = np.mean(data_large)
             l_var = np.sum(np.power(data_large - y_bar_large, 2)) / np.sum(np.power(data - y_bar, 2))
         elif alternative.casefold() == "less":
@@ -193,7 +193,7 @@ def tietjen_moore_test(
         else:
             abs_resids = np.abs(data - y_bar)
             z = data[np.argsort(abs_resids)]
-            outliers = z[len(data) - num_outliers:]
+            outliers = z[len(data) - num_outliers :]
             z_large = z[:-num_outliers]
             z_bar = np.mean(z_large)
             l_var = np.sum(np.power(z_large - z_bar, 2)) / np.sum(np.power(z - y_bar, 2))
@@ -219,7 +219,7 @@ def tietjen_moore_test(
         return None
 
 
-def chauvenet_test(data: Union[Sequence, np.ndarray]) -> np.ndarray:
+def chauvenet_test(data: Sequence | np.ndarray) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels.
 
     Based off of the Chauvenet criterion, which is that any data is an outlier if its error function is less than
@@ -243,8 +243,8 @@ def chauvenet_test(data: Union[Sequence, np.ndarray]) -> np.ndarray:
 
 
 def peirce_test(
-    observed: Union[Sequence, np.ndarray],
-    expected: Union[Sequence, np.ndarray],
+    observed: Sequence | np.ndarray,
+    expected: Sequence | np.ndarray,
     num_outliers: int = 1,
     num_coef: int = 1,
 ) -> np.ndarray:
@@ -299,7 +299,7 @@ def peirce_test(
     return observed[np.power(observed - expected, 2) > threshold]
 
 
-def dixon_q_test(data: Union[Sequence, np.ndarray], alpha: float = 0.01) -> np.ndarray:
+def dixon_q_test(data: Sequence | np.ndarray, alpha: float = 0.01) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels
 
     Parameters
@@ -425,7 +425,7 @@ def dixon_q_test(data: Union[Sequence, np.ndarray], alpha: float = 0.01) -> np.n
         return sort_data[q > q90[n - 3]]
 
 
-def thompson_tau_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> List:
+def thompson_tau_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
     """Not found in either scipy.stats or statsmodels
 
     Uses the Thompson-Tau criteria to iteratively identify outliers until no more exist.
@@ -460,7 +460,7 @@ def thompson_tau_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) ->
     return outlier_table
 
 
-def mad_median_test(data: Union[Sequence, np.ndarray], alpha: float = 0.05) -> List:
+def mad_median_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
     """Not found in either scipy.stats or statsmodels
 
     Uses the median absolute deviation rule as a method of outlier detection.

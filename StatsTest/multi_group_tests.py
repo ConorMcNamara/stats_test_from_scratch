@@ -1,5 +1,4 @@
 from math import sqrt
-from typing import Tuple
 
 import numpy as np
 from scipy.stats import f, chi2, norm
@@ -7,7 +6,7 @@ from scipy.stats import f, chi2, norm
 from StatsTest.utils import _check_table
 
 
-def levene_test(*args) -> Tuple[float, float]:
+def levene_test(*args) -> tuple[float, float]:
     """Found in scipy.stats as levene(center='mean')
 
     Used to determine if a variable/observation in multiple groups has equal variances across all groups. In short, does
@@ -43,7 +42,7 @@ def levene_test(*args) -> Tuple[float, float]:
     return w, p
 
 
-def brown_forsythe_test(*args) -> Tuple[float, float]:
+def brown_forsythe_test(*args) -> tuple[float, float]:
     """Found in scipy.stats as levene(center='median')
 
     Used instead of general levene test if we believe our data to be non-normal.
@@ -78,7 +77,7 @@ def brown_forsythe_test(*args) -> Tuple[float, float]:
     return w, p
 
 
-def one_way_f_test(*args) -> Tuple[float, float]:
+def one_way_f_test(*args) -> tuple[float, float]:
     """Found in scipy.stats as f_oneway
 
     Used to measure if multiple normal populations have the same mean. Note that this test is very sensitive to
@@ -114,7 +113,7 @@ def one_way_f_test(*args) -> Tuple[float, float]:
     return f_statistic, p
 
 
-def bartlett_test(*args) -> Tuple[float, float]:
+def bartlett_test(*args) -> tuple[float, float]:
     """Found in scipy.stats as bartlett
 
     This test is used to determine if multiple samples are from a population of equal variances. Note that this test
@@ -149,7 +148,7 @@ def bartlett_test(*args) -> Tuple[float, float]:
     return X, p
 
 
-def cochran_q_test(*args) -> Tuple[float, float]:
+def cochran_q_test(*args) -> tuple[float, float]:
     """Found in statsmodels as chochrans_q
 
     Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
@@ -183,7 +182,7 @@ def cochran_q_test(*args) -> Tuple[float, float]:
     return T, p
 
 
-def jonckheere_trend_test(*args, **kwargs) -> Tuple[float, float]:
+def jonckheere_trend_test(*args, **kwargs) -> tuple[float, float]:
     """This test is not found in scipy or statsmodels
 
     This test is used to determine if the population medians for each group have an a priori ordering.
@@ -248,7 +247,7 @@ def jonckheere_trend_test(*args, **kwargs) -> Tuple[float, float]:
     return z_statistic, p
 
 
-def mood_median_test(*args, **kwargs) -> Tuple[float, float]:
+def mood_median_test(*args, **kwargs) -> tuple[float, float]:
     """Found in scipy.stats as median_test
 
     This test is used to determine if two or more samples/observations come from a population with the same median.

@@ -11,7 +11,7 @@ from StatsTest.sample_tests import (
     two_sample_f_test,
     trinomial_test,
     trimmed_means_test,
-    yeun_welch_test,
+    yuen_welch_test,
     binomial_sign_test,
     wald_wolfowitz_test,
     fligner_policello_test,
@@ -186,20 +186,20 @@ class TestSampleTest:
 
     def test_YeunWelch_pLessZero_Error(self) -> None:
         with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
-            yeun_welch_test([1, 2, 3], [4, 5, 6], p=-5)
+            yuen_welch_test([1, 2, 3], [4, 5, 6], p=-5)
 
     def test_YeunWelch_pGreaterHundred_Error(self) -> None:
         with pytest.raises(ValueError, match="Percentage trimmed needs to be between 0 and 100"):
-            yeun_welch_test([1, 2, 3], [4, 5, 6], p=105)
+            yuen_welch_test([1, 2, 3], [4, 5, 6], p=105)
 
     def test_YeunWelch_alternativeWrong_Error(self) -> None:
         with pytest.raises(ValueError, match="Cannot determine method for alternative hypothesis"):
-            yeun_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative="moar")
+            yuen_welch_test([1, 2, 3], [4, 5, 6], p=10, alternative="moar")
 
     def test_YeunWelch_result(self) -> None:
         data_1 = [4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 40]
         data_2 = [12, 8, 6, 16, 12, 14, 10, 16, 6, 11]
-        t, p = yeun_welch_test(data_1, data_2, p=20, alternative="two-sided")
+        t, p = yuen_welch_test(data_1, data_2, p=20, alternative="two-sided")
         assert pytest.approx(0.739002, 0.00001) == p
         assert pytest.approx(0.34365, 0.0001) == t
 

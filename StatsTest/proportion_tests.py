@@ -1,5 +1,5 @@
 from math import sqrt
-from typing import Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -9,13 +9,13 @@ from StatsTest.utils import _check_table, _left_extreme, _right_extreme
 
 
 def one_sample_proportion_z_test(
-    sample_data: Union[Sequence, np.ndarray],
+    sample_data: Sequence | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Found in statsmodels as proportions_ztest
 
-    Used when comparing whether our observed proportion mean is difference to the population mean, assuming that the
+    Used when comparing whether our observed proportion mean is different from the population mean, assuming that the
     proportion mean is normally distributed.
 
     Parameters
@@ -63,10 +63,10 @@ def one_sample_proportion_z_test(
 
 
 def two_sample_proportion_z_test(
-    data_1: Union[Sequence, np.ndarray],
-    data_2: Union[Sequence, np.ndarray],
+    data_1: Sequence | np.ndarray,
+    data_2: Sequence | np.ndarray,
     alternative: str = "two-sided",
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Found in statsmodels as proportions_ztest
 
     Used when we are comparing whether or not two proportion means are the same, given that both of them come from a
@@ -115,10 +115,10 @@ def two_sample_proportion_z_test(
 
 
 def binomial_test(
-    success: Union[Sequence, np.ndarray, int],
-    failure: Union[Sequence, np.ndarray, int],
+    success: Sequence | np.ndarray | int,
+    failure: Sequence | np.ndarray | int,
     alternative: str = "two-sided",
-    success_prob: Optional[float] = None,
+    success_prob: float | None = None,
 ) -> float:
     """The binomial test can be found in scipy.stats as binom_test.
 
@@ -181,10 +181,10 @@ def binomial_test(
 
 
 def chi_square_proportion_test(
-    success_prob: Union[Sequence, np.ndarray],
-    n_total: Union[Sequence, np.ndarray],
-    expected: Optional[Union[Sequence, np.ndarray]] = None,
-) -> Tuple[float, float]:
+    success_prob: Sequence | np.ndarray,
+    n_total: Sequence | np.ndarray,
+    expected: Sequence | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Not found in either statsmodels or scipy.stats
 
     Used when we are given proportions of success (as well as total participants) instead of
@@ -240,10 +240,10 @@ def chi_square_proportion_test(
 
 
 def g_proportion_test(
-    success_prob: Union[Sequence, np.ndarray],
-    n_total: Union[Sequence, np.ndarray],
-    expected: Optional[Union[Sequence, np.ndarray]] = None,
-) -> Tuple[float, float]:
+    success_prob: Sequence | np.ndarray,
+    n_total: Sequence | np.ndarray,
+    expected: Sequence | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Not found in either statsmodels or scipy.stats
 
     Used when we are given proportions of success (as well as total participants) instead of
