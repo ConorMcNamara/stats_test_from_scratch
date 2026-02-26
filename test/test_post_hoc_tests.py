@@ -3,7 +3,7 @@ import pytest
 from statsmodels.stats.libqsturng import psturng
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-from StatsTest.post_hoc_tests import tukey_range_test, dunnett_test, duncan_multiple_range_test
+from StatsTest.post_hoc_tests import duncan_multiple_range_test, dunnett_test, tukey_range_test
 
 
 class TestPostHocTest:

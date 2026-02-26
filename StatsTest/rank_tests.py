@@ -1,9 +1,8 @@
-from math import sqrt
 from collections.abc import Sequence
+from math import sqrt
 
 import numpy as np
-
-from scipy.stats import rankdata, norm, chi2, f
+from scipy.stats import chi2, f, norm, rankdata
 
 from StatsTest.utils import _check_table
 
@@ -144,7 +143,7 @@ def friedman_test(*args) -> tuple[float, float]:
     """
     k = len(args)
     if k < 3:
-        raise AttributeError("Friedman Test not appropriate for {} levels".format(k))
+        raise AttributeError(f"Friedman Test not appropriate for {k} levels")
     df = k - 1
     all_data = np.vstack(args).T
     n = len(all_data)
@@ -177,7 +176,7 @@ def quade_test(*args) -> tuple[float, float]:
     """
     k = len(args)
     if k < 3:
-        raise AttributeError("Quade Test not appropriate for {} levels".format(k))
+        raise AttributeError(f"Quade Test not appropriate for {k} levels")
     all_data = np.vstack(args).T
     b = all_data.shape[0]
     rank = np.apply_along_axis(rankdata, 1, all_data)
@@ -218,7 +217,7 @@ def page_trend_test(*args, **kwargs) -> tuple[float, float]:
     """
     n_conditions = len(args)
     if n_conditions < 3:
-        raise AttributeError("Page Test not appropriate for {} levels".format(n_conditions))
+        raise AttributeError(f"Page Test not appropriate for {n_conditions} levels")
     lengths = [len(arg) for arg in args]
     if len(np.unique(lengths)) != 1:
         raise AttributeError("Page Test requires that each level have the same number of observations")
@@ -231,10 +230,7 @@ def page_trend_test(*args, **kwargs) -> tuple[float, float]:
     else:
         alternative = "greater"
     k_subjects = lengths[0]
-    if alternative.casefold() == "greater":
-        n_rank = np.arange(n_conditions, 0, -1)
-    else:
-        n_rank = np.arange(n_conditions) + 1
+    n_rank = np.arange(n_conditions, 0, -1) if alternative.casefold() == "greater" else np.arange(n_conditions) + 1
     rank_data = []
     for i in range(k_subjects):
         rank_data.append(rankdata([arg[i] for arg in args]))
@@ -312,14 +308,11 @@ def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
             raise ValueError("Cannot discern how to center the data")
     else:
         center = "median"
-    if center == "median":
-        m_i = [np.median(arg) for arg in args]
-    else:
-        m_i = [np.mean(arg) for arg in args]
+    m_i = [np.median(arg) for arg in args] if center == "median" else [np.mean(arg) for arg in args]
     n_i = [len(arg) for arg in args]
     n = np.sum(n_i)
     resids = np.abs([args[i] - m_i[i] for i in range(k)])
-    all_resids = np.hstack([resid for resid in resids])
+    all_resids = np.hstack(list(resids))
     rank_all_resids = rankdata(all_resids)
     normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)
     normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0 : len(n_i) - 1])
@@ -487,10 +480,7 @@ def mood_test(
     var_m = len_1 * len_2 * (n_obs + 1) * (n_obs + 2) * (n_obs - 2) / 180
     z = (m - mu_m) / sqrt(var_m)
     if alternative.casefold() == "two-sided":
-        if z > 0:
-            p = 2 * (1 - norm.cdf(z))
-        else:
-            p = 2 * norm.cdf(z)
+        p = 2 * (1 - norm.cdf(z)) if z > 0 else 2 * norm.cdf(z)
     elif alternative.casefold() == "greater":
         p = 1 - norm.cdf(z)
     else:
@@ -569,10 +559,7 @@ def cucconi_test(
     if how.casefold() not in ["bootstrap", "permutation"]:
         raise ValueError("Cannot identify method for calculating p-value")
     c = calculate_c(data_1, data_2)
-    if how.casefold() == "bootstrap":
-        reps_list = bootstrap(data_1, data_2)
-    else:
-        reps_list = permutation(data_1, data_2)
+    reps_list = bootstrap(data_1, data_2) if how.casefold() == "bootstrap" else permutation(data_1, data_2)
     p = np.sum(reps_list >= c) / len(reps_list)
     return c, p
 

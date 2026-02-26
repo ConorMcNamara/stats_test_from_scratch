@@ -2,17 +2,17 @@ import numpy as np
 import pytest
 import statsmodels.api as sm
 from scipy.stats import chi2_contingency, fisher_exact
-from statsmodels.stats.contingency_tables import mcnemar, SquareTable
+from statsmodels.stats.contingency_tables import SquareTable, mcnemar
 
 from StatsTest.categorical_tests import (
-    fisher_test,
-    mcnemar_test,
-    chi_squared_test,
-    g_test,
-    cmh_test,
-    woolf_test,
-    breslow_day_test,
     bowker_test,
+    breslow_day_test,
+    chi_squared_test,
+    cmh_test,
+    fisher_test,
+    g_test,
+    mcnemar_test,
+    woolf_test,
 )
 
 

@@ -1,10 +1,9 @@
-from math import sqrt
 from collections.abc import Sequence
+from math import sqrt
 
 import numpy as np
-
-from scipy.stats import t, median_abs_deviation, chi2
 from scipy.special import erfc
+from scipy.stats import chi2, median_abs_deviation, t
 
 from StatsTest.utils import _check_table
 
@@ -76,10 +75,7 @@ def grubbs_test(
         t_value = t.isf(alpha / (2 * n), n - 2)
     else:
         val = np.max([y_bar - np.min(data), np.max(data) - y_bar])
-        if val == y_bar - np.min(data):
-            return_val = np.min(data)
-        else:
-            return_val = np.max(data)
+        return_val = np.min(data) if val == y_bar - np.min(data) else np.max(data)
         t_value = t.isf(alpha / n, n - 2)
     g = val / s
     rejection_stat = ((n - 1) / sqrt(n)) * sqrt(pow(t_value, 2) / (n - 2 + pow(t_value, 2)))

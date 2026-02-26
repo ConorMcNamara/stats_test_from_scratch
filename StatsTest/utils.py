@@ -22,9 +22,9 @@ def _standard_error(std: float, n: int) -> float:
     The standard error, or our standard deviation divided by the square root of n.
     """
     if not isinstance(std, Number):
-        raise TypeError("Cannot calculate standard error with standard deviation of type {}".format(type(std)))
+        raise TypeError(f"Cannot calculate standard error with standard deviation of type {type(std)}")
     if not isinstance(n, int):
-        raise TypeError("Cannot calculate standard error with n of type {}".format(type(n)))
+        raise TypeError(f"Cannot calculate standard error with n of type {type(n)}")
     if n <= 0:
         raise ValueError("Cannot calculate standard error with n less than or equal to zero")
     return std / sqrt(n)
@@ -87,7 +87,7 @@ def _check_table(
     elif isinstance(table, (pd.Series, pd.DataFrame)):
         table = np.array(table)
     else:
-        raise TypeError("Data type {} is not supported".format(type(table)))
+        raise TypeError(f"Data type {type(table)} is not supported")
     if only_count:
         for tab in table:
             if not np.issubdtype(tab.dtype, np.integer):
@@ -95,9 +95,7 @@ def _check_table(
             if not np.all(tab >= 0):
                 raise ValueError("Cannot have negative counts")
     else:
-        if np.issubdtype(table.dtype, np.integer):
-            pass
-        elif np.issubdtype(table.dtype, np.dtype(float).type):
+        if np.issubdtype(table.dtype, np.integer) or np.issubdtype(table.dtype, np.dtype(float).type):
             pass
         else:
             raise TypeError("Cannot perform statistical test with non-numeric values")

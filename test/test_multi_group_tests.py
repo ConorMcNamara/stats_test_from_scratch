@@ -1,16 +1,16 @@
 import numpy as np
 import pytest
-from scipy.stats import levene, f_oneway, bartlett, median_test
+from scipy.stats import bartlett, f_oneway, levene, median_test
 from statsmodels.stats.contingency_tables import cochrans_q
 
 from StatsTest.multi_group_tests import (
-    levene_test,
-    brown_forsythe_test,
-    one_way_f_test,
     bartlett_test,
+    brown_forsythe_test,
     cochran_q_test,
     jonckheere_trend_test,
+    levene_test,
     mood_median_test,
+    one_way_f_test,
 )
 
 

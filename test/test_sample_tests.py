@@ -1,20 +1,20 @@
 import numpy as np
 import pytest
-from scipy.stats import ttest_rel, ttest_ind, ttest_1samp
+from scipy.stats import ttest_1samp, ttest_ind, ttest_rel
 from statsmodels.sandbox.stats.runs import runstest_1samp
 
 from StatsTest.sample_tests import (
-    one_sample_z_test,
+    binomial_sign_test,
+    fligner_policello_test,
     one_sample_t_test,
+    one_sample_z_test,
+    trimmed_means_test,
+    trinomial_test,
+    two_sample_f_test,
     two_sample_t_test,
     two_sample_z_test,
-    two_sample_f_test,
-    trinomial_test,
-    trimmed_means_test,
-    yuen_welch_test,
-    binomial_sign_test,
     wald_wolfowitz_test,
-    fligner_policello_test,
+    yuen_welch_test,
 )
 
 

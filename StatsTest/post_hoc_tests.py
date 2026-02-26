@@ -1,13 +1,12 @@
+from collections.abc import Sequence
 from itertools import chain
 from math import sqrt
-from collections.abc import Sequence
 
 import numpy as np
-
 from statsmodels.stats.libqsturng import psturng
 
-from StatsTest.utils import _sse
 from StatsTest.multi_group_tests import one_way_f_test
+from StatsTest.utils import _sse
 
 
 def dunnett_test(control: Sequence | np.ndarray, alpha: float = 0.05, *args) -> np.ndarray:
@@ -3094,7 +3093,7 @@ def tukey_range_test(*args) -> list[list]:
             std_group = sqrt(sse / df / min(n_a, n_b))
             q = difference / std_group
             p = psturng(q, k, df)
-            results.append(["group {} - group {}".format(group, next_group), q, p])
+            results.append([f"group {group} - group {next_group}", q, p])
     return results
 
 
@@ -3132,5 +3131,5 @@ def scheffe_test(*args) -> list[list]:
             mean_a, mean_b = means[group], means[next_group]
             n_a, n_b = sample_sizes[group], sample_sizes[next_group]
             scheffe_val = np.power(mean_a - mean_b, 2) / (ssw * ((1 / n_a) + (1 / n_b)))
-            results.append(["group {} - group {}".format(group, next_group), scheffe_val > f_prime])
+            results.append([f"group {group} - group {next_group}", scheffe_val > f_prime])
     return results

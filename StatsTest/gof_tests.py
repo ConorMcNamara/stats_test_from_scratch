@@ -1,11 +1,10 @@
-from math import sqrt, log, asinh
 from collections.abc import Sequence
+from math import asinh, log, sqrt
 
 import numpy as np
-
 from scipy.stats import chi2, norm, shapiro
 
-from StatsTest.utils import _check_table, _skew, _kurtosis, _autocorr
+from StatsTest.utils import _autocorr, _check_table, _kurtosis, _skew
 
 
 def shapiro_wilk_test(data: Sequence | np.ndarray) -> tuple[float, float]:
@@ -59,10 +58,7 @@ def chi_goodness_of_fit_test(
         The likelihood that our observed differences, given the amount of data, can be attributed to chance
     """
     observed = _check_table(observed, False)
-    if not expected:
-        expected = np.repeat(np.mean(observed), len(observed))
-    else:
-        expected = _check_table(expected)
+    expected = np.repeat(np.mean(observed), len(observed)) if not expected else _check_table(expected)
     df = len(observed) - 1
     X = np.sum(np.power(observed - expected, 2) / expected)
     p = 1 - chi2.cdf(X, df)
@@ -93,10 +89,7 @@ def g_goodness_of_fit_test(
         The likelihood that our observed differences are due to chance
     """
     observed = _check_table(observed, False)
-    if not expected:
-        expected = np.repeat(np.mean(observed), len(observed))
-    else:
-        expected = _check_table(expected)
+    expected = np.repeat(np.mean(observed), len(observed)) if not expected else _check_table(expected)
     df = len(observed) - 1
     g = 2 * np.sum(observed * np.log(observed / expected))
     p = 1 - chi2.cdf(g, df)
@@ -158,7 +151,7 @@ def ljung_box_test(
         h_lags = np.arange(1, 11)
     elif isinstance(num_lags, int):
         h_lags = np.arange(1, num_lags + 1)
-    elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
+    elif isinstance(num_lags, (list, np.ndarray, np.generic)):
         num_lags = _check_table(num_lags, only_count=False)
         h_lags = num_lags
     else:
@@ -200,7 +193,7 @@ def box_pierce_test(
         h_lags = np.arange(1, 11)
     elif isinstance(num_lags, int):
         h_lags = np.arange(1, num_lags + 1)
-    elif isinstance(num_lags, list) or isinstance(num_lags, (np.ndarray, np.generic)):
+    elif isinstance(num_lags, (list, np.ndarray, np.generic)):
         h_lags = _check_table(num_lags, only_count=False)
     else:
         raise ValueError("Cannot discern number of lags")

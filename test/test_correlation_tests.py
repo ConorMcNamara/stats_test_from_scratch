@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
-from scipy.stats import pearsonr, spearmanr, kendalltau, pointbiserialr
+from scipy.stats import kendalltau, pearsonr, pointbiserialr, spearmanr
 
 from StatsTest.correlation_tests import (
-    pearson_test,
-    spearman_test,
     kendall_tau_test,
+    pearson_test,
     point_biserial_correlation_test,
     rank_biserial_correlation_test,
+    spearman_test,
 )
 
 

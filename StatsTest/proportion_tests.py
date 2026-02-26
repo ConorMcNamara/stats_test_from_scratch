@@ -1,9 +1,8 @@
-from math import sqrt
 from collections.abc import Sequence
+from math import sqrt
 
 import numpy as np
-
-from scipy.stats import norm, binom, chi2
+from scipy.stats import binom, chi2, norm
 
 from StatsTest.utils import _check_table, _left_extreme, _right_extreme
 

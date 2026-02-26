@@ -1,8 +1,7 @@
 from collections.abc import Sequence
 
 import numpy as np
-
-from scipy.stats import chi2, binom
+from scipy.stats import binom, chi2
 
 from StatsTest.utils import _check_table, _hypergeom_distribution
 
@@ -95,7 +94,7 @@ def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = 
     def left_side(a, b, c, d):
         num_steps = min(a, d)
         p_val = []
-        for i in range(num_steps):
+        for _i in range(num_steps):
             a -= 1
             b += 1
             c += 1
@@ -107,7 +106,7 @@ def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = 
     def right_side(a, b, c, d):
         num_steps = min(b, c)
         p_val = []
-        for i in range(num_steps):
+        for _i in range(num_steps):
             a += 1
             b -= 1
             c -= 1

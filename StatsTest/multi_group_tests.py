@@ -1,7 +1,7 @@
 from math import sqrt
 
 import numpy as np
-from scipy.stats import f, chi2, norm
+from scipy.stats import chi2, f, norm
 
 from StatsTest.utils import _check_table
 

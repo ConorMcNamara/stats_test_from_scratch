@@ -1,9 +1,8 @@
-from math import sqrt, factorial
 from collections.abc import Sequence
+from math import factorial, sqrt
 
 import numpy as np
-
-from scipy.stats import t, rankdata, norm
+from scipy.stats import norm, rankdata, t
 
 from StatsTest.utils import _check_table
 
@@ -137,9 +136,7 @@ def kendall_tau_test(
             p = 2.0 / factorial(n)
         elif c == 1:
             p = 2.0 / factorial(n - 1)
-        elif n == 1:
-            p = 1.0
-        elif n == 2:
+        elif n == 1 or n == 2:
             p = 1.0
         else:
             new_vals = [1, 1] + [0] * (c - 1)

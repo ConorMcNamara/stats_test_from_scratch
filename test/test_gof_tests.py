@@ -1,20 +1,20 @@
 import numpy as np
 import pytest
-from scipy.stats import chisquare, power_divergence, normaltest, kurtosistest, skewtest, shapiro
+from scipy.stats import chisquare, kurtosistest, normaltest, power_divergence, shapiro, skewtest
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import jarque_bera
 
 from StatsTest.gof_tests import (
-    shapiro_wilk_test,
+    box_pierce_test,
     chi_goodness_of_fit_test,
     g_goodness_of_fit_test,
     jarque_bera_test,
-    ljung_box_test,
-    box_pierce_test,
-    skew_test,
-    kurtosis_test,
     k_squared_test,
+    kurtosis_test,
     lilliefors_test,
+    ljung_box_test,
+    shapiro_wilk_test,
+    skew_test,
 )
 
 

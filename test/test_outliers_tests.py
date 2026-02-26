@@ -2,15 +2,15 @@ import numpy as np
 import pytest
 
 from StatsTest.outliers_test import (
-    tukey_fence_test,
-    grubbs_test,
-    extreme_studentized_deviate_test,
-    tietjen_moore_test,
     chauvenet_test,
-    peirce_test,
     dixon_q_test,
-    thompson_tau_test,
+    extreme_studentized_deviate_test,
+    grubbs_test,
     mad_median_test,
+    peirce_test,
+    thompson_tau_test,
+    tietjen_moore_test,
+    tukey_fence_test,
 )
 
 

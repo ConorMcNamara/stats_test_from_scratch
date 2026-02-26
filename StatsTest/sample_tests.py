@@ -1,20 +1,18 @@
 import warnings
-
-from math import sqrt, factorial
-from numbers import Number
 from collections.abc import Sequence
+from math import factorial, sqrt
+from numbers import Number
 
 import numpy as np
-
-from scipy.stats import t, norm, f
 from scipy.special import factorial as st_factorial
+from scipy.stats import f, norm, t
 
 from StatsTest.utils import (
-    _standard_error,
     _check_table,
-    _right_extreme,
     _left_extreme,
+    _right_extreme,
     _rle,
+    _standard_error,
 )
 
 
@@ -479,10 +477,7 @@ def wald_wolfowitz_test(
     if expected is None:
         if cutoff.casefold() not in ["median", "mean"]:
             raise ValueError("Cannot determine cutoff point")
-        if cutoff.casefold() == "median":
-            midpoint = np.median(data_1)
-        else:
-            midpoint = np.mean(data_1)
+        midpoint = np.median(data_1) if cutoff.casefold() == "median" else np.mean(data_1)
         plus_minus = data_1 >= midpoint
     else:
         expected = _check_table(expected)
@@ -593,7 +588,7 @@ def fligner_policello_test(
         raise ValueError("Cannot determine alternative hypothesis")
     m, n = len(data_1), len(data_2)
     if m < 12 or n < 12:
-        warnings.warn("Datasets may be too small for accurate approximation of p")
+        warnings.warn("Datasets may be too small for accurate approximation of p", stacklevel=2)
 
     def compare_points(x, y):
         z = x - y[:, None]

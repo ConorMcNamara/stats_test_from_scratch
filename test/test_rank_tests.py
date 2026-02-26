@@ -1,17 +1,17 @@
 import numpy as np
 import pytest
-from scipy.stats import mannwhitneyu, wilcoxon, kruskal, friedmanchisquare, fligner, mood  # ansari
+from scipy.stats import fligner, friedmanchisquare, kruskal, mannwhitneyu, mood, wilcoxon  # ansari
 
 from StatsTest.rank_tests import (
-    two_sample_wilcoxon_test,
-    two_sample_mann_whitney_test,
+    cucconi_test,
+    fligner_kileen_test,
     friedman_test,
+    kruskal_wallis_test,
+    mood_test,
     page_trend_test,
     quade_test,
-    kruskal_wallis_test,
-    fligner_kileen_test,
-    mood_test,
-    cucconi_test,
+    two_sample_mann_whitney_test,
+    two_sample_wilcoxon_test,
 )
 
 

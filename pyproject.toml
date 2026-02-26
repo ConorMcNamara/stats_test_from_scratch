@@ -20,10 +20,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "numpy>=1.24.0",
-    "scipy>=1.10.0",
-    "statsmodels>=0.14.4,<0.15.0",
-    "pandas>=2.0.0",
+    "numpy>=2.0.0",
+    "scipy>=1.14.0",
+    "statsmodels>=0.14.4",
+    "pandas>=2.2.0",
 ]
 
 [project.optional-dependencies]

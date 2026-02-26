@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from numpy.testing import assert_array_equal
-from scipy.stats.mstats_basic import skew, kurtosis
+from scipy.stats.mstats_basic import kurtosis, skew
 from statsmodels.tsa.stattools import acf
 
 import StatsTest.utils as utils
@@ -160,7 +160,7 @@ class TestUtils:
         lags = np.arange(0, 11)
         a1 = utils._autocorr(data, lags)
         a2 = acf(data, nlags=len(lags) - 1, fft=False)
-        assert all([pytest.approx(a) == b for a, b in zip(a1, a2)])
+        assert all(pytest.approx(a) == b for a, b in zip(a1, a2, strict=False))
 
 
 if __name__ == "__main__":

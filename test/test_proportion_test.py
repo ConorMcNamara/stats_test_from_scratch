@@ -1,12 +1,13 @@
 import pytest
+from scipy.stats import binomtest
+
 from StatsTest.proportion_tests import (
-    one_sample_proportion_z_test,
-    two_sample_proportion_z_test,
     binomial_test,
     chi_square_proportion_test,
     g_proportion_test,
+    one_sample_proportion_z_test,
+    two_sample_proportion_z_test,
 )
-from scipy.stats import binomtest
 
 
 class TestProportionTest:
