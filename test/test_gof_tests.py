@@ -18,13 +18,13 @@ from StatsTest.gof_tests import (
 
 
 class TestGOFTests:
-
     # Chi Square Test for Goodness of Fit
 
     def test_chiGoodnessOfFit_result(self) -> None:
-        observed = [10, 20, 30, 40, 10]
-        expected = [20, 20, 20, 20, 20]
-        x1, p1 = chi_goodness_of_fit_test(observed, expected)
+        observed = [9, 11, 16, 10, 9, 5]
+        # Expected frequencies for a fair die (60 rolls / 6 sides = 10 each)
+        expected = [10, 10, 10, 10, 10, 10]
+        x1, p1 = chi_goodness_of_fit_test(observed, f_exp=expected)
         x2, p2 = chisquare(observed, expected)
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
@@ -32,9 +32,10 @@ class TestGOFTests:
     # G Test for Goodness of Fit
 
     def test_gGoodnessOfFit_result(self) -> None:
-        observed = [10, 20, 30, 40, 10]
-        expected = [20, 20, 20, 20, 20]
-        x1, p1 = g_goodness_of_fit_test(observed, expected)
+        observed = [9, 11, 16, 10, 9, 5]
+        # Expected frequencies for a fair die (60 rolls / 6 sides = 10 each)
+        expected = [10, 10, 10, 10, 10, 10]
+        x1, p1 = g_goodness_of_fit_test(observed, f_exp=expected)
         x2, p2 = power_divergence(observed, expected, lambda_="log-likelihood")
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
