@@ -62,7 +62,7 @@ class TestGOFTests:
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags)
         assert pytest.approx(df.loc[len(df) - 1, "lb_pvalue"]) == p1
-        assert pytest.approx(df.loc[len(df) - 1, "lb_stat"] == q1
+        assert pytest.approx(df.loc[len(df) - 1, "lb_stat"]) == q1
 
     # Box-Pierce Test
 
