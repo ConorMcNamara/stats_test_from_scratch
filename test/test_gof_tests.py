@@ -61,8 +61,8 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags)
-        assert pytest.approx(df["lb_pvalue"][0]) == p1
-        assert pytest.approx(df["lb_stat"][0]) == q1
+        assert pytest.approx(df.loc[len(df) - 1, "lb_pvalue"]) == p1
+        assert pytest.approx(df.loc[len(df) - 1, "lb_stat"] == q1
 
     # Box-Pierce Test
 
@@ -76,8 +76,8 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags, boxpierce=True)
-        assert pytest.approx(df["bp_pvalue"][0]) == p1
-        assert pytest.approx(df["bp_stat"][0]) == q1
+        assert pytest.approx(df.loc[len(df) - 1, "bp_pvalue"]) == p1
+        assert pytest.approx(df.loc[len(df) - 1, "bp_stat"]) == q1
 
     # Skew Test
 
@@ -134,7 +134,7 @@ class TestGOFTests:
         data = [1.2, 1.6, 1.8, 1.9, 1.9, 2.0, 2.2, 2.6, 3.0, 3.5, 4.0, 4.8, 5.6, 6.6, 7.6]
         d, result = lilliefors_test(data, 0.05)
         assert pytest.approx(0.1875, 0.001) == d
-        assert result is True
+        assert result
 
 
 if __name__ == "__main__":
