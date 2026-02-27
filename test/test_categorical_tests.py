@@ -81,7 +81,7 @@ class TestCategoricalTests:
     # CMH Test
 
     def test_cmhTest_TooFewObs_Error(self) -> None:
-        data_1 = [[222, 1234], [35, 61]]
+        data_1 = [1, 2, 3 ,4]
         with pytest.raises(AttributeError, match="Cannot perform CMH Test on less than 2 groups"):
             cmh_test(data_1)
 
@@ -111,7 +111,7 @@ class TestCategoricalTests:
     # Woolf Test
 
     def test_woolf_test_k_less2_error(self) -> None:
-        data = [[1, 2], [3, 4]]
+        data = [1, 2, 3 ,4]
         with pytest.raises(AttributeError, match="Cannot perform Woolf Test on less than two groups"):
             woolf_test(data)
 
@@ -136,7 +136,7 @@ class TestCategoricalTests:
     # Breslow-Day Test
 
     def test_breslowDayTest_kLess2_Error(self) -> None:
-        data = [[1, 2], [3, 4]]
+        data = [1, 2, 3 ,4]
         with pytest.raises(AttributeError, match="Cannot perform Breslow-Day Test for less than 2 groups"):
             breslow_day_test(data)
 

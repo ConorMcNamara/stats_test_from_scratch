@@ -2,36 +2,9 @@ from collections.abc import Sequence
 from math import asinh, log, sqrt
 
 import numpy as np
-from scipy.stats import chi2, norm, shapiro
+from scipy.stats import chi2, norm
 
 from StatsTest.utils import _autocorr, _check_table, _kurtosis, _skew
-
-
-def shapiro_wilk_test(data: Sequence | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as shapiro
-
-    Used to determine if a sample comes from a normally distributed population
-
-    Parameters
-    ----------
-    data : list or numpy array, 1-D
-        Our sample data
-
-    Returns
-    -------
-    w : float
-        Our test statistic for measuring the degree of normality in our data
-    p : float, 0 <= p <= 1
-        The likelihood that we would observe our data from a normally distributed population
-    """
-    data = _check_table(data, only_count=False)
-    n = len(data)
-    if n < 3:
-        raise AttributeError("Cannot run Shapiro-Wilks Test with less than 3 datapoints")
-    zeroes = np.zeros(n // 2)
-    data = np.sort(data)
-    a, w, p, ifault = shapiro(data, zeroes, 0)
-    return w, p
 
 
 def chi_goodness_of_fit_test(

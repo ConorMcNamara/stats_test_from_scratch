@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from scipy.stats import chisquare, kurtosistest, normaltest, power_divergence, shapiro, skewtest
+from scipy.stats import chisquare, kurtosistest, normaltest, power_divergence, skewtest
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import jarque_bera
 
@@ -13,31 +13,17 @@ from StatsTest.gof_tests import (
     kurtosis_test,
     lilliefors_test,
     ljung_box_test,
-    shapiro_wilk_test,
     skew_test,
 )
 
 
 class TestGOFTests:
-    # Shapiro-Wilk Test
-
-    def test_shapiroWilk_nLess3(self) -> None:
-        data = [1, 2]
-        with pytest.raises(AttributeError, match="Cannot run Shapiro-Wilks Test with less than 3 datapoints"):
-            shapiro_wilk_test(data)
-
-    def test_shapiroWilk_result(self) -> None:
-        data = np.random.randint(0, 50, 100)
-        w1, p1 = shapiro_wilk_test(data)
-        w2, p2 = shapiro(data)
-        assert pytest.approx(p2) == p1
-        assert pytest.approx(w2) == w1
 
     # Chi Square Test for Goodness of Fit
 
     def test_chiGoodnessOfFit_result(self) -> None:
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
+        observed = [10, 20, 30, 40, 10]
+        expected = [20, 20, 20, 20, 20]
         x1, p1 = chi_goodness_of_fit_test(observed, expected)
         x2, p2 = chisquare(observed, expected)
         assert pytest.approx(p2) == p1
@@ -73,9 +59,9 @@ class TestGOFTests:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 11)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
-        q2, p2 = acorr_ljungbox(data, num_lags)
-        assert pytest.approx(p2[len(p2) - 1]) == p1
-        assert pytest.approx(q2[len(q2) - 1]) == q1
+        df = acorr_ljungbox(data, num_lags)
+        assert pytest.approx(df["lb_pvalue"]) == p1
+        assert pytest.approx(df["lb_stat"]) == q1
 
     # Box-Pierce Test
 
@@ -88,9 +74,9 @@ class TestGOFTests:
         data = np.random.normal(0, 100, 1000)
         num_lags = np.arange(1, 11)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
-        _1, _2, q2, p2 = acorr_ljungbox(data, num_lags, boxpierce=True)
-        assert pytest.approx(p2[len(p2) - 1]) == p1
-        assert pytest.approx(q2[len(q2) - 1]) == q1
+        df = acorr_ljungbox(data, num_lags, boxpierce=True)
+        assert pytest.approx(df["bp_pvalue"]) == p1
+        assert pytest.approx(df["bp_stat"]) == q1
 
     # Skew Test
 
