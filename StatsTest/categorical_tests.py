@@ -179,7 +179,6 @@ def cmh_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
         The likelihood that our common odds ratio would not equal one if we were to randomly sample strata from the same
         population
     """
-    print(len(tables))
     if len(tables) < 2:
         raise AttributeError("Cannot perform CMH Test on less than 2 groups")
     a, row_sum, col_sum, total, n_i, m_i = [], [], [], [], [], []

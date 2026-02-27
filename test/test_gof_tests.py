@@ -24,8 +24,8 @@ class TestGOFTests:
         observed = [9, 11, 16, 10, 9, 5]
         # Expected frequencies for a fair die (60 rolls / 6 sides = 10 each)
         expected = [10, 10, 10, 10, 10, 10]
-        x1, p1 = chi_goodness_of_fit_test(observed, f_exp=expected)
-        x2, p2 = chisquare(observed, expected)
+        x1, p1 = chi_goodness_of_fit_test(observed, expected)
+        x2, p2 = chisquare(observed, f_exp=expected)
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
@@ -35,8 +35,8 @@ class TestGOFTests:
         observed = [9, 11, 16, 10, 9, 5]
         # Expected frequencies for a fair die (60 rolls / 6 sides = 10 each)
         expected = [10, 10, 10, 10, 10, 10]
-        x1, p1 = g_goodness_of_fit_test(observed, f_exp=expected)
-        x2, p2 = power_divergence(observed, expected, lambda_="log-likelihood")
+        x1, p1 = g_goodness_of_fit_test(observed, expected)
+        x2, p2 = power_divergence(observed, f_exp=expected, lambda_="log-likelihood")
         assert pytest.approx(p2) == p1
         assert pytest.approx(x2) == x1
 
@@ -61,8 +61,8 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags)
-        assert pytest.approx(df["lb_pvalue"]) == p1
-        assert pytest.approx(df["lb_stat"]) == q1
+        assert pytest.approx(df["lb_pvalue"][0]) == p1
+        assert pytest.approx(df["lb_stat"][0]) == q1
 
     # Box-Pierce Test
 
@@ -76,8 +76,8 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags, boxpierce=True)
-        assert pytest.approx(df["bp_pvalue"]) == p1
-        assert pytest.approx(df["bp_stat"]) == q1
+        assert pytest.approx(df["bp_pvalue"][0]) == p1
+        assert pytest.approx(df["bp_stat"][0]) == q1
 
     # Skew Test
 

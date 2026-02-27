@@ -86,6 +86,8 @@ def _check_table(
         pass
     elif isinstance(table, (pd.Series, pd.DataFrame)):
         table = np.array(table)
+    elif isinstance(table, tuple):
+        table = np.array([np.array(xi) for xi in table])
     else:
         raise TypeError(f"Data type {type(table)} is not supported")
     if only_count:
