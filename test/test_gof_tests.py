@@ -46,8 +46,8 @@ class TestGOFTests:
     # G Test for Goodness of Fit
 
     def test_gGoodnessOfFit_result(self) -> None:
-        observed = [10, 20, 30, 40]
-        expected = [20, 20, 20, 20]
+        observed = [10, 20, 30, 40, 10]
+        expected = [20, 20, 20, 20, 20]
         x1, p1 = g_goodness_of_fit_test(observed, expected)
         x2, p2 = power_divergence(observed, expected, lambda_="log-likelihood")
         assert pytest.approx(p2) == p1

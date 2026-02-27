@@ -100,13 +100,13 @@ class TestProportionTest:
     def test_BinomialTest_rightSide_pResult(self) -> None:
         n_success, n_failure, success_prob = 50, 100, 0.66
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
-        p2 = binomtest(n_success, n_success + n_failure, success_prob)
+        p2 = binomtest(n_success, n_success + n_failure, success_prob).pvalue
         assert pytest.approx(p2) == p1
 
     def test_BinomialTest_leftSide_pResult(self) -> None:
         n_success, n_failure, success_prob = 50, 100, 0.25
         p1 = binomial_test(n_success, n_failure, success_prob=success_prob)
-        p2 = binomtest(n_success, n_success + n_failure, success_prob)
+        p2 = binomtest(n_success, n_success + n_failure, success_prob).pvalue
         assert pytest.approx(p2) == p1
 
     # Chi Square Proportion Test

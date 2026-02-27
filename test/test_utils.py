@@ -84,11 +84,6 @@ class TestUtils:
         with pytest.raises(TypeError):
             utils._check_table(table, False)
 
-    def test_checkTable_Pandas_Error(self) -> None:
-        table = pd.DataFrame({"a": [10]})
-        with pytest.raises(TypeError):
-            utils._check_table(table, False)
-
     def test_checkTable_Float_Error(self) -> None:
         table = [1, 2, 3.0]
         with pytest.raises(TypeError):

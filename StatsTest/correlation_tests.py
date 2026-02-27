@@ -119,14 +119,14 @@ def kendall_tau_test(
 
     x, y = x[np.argsort(x)], y[np.argsort(x)]
     concordant, discordant, t_var, u = find_concordant_pairs(x, y)
-    n1 = np.sum(t * (t_var - 1) / 2)
+    n1 = np.sum(t_var * (t_var - 1) / 2)
     n2 = np.sum(u * (u - 1) / 2)
     tau = (concordant - discordant) / sqrt((denom - n1) * (denom - n2))
     if method.casefold() == "hypothesis":
         v = 2 * (2 * n + 5) / (9 * n * (n - 1))
         p = 2 * (1 - norm.cdf(abs(tau) / sqrt(v)))
     elif method.casefold() == "exact":
-        if len(t) != 0 or len(u) != 0:
+        if len(t_var) != 0 or len(u) != 0:
             raise AttributeError("Cannot run exact test when ties are present")
         n_choose = n * (n - 1) // 2
         c = min(discordant, n_choose - discordant)
@@ -149,9 +149,9 @@ def kendall_tau_test(
             p = 2.0 * np.sum(new_vals) / factorial(n)
     else:
         v_0 = n * (n - 1) * (2 * n + 5)
-        v_t, v_u = np.sum(t * (t - 1) * (2 * t + 5)), np.sum(u * (u - 1) * (2 * u + 5))
-        v_1 = np.sum(t * (t - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
-        v_2 = np.sum(t * (t - 1) * (t - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
+        v_t, v_u = np.sum(t_var * (t_var - 1) * (2 * t + 5)), np.sum(u * (u - 1) * (2 * u + 5))
+        v_1 = np.sum(t_var * (t_var - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
+        v_2 = np.sum(t_var * (t_var - 1) * (t_var - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
         v = (v_0 - v_t - v_u) / 18 + v_1 + v_2
         p = 2 * (1 - norm.cdf(abs(concordant - discordant) / sqrt(v)))
     return tau, p
