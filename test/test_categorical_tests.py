@@ -88,8 +88,9 @@ class TestCategoricalTests:
     def test_cmhTest_NotContingency_Error(self) -> None:
         data_1 = [123, 124, 125, 126]
         data_2 = [[222, 1234], [35, 61]]
+        mat = [data_1, data_2]
         with pytest.raises(AttributeError, match="CMH Test is meant for 2x2 contingency tables"):
-            cmh_test(data_1, data_2)
+            cmh_test(mat)
 
     def test_cmhTest_result(self) -> None:
         data_1 = [[126, 100], [35, 61]]
@@ -102,7 +103,7 @@ class TestCategoricalTests:
         data_8 = [[104, 89], [21, 36]]
         mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
         s_table = sm.stats.StratifiedTable(mat)
-        epsilon1, p1 = cmh_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        epsilon1, p1 = cmh_test(mat)
         epsilon2, p2 = s_table.test_null_odds().statistic, s_table.test_null_odds().pvalue
         assert pytest.approx(p2) == p1
         assert pytest.approx(epsilon2) == epsilon1
@@ -115,7 +116,7 @@ class TestCategoricalTests:
             woolf_test(data)
 
     def test_woolfTest_notSquare_Error(self) -> None:
-        data = [[1, 2, 3], [4, 5, 6]]
+        data = [[[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]]]
         with pytest.raises(AttributeError, match="Woolf Test is meant for 2x2 contingency table"):
             woolf_test(data, data)
 
@@ -127,7 +128,8 @@ class TestCategoricalTests:
         data_5 = [[4, 314], [2, 440]]
         data_6 = [[1, 313], [4, 436]]
         data_7 = [[1, 312], [2, 434]]
-        x, p = woolf_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7)
+        mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7]
+        x, p = woolf_test(mat)
         assert pytest.approx(0.4094, 0.001) == p
         assert pytest.approx(6.1237, 0.001) == x
 
@@ -139,9 +141,9 @@ class TestCategoricalTests:
             breslow_day_test(data)
 
     def test_breslowDayTest_notSquare_Error(self) -> None:
-        data = [[1, 2, 3], [4, 5, 6]]
+        data = [[[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]]]
         with pytest.raises(AttributeError, match="Breslow-Day Test is meant for 2x2 contingency table"):
-            breslow_day_test(data, data)
+            breslow_day_test(data)
 
     def test_breslowDayTest_result(self) -> None:
         data_1 = [[126, 100], [35, 61]]
@@ -153,7 +155,7 @@ class TestCategoricalTests:
         data_7 = [[60, 99], [11, 43]]
         data_8 = [[104, 89], [21, 36]]
         mat = [data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8]
-        x1, p1 = breslow_day_test(data_1, data_2, data_3, data_4, data_5, data_6, data_7, data_8)
+        x1, p1 = breslow_day_test(mat)
         x2, p2 = (
             sm.stats.StratifiedTable(mat).test_equal_odds().statistic,
             sm.stats.StratifiedTable(mat).test_equal_odds().pvalue,

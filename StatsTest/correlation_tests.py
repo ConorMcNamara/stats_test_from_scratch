@@ -149,7 +149,7 @@ def kendall_tau_test(
             p = 2.0 * np.sum(new_vals) / factorial(n)
     else:
         v_0 = n * (n - 1) * (2 * n + 5)
-        v_t, v_u = np.sum(t_var * (t_var - 1) * (2 * t + 5)), np.sum(u * (u - 1) * (2 * u + 5))
+        v_t, v_u = np.sum(t_var * (t_var - 1) * (2 * t_var + 5)), np.sum(u * (u - 1) * (2 * u + 5))
         v_1 = np.sum(t_var * (t_var - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
         v_2 = np.sum(t_var * (t_var - 1) * (t_var - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
         v = (v_0 - v_t - v_u) / 18 + v_1 + v_2
