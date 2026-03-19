@@ -50,15 +50,15 @@ def _hypergeom_distribution(a: int | float, b: int | float, c: int | float, d: i
     """
     if isinstance(a, int) and isinstance(b, int) and isinstance(c, int) and isinstance(d, int):
         pass
-    elif (
-        not isinstance(a, np.integer)
+    elif (  # type: ignore[unreachable]
+        not isinstance(a, np.integer)  # type: ignore[unreachable]
         or not isinstance(b, np.integer)
         or not isinstance(c, np.integer)
         or not isinstance(d, np.integer)
-    ):  # type: ignore[unreachable]
+    ):
         raise TypeError("Cannot compute factorials for non-integer values")
-    return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / (
-        factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d)
+    return (factorial(int(a + b)) * factorial(int(c + d)) * factorial(int(a + c)) * factorial(int(b + d))) / (
+        factorial(int(a)) * factorial(int(b)) * factorial(int(c)) * factorial(int(d)) * factorial(int(a + b + c + d))
     )
 
 
