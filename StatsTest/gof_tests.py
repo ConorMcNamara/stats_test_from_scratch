@@ -8,8 +8,8 @@ from StatsTest.utils import _autocorr, _check_table, _kurtosis, _skew
 
 
 def chi_goodness_of_fit_test(
-    observed: Sequence | np.ndarray,
-    expected: Sequence | np.ndarray | None = None,
+    observed: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Found in scipy.stats as chisquare
 
@@ -34,13 +34,13 @@ def chi_goodness_of_fit_test(
     expected = np.repeat(np.mean(observed), len(observed)) if not expected else _check_table(expected)
     df = len(observed) - 1
     X = np.sum(np.power(observed - expected, 2) / expected)
-    p = 1 - chi2.cdf(X, df)
-    return X, p
+    p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
+    return float(X), float(p)
 
 
 def g_goodness_of_fit_test(
-    observed: Sequence | np.ndarray,
-    expected: Sequence | np.ndarray | None = None,
+    observed: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
 
@@ -65,11 +65,11 @@ def g_goodness_of_fit_test(
     expected = np.repeat(np.mean(observed), len(observed)) if not expected else _check_table(expected)
     df = len(observed) - 1
     g = 2 * np.sum(observed * np.log(observed / expected))
-    p = 1 - chi2.cdf(g, df)
-    return g, p
+    p = 1 - chi2.cdf(g, df)  # type: ignore[no-untyped-call]
+    return float(g), float(p)
 
 
-def jarque_bera_test(data: Sequence | np.ndarray) -> tuple[float, float]:
+def jarque_bera_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as jarque_bera
 
     This test is used to evaluate whether the skew and kurtosis of said data follows that of a normal distribution
@@ -92,13 +92,13 @@ def jarque_bera_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     skew = _skew(data)
     kurtosis = _kurtosis(data)
     jb = (n / 6) * (pow(skew, 2) + (pow(kurtosis - 3, 2) / 4))
-    p_value = 1 - chi2.cdf(jb, 2)
-    return jb, p_value
+    p_value = 1 - chi2.cdf(jb, 2)  # type: ignore[no-untyped-call]
+    return float(jb), float(p_value)
 
 
 def ljung_box_test(
-    data: Sequence | np.ndarray,
-    num_lags: int | Sequence | np.ndarray | None = None,
+    data: Sequence[float] | np.ndarray,
+    num_lags: int | Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Found in statsmodels as acorr_ljung(boxpierce=False)
 
@@ -134,14 +134,14 @@ def ljung_box_test(
     n_repeat = np.repeat(n, h)
     box_sum = np.sum(pow(_autocorr(data, h_lags), 2) / (n_repeat - h_lags))
     q = n * (n + 2) * box_sum
-    p = 1 - chi2.cdf(q, h)
-    return q, p
+    p = 1 - chi2.cdf(q, h)  # type: ignore[no-untyped-call]
+    return float(q), float(p)
 
 
 def box_pierce_test(
-    data: Sequence | np.ndarray,
-    num_lags: int | Sequence | np.ndarray | None = None,
-) -> tuple[int, int]:
+    data: Sequence[float] | np.ndarray,
+    num_lags: int | Sequence[float] | np.ndarray | None = None,
+) -> tuple[float, float]:
     """Found in statsmodels as acorr_ljung(boxpierce=True)
 
     Used to determine if any group of autocorrelations in a time series dataset are different from zero
@@ -173,11 +173,11 @@ def box_pierce_test(
     h = np.max(h_lags)
     n = len(data)
     q = n * np.sum(pow(_autocorr(data, h_lags), 2))
-    p = 1 - chi2.cdf(q, h)
-    return q, p
+    p = 1 - chi2.cdf(q, h)  # type: ignore[no-untyped-call]
+    return float(q), float(p)
 
 
-def skew_test(data: Sequence | np.ndarray) -> tuple[float, float]:
+def skew_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as skewtest.
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its skewness.
@@ -206,11 +206,11 @@ def skew_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     delta = 1 / sqrt(log(sqrt(w2)))
     alpha_2 = 2 / (w2 - 1)
     z = delta * asinh(skew / sqrt(alpha_2 * u2))
-    p = 2 * (1 - norm.cdf(abs(z)))
-    return z, p
+    p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
+    return float(z), float(p)
 
 
-def kurtosis_test(data: Sequence | np.ndarray) -> tuple[float, float]:
+def kurtosis_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as kurtosistest.
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its kurtosis.
@@ -242,11 +242,11 @@ def kurtosis_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     z_top = 1 - 2 / a
     z_bottom = 1 + ((kurtosis - mean_kurt) / sqrt(var_kurt)) * sqrt(2 / (a - 4))
     z = sqrt(9 * a / 2) * (1 - 2 / (9 * a) - np.sign(z_bottom) * np.power(z_top / abs(z_bottom), 1 / 3.0))
-    p = 2 * (1 - norm.cdf(abs(z)))
-    return z, p
+    p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
+    return float(z), float(p)
 
 
-def k_squared_test(data: Sequence | np.ndarray) -> tuple[float, float]:
+def k_squared_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as normaltest
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its
@@ -268,11 +268,11 @@ def k_squared_test(data: Sequence | np.ndarray) -> tuple[float, float]:
     z1, _ = skew_test(data)
     z2, _ = kurtosis_test(data)
     k2 = pow(z1, 2) + pow(z2, 2)
-    p = 1 - chi2.cdf(k2, 2)
-    return k2, p
+    p = 1 - chi2.cdf(k2, 2)  # type: ignore[no-untyped-call]
+    return float(k2), float(p)
 
 
-def lilliefors_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> tuple[float, bool]:
+def lilliefors_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> tuple[float, bool]:
     """Found in statsmodels as lilliefors.
 
     Used to determine if the data follows a normal distribution
@@ -291,7 +291,7 @@ def lilliefors_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> tuple[f
     bool : Whether our data follows a normal distribution or not
     """
 
-    def f(x):
+    def f(x: float) -> float:
         return (0.83 + x) / sqrt(x) - 0.01
 
     data = _check_table(data)
@@ -563,7 +563,7 @@ def lilliefors_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> tuple[f
     else:
         d_x = q_20[index]
     z_table = (data - np.mean(data)) / np.std(data, ddof=1)
-    expected = norm.cdf(z_table)
+    expected = norm.cdf(z_table)  # type: ignore[no-untyped-call]
     actual = np.cumsum(np.ones(len(data)) / len(data))
     diff = np.abs(actual - expected)
     d_max = np.max(diff)

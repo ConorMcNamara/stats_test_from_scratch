@@ -8,7 +8,7 @@ from StatsTest.utils import _check_table, _left_extreme, _right_extreme
 
 
 def one_sample_proportion_z_test(
-    sample_data: Sequence | np.ndarray,
+    sample_data: Sequence[float] | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
@@ -53,17 +53,17 @@ def one_sample_proportion_z_test(
     std = sqrt((p * q) / n)
     z_score = (p - pop_mean) / std
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return z_score, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(z_score), float(p)
 
 
 def two_sample_proportion_z_test(
-    data_1: Sequence | np.ndarray,
-    data_2: Sequence | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """Found in statsmodels as proportions_ztest
@@ -105,17 +105,17 @@ def two_sample_proportion_z_test(
     se = sqrt((p * q) * ((1 / n_1) + (1 / n_2)))
     z_score = (p_1 - p_2) / se
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return z_score, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(z_score), float(p)
 
 
 def binomial_test(
-    success: Sequence | np.ndarray | int,
-    failure: Sequence | np.ndarray | int,
+    success: Sequence[float] | np.ndarray | int,
+    failure: Sequence[float] | np.ndarray | int,
     alternative: str = "two-sided",
     success_prob: float | None = None,
 ) -> float:
@@ -150,8 +150,9 @@ def binomial_test(
     if isinstance(success, int) and isinstance(failure, int):
         num_success, num_failure = success, failure
     else:
-        success, failure = _check_table(success), _check_table(failure)
-        num_success, num_failure = len(success), len(failure)
+        success_arr = _check_table(success) if not isinstance(success, int) else np.array([])
+        failure_arr = _check_table(failure) if not isinstance(failure, int) else np.array([])
+        num_success, num_failure = len(success_arr), len(failure_arr)
     total = num_success + num_failure
     if not success_prob:
         success_prob = num_success / total
@@ -165,14 +166,14 @@ def binomial_test(
         p = _left_extreme(num_success, total, success_prob)
     else:
         expected = int(success_prob * total)
-        observed_p = binom.pmf(num_success, total, success_prob)
+        observed_p = binom.pmf(num_success, total, success_prob)  # type: ignore[no-untyped-call]
         if num_success < expected:
-            vals = binom.pmf(np.arange(expected, total + 1), total, success_prob)
+            vals = binom.pmf(np.arange(expected, total + 1), total, success_prob)  # type: ignore[no-untyped-call]
             num_small = vals <= observed_p
             small_pmf = np.sum(np.compress(num_small, vals))
             p = _left_extreme(num_success, total, success_prob) + small_pmf
         else:
-            vals = binom.pmf(np.arange(expected + 1), total, success_prob)
+            vals = binom.pmf(np.arange(expected + 1), total, success_prob)  # type: ignore[no-untyped-call]
             num_small = vals <= observed_p
             small_pmf = np.sum(np.compress(num_small, vals))
             p = small_pmf + _right_extreme(num_success, total, success_prob)
@@ -180,9 +181,9 @@ def binomial_test(
 
 
 def chi_square_proportion_test(
-    success_prob: Sequence | np.ndarray,
-    n_total: Sequence | np.ndarray,
-    expected: Sequence | np.ndarray | None = None,
+    success_prob: Sequence[float] | np.ndarray,
+    n_total: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Not found in either statsmodels or scipy.stats
 
@@ -228,20 +229,21 @@ def chi_square_proportion_test(
         raise ValueError("Cannot have negative percentage of success")
     n_success = success_prob * n_total
     n_failure = n_total - n_success
-    n_expected_success = expected * n_total
-    n_expected_failure = (1 - expected) * n_total
+    expected_arr = np.asarray(expected)
+    n_expected_success = expected_arr * n_total
+    n_expected_failure = (1 - expected_arr) * n_total
     df = len(n_total) - 1
     X = np.sum(np.power(n_success - n_expected_success, 2) / n_expected_success) + np.sum(
         np.power(n_failure - n_expected_failure, 2) / n_expected_failure
     )
-    p = 1 - chi2.cdf(X, df)
-    return X, p
+    p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
+    return float(X), float(p)
 
 
 def g_proportion_test(
-    success_prob: Sequence | np.ndarray,
-    n_total: Sequence | np.ndarray,
-    expected: Sequence | np.ndarray | None = None,
+    success_prob: Sequence[float] | np.ndarray,
+    n_total: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Not found in either statsmodels or scipy.stats
 
@@ -287,12 +289,13 @@ def g_proportion_test(
         raise ValueError("Cannot have negative percentage of success")
     n_success = success_prob * n_total
     n_failure = n_total - n_success
-    n_expected_success = expected * n_total
-    n_expected_failure = (1 - expected) * n_total
+    expected_arr = np.asarray(expected)
+    n_expected_success = expected_arr * n_total
+    n_expected_failure = (1 - expected_arr) * n_total
     df = len(n_total) - 1
     g = 2 * (
         np.sum(n_success * np.log(n_success / n_expected_success))
         + np.sum(n_failure * np.log(n_failure / n_expected_failure))
     )
-    p = 1 - chi2.cdf(g, df)
-    return g, p
+    p = 1 - chi2.cdf(g, df)  # type: ignore[no-untyped-call]
+    return float(g), float(p)

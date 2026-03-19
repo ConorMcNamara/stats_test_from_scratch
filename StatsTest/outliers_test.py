@@ -8,7 +8,7 @@ from scipy.stats import chi2, median_abs_deviation, t
 from StatsTest.utils import _check_table
 
 
-def tukey_fence_test(data: Sequence | np.ndarray, coef: float = 1.5) -> np.ndarray:
+def tukey_fence_test(data: Sequence[float] | np.ndarray, coef: float = 1.5) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels
 
     Used to determine outliers in a normally distributed dataset.
@@ -33,7 +33,7 @@ def tukey_fence_test(data: Sequence | np.ndarray, coef: float = 1.5) -> np.ndarr
 
 
 def grubbs_test(
-    data: Sequence | np.ndarray,
+    data: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
     alpha: float = 0.05,
 ) -> float | int | None:
@@ -68,26 +68,26 @@ def grubbs_test(
     if alternative.casefold() == "less":
         return_val = np.min(data)
         val = y_bar - return_val
-        t_value = t.isf(alpha / (2 * n), n - 2)
+        t_value = t.isf(alpha / (2 * n), n - 2)  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
         return_val = np.max(data)
         val = return_val - y_bar
-        t_value = t.isf(alpha / (2 * n), n - 2)
+        t_value = t.isf(alpha / (2 * n), n - 2)  # type: ignore[no-untyped-call]
     else:
         val = np.max([y_bar - np.min(data), np.max(data) - y_bar])
         return_val = np.min(data) if val == y_bar - np.min(data) else np.max(data)
-        t_value = t.isf(alpha / n, n - 2)
+        t_value = t.isf(alpha / n, n - 2)  # type: ignore[no-untyped-call]
     g = val / s
     rejection_stat = ((n - 1) / sqrt(n)) * sqrt(pow(t_value, 2) / (n - 2 + pow(t_value, 2)))
     if g > rejection_stat:
-        return return_val
+        return float(return_val)
     else:
         return None
 
 
 def extreme_studentized_deviate_test(
-    data: Sequence | np.ndarray, num_outliers: int = 1, alpha: float = 0.05
-) -> tuple[int, list]:
+    data: Sequence[float] | np.ndarray, num_outliers: int = 1, alpha: float = 0.05
+) -> tuple[int, list[float]]:
     """Not found in either scipy.stats or statsmodels
 
     Used when we think there are at most k outliers, as other tests such as Grubbs or Tietjen-Moore rely on there existing
@@ -128,20 +128,20 @@ def extreme_studentized_deviate_test(
         abs_resids = np.abs(data_copy - y_bar)
         r_i = np.max(abs_resids) / s
         p = 1 - (alpha / (2 * (n - i + 1)))
-        lambda_i = ((n - i) * t.isf(p, n - i - 1)) / sqrt((n - i - 1 + pow(t.isf(p, n - i - 1), 2)) * (n - i + 1))
+        lambda_i = ((n - i) * t.isf(p, n - i - 1)) / sqrt((n - i - 1 + pow(t.isf(p, n - i - 1), 2)) * (n - i + 1))  # type: ignore[no-untyped-call]
         r[i - 1] = r_i > abs(lambda_i)
         outliers.append(data_copy[np.argsort(abs_resids)][-1:][0])
         data_copy = data_copy[np.argsort(abs_resids)][:-1]
     max_outliers = np.max(np.where(r == 1)[0]) + 1
-    return max_outliers, outliers[:max_outliers]
+    return int(max_outliers), outliers[:max_outliers]
 
 
 def tietjen_moore_test(
-    data: Sequence | np.ndarray,
+    data: Sequence[float] | np.ndarray,
     num_outliers: int = 1,
     alternative: str = "two-sided",
     alpha: float = 0.05,
-) -> list | None:
+) -> list[float] | None:
     """Not found in either scipy.stats or statsmodels
 
     An extension of Grubbs where it is used to determine if there exists exactly k outliers in the dataset based on their
@@ -174,7 +174,9 @@ def tietjen_moore_test(
     if num_outliers > n:
         raise ValueError("Cannot have number of outliers greater than number of observations")
 
-    def teitjen(data, num_outliers=1, alternative="two-sided", simulation=True):
+    def teitjen(
+        data: np.ndarray, num_outliers: int = 1, alternative: str = "two-sided", simulation: bool = True
+    ) -> float | tuple[float, np.ndarray]:  # type: ignore[return]
         y_bar = np.mean(data)
         if alternative.casefold() == "greater":
             data_large = sort_data[:-num_outliers]
@@ -196,9 +198,9 @@ def tietjen_moore_test(
         if simulation:
             return l_var, outliers
         else:
-            return l_var
+            return l_var  # type: ignore[no-any-return]
 
-    l_var, outliers = teitjen(data, num_outliers, alternative, simulation=True)
+    l_var, outliers = teitjen(data, num_outliers, alternative, simulation=True)  # type: ignore[misc]
     E_norm = np.random.normal(size=(10000, n))
     tietjen_E = np.apply_along_axis(
         teitjen,
@@ -210,12 +212,12 @@ def tietjen_moore_test(
     )
     critical_value = np.percentile(tietjen_E, alpha * 100)
     if l_var < critical_value:
-        return outliers
+        return list(outliers) if isinstance(outliers, np.ndarray) else outliers
     else:
         return None
 
 
-def chauvenet_test(data: Sequence | np.ndarray) -> np.ndarray:
+def chauvenet_test(data: Sequence[float] | np.ndarray) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels.
 
     Based off of the Chauvenet criterion, which is that any data is an outlier if its error function is less than
@@ -235,12 +237,12 @@ def chauvenet_test(data: Sequence | np.ndarray) -> np.ndarray:
     z = np.abs(data - mean) / std
     criterion = 1 / (2 * n)
     prob = erfc(z)
-    return data[prob < criterion]
+    return np.array(data[prob < criterion])
 
 
 def peirce_test(
-    observed: Sequence | np.ndarray,
-    expected: Sequence | np.ndarray,
+    observed: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray,
     num_outliers: int = 1,
     num_coef: int = 1,
 ) -> np.ndarray:
@@ -292,10 +294,10 @@ def peirce_test(
             r_new = np.exp((x2 - 1) / 2.0) * erfc(np.sqrt(x2 / 2))
     mean_squared_error = np.sum(np.power(observed - expected, 2)) / n
     threshold = x2 * mean_squared_error
-    return observed[np.power(observed - expected, 2) > threshold]
+    return np.array(observed[np.power(observed - expected, 2) > threshold])
 
 
-def dixon_q_test(data: Sequence | np.ndarray, alpha: float = 0.01) -> np.ndarray:
+def dixon_q_test(data: Sequence[float] | np.ndarray, alpha: float = 0.01) -> np.ndarray:
     """Not found in either scipy.stats or statsmodels
 
     Parameters
@@ -414,14 +416,14 @@ def dixon_q_test(data: Sequence | np.ndarray, alpha: float = 0.01) -> np.ndarray
         0.372,
     ]
     if alpha == 0.01:
-        return sort_data[q > q99[n - 3]]
+        return np.array(sort_data[q > q99[n - 3]])
     elif alpha == 0.05:
-        return sort_data[q > q95[n - 3]]
+        return np.array(sort_data[q > q95[n - 3]])
     else:
-        return sort_data[q > q90[n - 3]]
+        return np.array(sort_data[q > q90[n - 3]])
 
 
-def thompson_tau_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
+def thompson_tau_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> list[float]:
     """Not found in either scipy.stats or statsmodels
 
     Uses the Thompson-Tau criteria to iteratively identify outliers until no more exist.
@@ -446,7 +448,7 @@ def thompson_tau_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
     while outlier_exist:
         n, mu, s = len(data_copy), np.mean(data_copy), np.std(data_copy, ddof=1)
         ab_resid = np.abs(data_copy - mu) / s
-        rejection = t.isf(alpha / 2, n - 2) * (n - 1) / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))
+        rejection = t.isf(alpha / 2, n - 2) * (n - 1) / (sqrt(n) * sqrt(n - 2 + pow(t.isf(alpha / 2, n - 2), 2)))  # type: ignore[no-untyped-call]
         is_outlier = ab_resid > rejection
         if np.sum(is_outlier) != 0:
             outlier_table.append(data_copy[np.argsort(ab_resid)][-1:][0])
@@ -456,7 +458,7 @@ def thompson_tau_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
     return outlier_table
 
 
-def mad_median_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
+def mad_median_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> list[float]:
     """Not found in either scipy.stats or statsmodels
 
     Uses the median absolute deviation rule as a method of outlier detection.
@@ -476,6 +478,6 @@ def mad_median_test(data: Sequence | np.ndarray, alpha: float = 0.05) -> list:
     if alpha < 0 or alpha > 1:
         raise ValueError("Cannot have alpha level greater than 1 or less than 0")
     median = np.median(data)
-    mad = median_abs_deviation(data)
+    mad = median_abs_deviation(data)  # type: ignore[no-untyped-call]
     mad_med_obs = np.abs(data - median) / mad
-    return data[mad_med_obs > sqrt(chi2.ppf(1 - (alpha / 2.0), 1))]
+    return list(data[mad_med_obs > sqrt(chi2.ppf(1 - (alpha / 2.0), 1))])  # type: ignore[no-untyped-call]

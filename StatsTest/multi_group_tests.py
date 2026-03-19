@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from math import sqrt
 
 import numpy as np
@@ -6,7 +7,7 @@ from scipy.stats import chi2, f, norm
 from StatsTest.utils import _check_table
 
 
-def levene_test(*args) -> tuple[float, float]:
+def levene_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as levene(center='mean')
 
     Used to determine if a variable/observation in multiple groups has equal variances across all groups. In short, does
@@ -28,7 +29,10 @@ def levene_test(*args) -> tuple[float, float]:
     k = len(args)
     if k < 2:
         raise AttributeError("Need at least two groups to perform a Levene Test")
-    n_i, z_bar, all_z_ij, z_bar_condensed = [], [], [], []
+    n_i: np.ndarray = np.array([])
+    z_bar: np.ndarray = np.array([])
+    all_z_ij: np.ndarray = np.array([])
+    z_bar_condensed: np.ndarray = np.array([])
     for obs in args:
         obs = _check_table(obs, False)
         n_i = np.append(n_i, len(obs))
@@ -38,11 +42,11 @@ def levene_test(*args) -> tuple[float, float]:
         z_bar_condensed = np.append(z_bar_condensed, np.mean(z_ij))
     scalar = (np.sum(n_i) - k) / (k - 1)
     w = scalar * np.sum(n_i * np.power(z_bar_condensed - np.mean(z_bar), 2)) / np.sum(np.power(all_z_ij - z_bar, 2))
-    p = 1 - f.cdf(w, k - 1, np.sum(n_i) - k)
-    return w, p
+    p = 1 - f.cdf(w, k - 1, np.sum(n_i) - k)  # type: ignore[no-untyped-call]
+    return float(w), float(p)
 
 
-def brown_forsythe_test(*args) -> tuple[float, float]:
+def brown_forsythe_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as levene(center='median')
 
     Used instead of general levene test if we believe our data to be non-normal.
@@ -63,7 +67,10 @@ def brown_forsythe_test(*args) -> tuple[float, float]:
     k = len(args)
     if k < 2:
         raise AttributeError("Need at least two groups to perform a Brown-Forsythe Test")
-    n_i, z_bar, all_z_ij, z_bar_condensed = [], [], [], []
+    n_i: np.ndarray = np.array([])
+    z_bar: np.ndarray = np.array([])
+    all_z_ij: np.ndarray = np.array([])
+    z_bar_condensed: np.ndarray = np.array([])
     for obs in args:
         obs = _check_table(obs, False)
         n_i = np.append(n_i, len(obs))
@@ -73,11 +80,11 @@ def brown_forsythe_test(*args) -> tuple[float, float]:
         z_bar_condensed = np.append(z_bar_condensed, np.mean(z_ij))
     scalar = (np.sum(n_i) - k) / (k - 1)
     w = scalar * np.sum(n_i * np.power(z_bar_condensed - np.mean(z_bar), 2)) / np.sum(np.power(all_z_ij - z_bar, 2))
-    p = 1 - f.cdf(w, k - 1, np.sum(n_i) - k)
-    return w, p
+    p = 1 - f.cdf(w, k - 1, np.sum(n_i) - k)  # type: ignore[no-untyped-call]
+    return float(w), float(p)
 
 
-def one_way_f_test(*args) -> tuple[float, float]:
+def one_way_f_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as f_oneway
 
     Used to measure if multiple normal populations have the same mean. Note that this test is very sensitive to
@@ -98,7 +105,9 @@ def one_way_f_test(*args) -> tuple[float, float]:
     k = len(args)
     if k < 2:
         raise AttributeError("Need at least two groups to perform a one-way F Test")
-    n_i, y_bar, all_y_ij, y_bar_condensed = [], [], [], []
+    n_i: np.ndarray = np.array([])
+    y_bar: np.ndarray = np.array([])
+    y_bar_condensed: np.ndarray = np.array([])
     all_y_ij = np.hstack(args)
     for obs in args:
         obs = _check_table(obs, False)
@@ -109,11 +118,11 @@ def one_way_f_test(*args) -> tuple[float, float]:
     explained_variance = np.sum(n_i * np.power(y_bar_condensed - np.mean(all_y_ij), 2) / (k - 1))
     unexplained_variance = np.sum(np.power(all_y_ij - y_bar, 2) / (np.sum(n_i) - k))
     f_statistic = explained_variance / unexplained_variance
-    p = 1 - f.cdf(f_statistic, k - 1, np.sum(n_i) - k)
-    return f_statistic, p
+    p = 1 - f.cdf(f_statistic, k - 1, np.sum(n_i) - k)  # type: ignore[no-untyped-call]
+    return float(f_statistic), float(p)
 
 
-def bartlett_test(*args) -> tuple[float, float]:
+def bartlett_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as bartlett
 
     This test is used to determine if multiple samples are from a population of equal variances. Note that this test
@@ -135,7 +144,8 @@ def bartlett_test(*args) -> tuple[float, float]:
     k = len(args)
     if k < 2:
         raise AttributeError("Need at least two groups to perform the Bartlett Test")
-    n_i, var_i = [], []
+    n_i: np.ndarray = np.array([])
+    var_i: np.ndarray = np.array([])
     for obs in args:
         obs = _check_table(obs)
         n_i = np.append(n_i, len(obs))
@@ -144,11 +154,11 @@ def bartlett_test(*args) -> tuple[float, float]:
     top = (np.sum(n_i) - k) * np.log(pooled_variance) - np.sum((n_i - 1) * np.log(var_i))
     bottom = 1 + (1 / (3 * (k - 1))) * (np.sum(1 / (n_i - 1)) - (1 / (np.sum(n_i) - k)))
     X = top / bottom
-    p = 1 - chi2.cdf(X, k - 1)
-    return X, p
+    p = 1 - chi2.cdf(X, k - 1)  # type: ignore[no-untyped-call]
+    return float(X), float(p)
 
 
-def cochran_q_test(*args) -> tuple[float, float]:
+def cochran_q_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as chochrans_q
 
     Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
@@ -170,19 +180,19 @@ def cochran_q_test(*args) -> tuple[float, float]:
     k = len(args)
     if k < 3:
         raise AttributeError("Cannot run Cochran's Q Test with less than 3 treatments")
-    if len(np.unique(args)) > 2:
+    if len(np.unique(args)) > 2:  # type: ignore[call-overload]
         raise AttributeError("Cochran's Q Test only works with binary variables")
     df = k - 1
-    N = np.sum(args)
+    N = np.sum(args)  # type: ignore[call-overload]
     all_data = np.vstack(args).T
     row_sum, col_sum = np.sum(all_data, axis=1), np.sum(all_data, axis=0)
     scalar = k * (k - 1)
     T = scalar * np.sum(np.power(col_sum - (N / k), 2)) / np.sum(row_sum * (k - row_sum))
-    p = 1 - chi2.cdf(T, df)
-    return T, p
+    p = 1 - chi2.cdf(T, df)  # type: ignore[no-untyped-call]
+    return float(T), float(p)
 
 
-def jonckheere_trend_test(*args, **kwargs) -> tuple[float, float]:
+def jonckheere_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
     """This test is not found in scipy or statsmodels
 
     This test is used to determine if the population medians for each group have an a priori ordering.
@@ -243,11 +253,11 @@ def jonckheere_trend_test(*args, **kwargs) -> tuple[float, float]:
     part_three = (sum_t_2 - n) * (sum_u_2 - n) / (2 * n * (n - 1))
     var_s = part_one + part_two + part_three
     z_statistic = s / sqrt(var_s)
-    p = 1 - norm.cdf(z_statistic)
-    return z_statistic, p
+    p = 1 - norm.cdf(z_statistic)  # type: ignore[no-untyped-call]
+    return float(z_statistic), float(p)
 
 
-def mood_median_test(*args, **kwargs) -> tuple[float, float]:
+def mood_median_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
     """Found in scipy.stats as median_test
 
     This test is used to determine if two or more samples/observations come from a population with the same median.
@@ -276,13 +286,19 @@ def mood_median_test(*args, **kwargs) -> tuple[float, float]:
     all_data = np.concatenate(args)
     med = np.median(all_data)
     if "alternative" in kwargs:
-        alternative = kwargs.get("alternative").casefold()
+        alt_val = kwargs.get("alternative")
+        if alt_val is None:
+            raise ValueError("Cannot discern alternative hypothesis")
+        alternative = alt_val.casefold()
         if alternative not in ["greater", "less", "two-sided"]:
             raise ValueError("Cannot discern alternative hypothesis")
     else:
         alternative = "two-sided"
     if "handle_med" in kwargs:
-        handle_med = kwargs.get("handle_med").casefold()
+        hm_val = kwargs.get("handle_med")
+        if hm_val is None:
+            raise ValueError("Cannot discern how to handle median value")
+        handle_med = hm_val.casefold()
         if handle_med not in ["greater", "less", "ignore"]:
             raise ValueError("Cannot discern how to handle median value")
     else:
@@ -310,9 +326,9 @@ def mood_median_test(*args, **kwargs) -> tuple[float, float]:
     X = np.sum(pow(cont_table - expected, 2) / expected)
     df = len(args) - 1
     if alternative == "two-sided":
-        p = 2 * (1 - chi2.cdf(X, df))
+        p = 2 * (1 - chi2.cdf(X, df))  # type: ignore[no-untyped-call]
     elif alternative == "less":
-        p = 1 - chi2.cdf(X, df)
+        p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
     else:
-        p = chi2.cdf(X, df)
-    return X, p
+        p = chi2.cdf(X, df)  # type: ignore[no-untyped-call]
+    return float(X), float(p)

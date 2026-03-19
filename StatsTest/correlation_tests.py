@@ -7,7 +7,7 @@ from scipy.stats import norm, rankdata, t
 from StatsTest.utils import _check_table
 
 
-def pearson_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
+def pearson_test(x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as pearsonr
 
     Used to evaluate the pearson correlation between X and Y.
@@ -34,11 +34,11 @@ def pearson_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[fl
         sqrt(n * np.sum(np.power(x, 2)) - pow(np.sum(x), 2)) * sqrt(n * np.sum(np.power(y, 2)) - pow(np.sum(y), 2))
     )
     t_stat = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
-    p = 2 * (1 - t.cdf(abs(t_stat), n - 2))
-    return rho, p
+    p = 2 * (1 - t.cdf(abs(t_stat), n - 2))  # type: ignore[no-untyped-call]
+    return float(rho), float(p)
 
 
-def spearman_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
+def spearman_test(x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as spearmanr
 
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
@@ -67,13 +67,13 @@ def spearman_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[f
     cov = np.cov(rank_x, rank_y)[0][1]
     rho = cov / (std_x * std_y)
     t_stat = rho * sqrt(df / (1 - pow(rho, 2)))
-    p = 2 * (1 - t.cdf(abs(t_stat), df))
-    return rho, p
+    p = 2 * (1 - t.cdf(abs(t_stat), df))  # type: ignore[no-untyped-call]
+    return float(rho), float(p)
 
 
 def kendall_tau_test(
-    x: Sequence | np.ndarray,
-    y: Sequence | np.ndarray,
+    x: Sequence[float] | np.ndarray,
+    y: Sequence[float] | np.ndarray,
     method: str = "hypothesis",
 ) -> tuple[float, float]:
     """Found in scipy.stats as kendalltau
@@ -105,7 +105,7 @@ def kendall_tau_test(
     if method.casefold() not in ["hypothesis", "significance", "exact"]:
         raise ValueError("Cannot determine type of test for Kendall Tau")
 
-    def find_concordant_pairs(x, y):
+    def find_concordant_pairs(x: np.ndarray, y: np.ndarray) -> tuple[int, int, np.ndarray, np.ndarray]:
         concordant, discordant = 0, 0
         unique_x, counts_x = np.unique(x, return_counts=True)
         unique_y, counts_y = np.unique(y, return_counts=True)
@@ -124,7 +124,7 @@ def kendall_tau_test(
     tau = (concordant - discordant) / sqrt((denom - n1) * (denom - n2))
     if method.casefold() == "hypothesis":
         v = 2 * (2 * n + 5) / (9 * n * (n - 1))
-        p = 2 * (1 - norm.cdf(abs(tau) / sqrt(v)))
+        p = 2 * (1 - norm.cdf(abs(tau) / sqrt(v)))  # type: ignore[no-untyped-call]
     elif method.casefold() == "exact":
         if len(t_var) != 0 or len(u) != 0:
             raise AttributeError("Cannot run exact test when ties are present")
@@ -153,11 +153,13 @@ def kendall_tau_test(
         v_1 = np.sum(t_var * (t_var - 1)) * np.sum(u * (u - 1)) / (2 * n * (n - 1))
         v_2 = np.sum(t_var * (t_var - 1) * (t_var - 2)) * np.sum(u * (u - 1) * (u - 2)) / (9 * n * (n - 1) * (n - 2))
         v = (v_0 - v_t - v_u) / 18 + v_1 + v_2
-        p = 2 * (1 - norm.cdf(abs(concordant - discordant) / sqrt(v)))
-    return tau, p
+        p = 2 * (1 - norm.cdf(abs(concordant - discordant) / sqrt(v)))  # type: ignore[no-untyped-call]
+    return float(tau), float(p)
 
 
-def point_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
+def point_biserial_correlation_test(
+    x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray
+) -> tuple[float, float]:
     """Found in scipy.stats as pointbiserialr
 
     Parameters
@@ -186,11 +188,13 @@ def point_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.n
     s = np.std(x, ddof=1)
     rho = ((mu_1 - mu_0) / s) * sqrt(n_1 * n_0 / (n * (n - 1)))
     t_val = rho * sqrt((n - 2) / (1 - pow(rho, 2)))
-    p = 2 * (1 - t.cdf(abs(t_val), n - 2))
-    return rho, p
+    p = 2 * (1 - t.cdf(abs(t_val), n - 2))  # type: ignore[no-untyped-call]
+    return float(rho), float(p)
 
 
-def rank_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.ndarray) -> tuple[float, float]:
+def rank_biserial_correlation_test(
+    x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray
+) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
 
     Parameters
@@ -220,5 +224,5 @@ def rank_biserial_correlation_test(x: Sequence | np.ndarray, y: Sequence | np.nd
     u_min = min((1 + rho) * n_1 * n_0 / 2, (1 - rho) * n_1 * n_0 / 2)
     mu = n_1 * n_0 / 2
     z = (u_min - mu) / s
-    p = 2 * (1 - norm.cdf(abs(z)))
-    return rho, p
+    p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
+    return float(rho), float(p)

@@ -6,7 +6,7 @@ from scipy.stats import binom, chi2
 from StatsTest.utils import _check_table, _hypergeom_distribution
 
 
-def chi_squared_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def chi_squared_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as chi2_contingency.
 
     Determines the difference between what we expect the count of a group to be versus what was observed in our
@@ -32,11 +32,11 @@ def chi_squared_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float
     row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
     expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     X = np.sum(pow(cont_table - expected, 2) / expected)
-    p = 1 - chi2.cdf(X, df)
-    return X, p
+    p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
+    return float(X), float(p)
 
 
-def g_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def g_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as chi2_contingency(lambda_="log-likelihood")
 
     A likelihood ratio test used for determine if the difference between our observed results and expected results in
@@ -60,11 +60,11 @@ def g_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     row_sum, col_sum = np.sum(cont_table, axis=1), np.sum(cont_table, axis=0)
     expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     g = 2 * np.sum(cont_table * np.log(cont_table / expected))
-    p = 1 - chi2.cdf(g, df)
-    return g, p
+    p = 1 - chi2.cdf(g, df)  # type: ignore[no-untyped-call]
+    return float(g), float(p)
 
 
-def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = "two-sided") -> float:
+def fisher_test(cont_table: Sequence[Sequence[float]] | np.ndarray, alternative: str = "two-sided") -> float:
     """Found in scipy.stats as fisher_exact
 
     Used to determine the exact likelihood that we would observe a measurement in our 2x2 contingency table that
@@ -91,10 +91,10 @@ def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = 
     p = _hypergeom_distribution(a, b, c, d)
 
     # left side
-    def left_side(a, b, c, d):
+    def left_side(a: float, b: float, c: float, d: float) -> list[float]:
         num_steps = min(a, d)
-        p_val = []
-        for _i in range(num_steps):
+        p_val: list[float] = []
+        for _i in range(int(num_steps)):
             a -= 1
             b += 1
             c += 1
@@ -103,10 +103,10 @@ def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = 
         return p_val
 
     # right side
-    def right_side(a, b, c, d):
+    def right_side(a: float, b: float, c: float, d: float) -> list[float]:
         num_steps = min(b, c)
-        p_val = []
-        for _i in range(num_steps):
+        p_val: list[float] = []
+        for _i in range(int(num_steps)):
             a += 1
             b -= 1
             c -= 1
@@ -116,17 +116,17 @@ def fisher_test(cont_table: Sequence[Sequence] | np.ndarray, alternative: str = 
 
     if alternative.casefold() == "greater":
         right_p_val = right_side(a, b, c, d)
-        return p + np.sum(right_p_val)
+        return float(p + np.sum(right_p_val))
     elif alternative.casefold() == "less":
         left_p_val = left_side(a, b, c, d)
-        return p + np.sum(left_p_val)
+        return float(p + np.sum(left_p_val))
     else:
         left_p_val, right_p_val = left_side(a, b, c, d), right_side(a, b, c, d)
         all_p = right_p_val + left_p_val
-        return p + np.sum([i for i in all_p if i <= p])
+        return float(p + np.sum([i for i in all_p if i <= p]))
 
 
-def mcnemar_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def mcnemar_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as mcnemar
 
     Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
@@ -151,14 +151,14 @@ def mcnemar_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, fl
     b, c = cont_table[0, 1], cont_table[1, 0]
     if b + c > 25:
         chi_squared = pow(abs(b - c) - 1, 2) / (b + c)
-        p = 1 - chi2.cdf(chi_squared, 1)
+        p = 1 - chi2.cdf(chi_squared, 1)  # type: ignore[no-untyped-call]
     else:
         chi_squared = min(b, c)
-        p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(binom.ppf(0.99, b + c, 0.5), b + c, 0.5)
-    return chi_squared, p
+        p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(binom.ppf(0.99, b + c, 0.5), b + c, 0.5)  # type: ignore[no-untyped-call]
+    return float(chi_squared), float(p)
 
 
-def cmh_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def cmh_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as Stratified Table.test_null_odds()
 
     Used when we want to evaluate the association between a binary predictor/treatment and a binary outcome variable
@@ -181,7 +181,12 @@ def cmh_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     """
     if len(tables) < 2:
         raise AttributeError("Cannot perform CMH Test on less than 2 groups")
-    a, row_sum, col_sum, total, n_i, m_i = [], [], [], [], [], []
+    a: np.ndarray = np.array([])
+    row_sum: np.ndarray = np.array([])
+    col_sum: np.ndarray = np.array([])
+    total: np.ndarray = np.array([])
+    n_i: np.ndarray = np.array([])
+    m_i: np.ndarray = np.array([])
     for table in tables:
         table = _check_table(table)
         if table.shape != (2, 2):
@@ -192,14 +197,14 @@ def cmh_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
         col_sum = np.append(col_sum, m)
         total = np.append(total, np.sum(n))
         n_i, m_i = np.append(n_i, n[0]), np.append(m_i, m[0])
-    top = pow(abs(np.sum(a - (n_i * m_i / total))), 2)
+    top = pow(float(abs(np.sum(a - (n_i * m_i / total)))), 2)
     bottom = np.sum((n_i * (total - n_i) * m_i * (total - m_i)) / (np.power(total, 2) * (total - 1)))
     epsilon = top / bottom
-    p = 1 - chi2.cdf(epsilon, 1)
-    return epsilon, p
+    p = 1 - chi2.cdf(epsilon, 1)  # type: ignore[no-untyped-call]
+    return float(epsilon), float(p)
 
 
-def woolf_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def woolf_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
     Used to test the homogeneity of the odds ratio of each contingency table. Unlike Breslow-Day, compares
@@ -221,7 +226,8 @@ def woolf_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     k = len(tables)
     if k < 2:
         raise AttributeError("Cannot perform Woolf Test on less than two groups")
-    or_i, w_i = [], []
+    or_i: np.ndarray = np.array([])
+    w_i: np.ndarray = np.array([])
     for table in tables:
         table = _check_table(table, only_count=True)
         if table.shape != (2, 2):
@@ -232,11 +238,11 @@ def woolf_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
     or_bar = np.sum(w_i * or_i) / np.sum(w_i)
     x = np.sum(w_i * np.power(or_i - or_bar, 2))
     df = k - 1
-    p = 1 - chi2.cdf(x, df)
-    return x, p
+    p = 1 - chi2.cdf(x, df)  # type: ignore[no-untyped-call]
+    return float(x), float(p)
 
 
-def breslow_day_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def breslow_day_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as StratifiedTable.test_equal_odds()
 
     Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
@@ -265,7 +271,12 @@ def breslow_day_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, fl
     k = len(tables)
     if k < 2:
         raise AttributeError("Cannot perform Breslow-Day Test for less than 2 groups")
-    a_i, bc, ad, m_i1, m_i2, n_i = [], [], [], [], [], []
+    a_i: np.ndarray = np.array([])
+    bc: np.ndarray = np.array([])
+    ad: np.ndarray = np.array([])
+    m_i1: np.ndarray = np.array([])
+    m_i2: np.ndarray = np.array([])
+    n_i: np.ndarray = np.array([])
     for table in tables:
         table = _check_table(table, only_count=True)
         if table.shape != (2, 2):
@@ -279,18 +290,18 @@ def breslow_day_test(tables: Sequence[Sequence] | np.ndarray) -> tuple[float, fl
         n_i = np.append(n_i, np.sum(table, axis=0)[0])
     odds = np.sum(ad / (m_i1 + m_i2)) / np.sum(bc / (m_i1 + m_i2))
 
-    def solve_quadratic(a, b, c):
-        return (-b + np.sqrt(np.power(b, 2) - 4 * a * c)) / (2 * a)
+    def solve_quadratic(a: np.ndarray | float, b: np.ndarray | float, c: np.ndarray | float) -> np.ndarray:
+        return (-b + np.sqrt(np.power(b, 2) - 4 * a * c)) / (2 * a)  # type: ignore[return-value]
 
     A = solve_quadratic(1 - odds, (m_i2 - n_i + (odds * n_i) + (odds * m_i1)), -odds * n_i * m_i1)
     B, C, D = m_i1 - A, n_i - A, m_i2 - n_i + A
     var_i = np.power((1 / A) + (1 / B) + (1 / C) + (1 / D), -1)
     x = np.sum(np.power(a_i - A, 2) / var_i)
-    p = 1 - chi2.cdf(x, k - 1)
-    return x, p
+    p = 1 - chi2.cdf(x, k - 1)  # type: ignore[no-untyped-call]
+    return float(x), float(p)
 
 
-def bowker_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, float]:
+def bowker_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
     """Found in statsmodels as TableSymmetry or as bowker_symmetry
 
     Used to test if a given square table is symmetric about the main diagonal
@@ -318,5 +329,5 @@ def bowker_test(cont_table: Sequence[Sequence] | np.ndarray) -> tuple[float, flo
     lower_triangle = cont_table.T[upper_diagonal]
     x = np.sum(np.power(lower_triangle - upper_triangle, 2) / (upper_triangle + lower_triangle))
     df = n1 * (n1 - 1) / 2
-    p = 1 - chi2.cdf(x, df)
-    return x, p
+    p = 1 - chi2.cdf(x, df)  # type: ignore[no-untyped-call]
+    return float(x), float(p)

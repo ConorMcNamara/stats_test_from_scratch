@@ -30,7 +30,7 @@ def _standard_error(std: float, n: int) -> float:
     return std / sqrt(n)
 
 
-def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
+def _hypergeom_distribution(a: int | float, b: int | float, c: int | float, d: int | float) -> float:
     """Calculates the hyper-geometric distribution for a given a, b, c and d
 
     Parameters
@@ -55,7 +55,7 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
         or not isinstance(b, np.integer)
         or not isinstance(c, np.integer)
         or not isinstance(d, np.integer)
-    ):
+    ):  # type: ignore[unreachable]
         raise TypeError("Cannot compute factorials for non-integer values")
     return (factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d)) / (
         factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(a + b + c + d)
@@ -63,7 +63,7 @@ def _hypergeom_distribution(a: int, b: int, c: int, d: int) -> float:
 
 
 def _check_table(
-    table: Sequence | np.ndarray | pd.Series | pd.DataFrame,
+    table: Sequence[float] | Sequence[Sequence[float]] | np.ndarray | pd.Series | pd.DataFrame,
     only_count: bool = False,
 ) -> np.ndarray:
     """Performs checks on our table to ensure that it is suitable for our statistical tests
@@ -105,9 +105,9 @@ def _check_table(
 
 
 def _sse(
-    sum_data: Sequence | np.ndarray,
-    square_data: Sequence | np.ndarray,
-    n_data: Sequence | np.ndarray,
+    sum_data: Sequence[float] | np.ndarray,
+    square_data: Sequence[float] | np.ndarray,
+    n_data: Sequence[float] | np.ndarray,
 ) -> float:
     """Calculates the sum of squares for the errors
 
@@ -138,7 +138,7 @@ def _sse(
     sst = np.sum(square_data) - cm
     ssr = np.sum(np.power(sum_data, 2) / n_data) - cm
     sse = sst - ssr
-    return sse
+    return float(sse)
 
 
 def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
@@ -161,8 +161,8 @@ def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
         success
     """
     counter = np.arange(n_instances, n_total + 1)
-    p = np.sum(binom.pmf(counter, n_total, prob))
-    return p
+    p = np.sum(binom.pmf(counter, n_total, prob))  # type: ignore[no-untyped-call]
+    return float(p)
 
 
 def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
@@ -185,11 +185,11 @@ def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
         success
     """
     counter = np.arange(n_instances + 1)
-    p = np.sum(binom.pmf(counter, n_total, prob))
-    return p
+    p = np.sum(binom.pmf(counter, n_total, prob))  # type: ignore[no-untyped-call]
+    return float(p)
 
 
-def _skew(data: Sequence | np.ndarray) -> float:
+def _skew(data: Sequence[float] | np.ndarray) -> float:
     """Calculates the skew (third moment) of the data
 
     Parameters
@@ -202,15 +202,16 @@ def _skew(data: Sequence | np.ndarray) -> float:
     skew : float
         Our measure of the asymmetry of the probability distribution of a real-valued random variable about its mean
     """
-    x_bar = np.mean(data)
-    n = len(data)
-    mu_3 = np.sum(np.power(data - x_bar, 3)) / n
-    sigma_3 = np.sum(np.power(np.var(data), 1.5))
+    data_arr = np.asarray(data)
+    x_bar = np.mean(data_arr)
+    n = len(data_arr)
+    mu_3 = np.sum(np.power(data_arr - x_bar, 3)) / n
+    sigma_3 = np.sum(np.power(np.var(data_arr), 1.5))
     skew = mu_3 / sigma_3
-    return skew
+    return float(skew)
 
 
-def _kurtosis(data: Sequence | np.ndarray) -> float:
+def _kurtosis(data: Sequence[float] | np.ndarray) -> float:
     """Calculates the kurtosis (fourth moment) of the data
 
     Parameters
@@ -223,15 +224,16 @@ def _kurtosis(data: Sequence | np.ndarray) -> float:
     kurtosis : float
         The sharpness of the peak of a frequency-distribution curve in our data
     """
-    x_bar = np.mean(data)
-    n = len(data)
-    mu_4 = np.sum(np.power(data - x_bar, 4)) / n
-    sigma_4 = np.sum(np.power(np.var(data), 2))
+    data_arr = np.asarray(data)
+    x_bar = np.mean(data_arr)
+    n = len(data_arr)
+    mu_4 = np.sum(np.power(data_arr - x_bar, 4)) / n
+    sigma_4 = np.sum(np.power(np.var(data_arr), 2))
     kurtosis = mu_4 / sigma_4
-    return kurtosis
+    return float(kurtosis)
 
 
-def _autocorr(data: Sequence | np.ndarray, lags: Sequence | np.ndarray) -> np.ndarray:
+def _autocorr(data: Sequence[float] | np.ndarray, lags: Sequence[float] | np.ndarray) -> np.ndarray:
     """Calculates the autocorrelation for a given time series dataset given a set amount of lags
 
     Parameters
@@ -246,14 +248,15 @@ def _autocorr(data: Sequence | np.ndarray, lags: Sequence | np.ndarray) -> np.nd
     corr : numpy array
         The autocorrelation for a dataset for each given lag
     """
-    mean = np.mean(data)
-    var = np.var(data)
-    xp = data - mean
-    corr = [1.0 if lag == 0 else np.sum(xp[lag:] * xp[:-lag]) / len(data) / var for lag in lags]
+    data_arr = np.asarray(data)
+    mean = np.mean(data_arr)
+    var = np.var(data_arr)
+    xp = data_arr - mean
+    corr = [1.0 if lag == 0 else np.sum(xp[int(lag) :] * xp[: -int(lag)]) / len(data_arr) / var for lag in lags]
     return np.array(corr)
 
 
-def _rle(arr: Sequence | np.ndarray) -> tuple[np.ndarray | None, np.ndarray | None, np.ndarray | None]:
+def _rle(arr: Sequence[float] | np.ndarray) -> tuple[np.ndarray | None, np.ndarray | None, np.ndarray | None]:
     """Similar to R rle function, runs length encoding for a binary sequence.
 
     Parameters

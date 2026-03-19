@@ -77,8 +77,8 @@ format: ## Format code with ruff
 format-check: ## Check code formatting without modifying files
 	ruff format --check .
 
-type-check: ## Run type checking with mypy
-	mypy StatsTest --ignore-missing-imports
+type-check: ## Run type checking with zuban
+	zuban check StatsTest
 
 # ============================================================================
 # Pre-commit Targets
@@ -127,7 +127,7 @@ clean-test: ## Remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
-	rm -fr .mypy_cache
+	rm -fr .zuban_cache
 	rm -fr .ruff_cache
 
 lock-poetry: ## Update poetry.lock file
@@ -165,7 +165,7 @@ info: ## Show project information
 	@command -v uv >/dev/null 2>&1 && echo "uv: $$(uv --version)" || echo "uv: not installed"
 	@echo ""
 	@echo "$(BLUE)Installed Packages$(NC)"
-	@pip list | grep -E "(numpy|scipy|pandas|statsmodels|pytest|ruff|mypy)"
+	@pip list | grep -E "(numpy|scipy|pandas|statsmodels|pytest|ruff|zuban)"
 
 deps-update: ## Show outdated dependencies
 	pip list --outdated

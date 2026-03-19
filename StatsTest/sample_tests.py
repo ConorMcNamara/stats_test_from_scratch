@@ -17,7 +17,7 @@ from StatsTest.utils import (
 
 
 def one_sample_z_test(
-    sample_data: Sequence[Sequence] | np.ndarray,
+    sample_data: Sequence[float] | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
@@ -54,21 +54,21 @@ def one_sample_z_test(
     sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     sample_std = np.std(sample_data, ddof=1)
-    z_score = sample_mean - pop_mean / _standard_error(sample_std, len(sample_data))
+    z_score = sample_mean - pop_mean / _standard_error(float(sample_std), len(sample_data))
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return z_score, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(z_score), float(p)
 
 
 def two_sample_z_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
-) -> tuple[Number, float]:
+) -> tuple[float, float]:
     """This test can be found in statsmodels as ztest_ind
 
     Determines the likelihood that the distribution of two data points is significantly different, assuming that both
@@ -100,22 +100,22 @@ def two_sample_z_test(
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
     z_score = (data_1_mean - data_2_mean) / sqrt(
-        _standard_error(data_1_std, len(data_1)) + _standard_error(data_2_std, len(data_2))
+        _standard_error(float(data_1_std), len(data_1)) + _standard_error(float(data_2_std), len(data_2))
     )
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return z_score, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(z_score), float(p)
 
 
 def one_sample_t_test(
-    sample_data: Sequence[Sequence] | np.ndarray,
+    sample_data: Sequence[float] | np.ndarray,
     pop_mean: float,
     alternative: str = "two-sided",
-) -> tuple[Number, float]:
+) -> tuple[float, float]:
     """This test can be found in scipy.stats as ttest_1samp
 
     Used when we want to compare our sample mean to that of an expected population mean, and while we assume that the
@@ -149,22 +149,22 @@ def one_sample_t_test(
     df = n_observations - 1
     sample_std = np.std(sample_data, ddof=1)
     t_value = (sample_mean - pop_mean) / (sample_std / sqrt(n_observations))
-    p = 1.0 - t.cdf(abs(t_value), df)
+    p = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two_sided":
         p *= 2
     elif alternative.casefold() == "less":
         p = 1 - p
     else:
         pass
-    return t_value, p
+    return float(t_value), float(p)
 
 
 def two_sample_t_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
     paired: bool = False,
-) -> tuple[Number, float]:
+) -> tuple[float, float]:
     """This test can be found in scipy.stats as either ttest_rel or ttest_ind
 
     Used when we want to compare the distributions of two samples, and while we assume that they both follow a normal
@@ -216,22 +216,22 @@ def two_sample_t_test(
         )
         standard_error_difference = sqrt((data_1_var / data_1_n) + (data_2_var / data_2_n))
     t_value = (data_1_mean - data_2_mean) / standard_error_difference
-    p = 1.0 - t.cdf(abs(t_value), df)
+    p = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
         p *= 2
     elif alternative.casefold() == "less":
         p = 1 - p
     else:
         pass
-    return t_value, p
+    return float(t_value), float(p)
 
 
 def trimmed_means_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     p: int = 10,
     alternative: str = "two-sided",
-) -> tuple[Number, float]:
+) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels.
     Used when we wish to perform a two-sample t-test, but suspect that the data is being heavily influenced by outliers,
     i.e., cannot assume normality.
@@ -262,8 +262,8 @@ def trimmed_means_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1 : len(sort_data_1) - n_1],
-        sort_data_2[n_2 : len(sort_data_2) - n_2],
+        sort_data_1[int(n_1) : len(sort_data_1) - int(n_1)],
+        sort_data_2[int(n_2) : len(sort_data_2) - int(n_2)],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -277,22 +277,22 @@ def trimmed_means_test(
     pooled_var = ((n_x - 1) * s_x + (n_y - 1) * s_y) / ((m_x - 1) + (m_y - 1))
     t_value = (x_bar - y_bar) / np.sqrt(pooled_var * ((1 / m_x) + (1 / m_y)))
     df = m_x + m_y - 2
-    p = 1.0 - t.cdf(abs(t_value), df)
+    p_val = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
-        p *= 2
+        p_val *= 2
     elif alternative.casefold() == "less":
-        p = 1 - p
+        p_val = 1 - p_val
     else:
         pass
-    return t_value, p
+    return float(t_value), float(p_val)
 
 
 def yuen_welch_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
-    p=10,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
+    p: float = 10,
     alternative: str = "two-sided",
-) -> tuple[Number, float]:
+) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels.
 
     Used when we wish to perform a two-sample t-test, but cannot assume normality or equality of variances.
@@ -323,8 +323,8 @@ def yuen_welch_test(
     sort_data_1, sort_data_2 = np.sort(data_1), np.sort(data_2)
     n_1, n_2 = len(data_1) * p // 200, len(data_2) * p // 200
     trim_data_1, trim_data_2 = (
-        sort_data_1[n_1 : len(sort_data_1) - n_1],
-        sort_data_2[n_2 : len(sort_data_2) - n_2],
+        sort_data_1[int(n_1) : len(sort_data_1) - int(n_1)],
+        sort_data_2[int(n_2) : len(sort_data_2) - int(n_2)],
     )
     n_x, n_y = len(data_1), len(data_2)
     m_x, m_y = len(trim_data_1), len(trim_data_2)
@@ -338,19 +338,19 @@ def yuen_welch_test(
     d_x, d_y = (n_x - 1) * s_x / (m_x * (m_x - 1)), (n_y - 1) * s_y / (m_y * (m_y - 1))
     df = pow(d_x + d_y, 2) / (pow(d_x, 2) / (m_x - 1) + pow(d_y, 2) / (m_y - 1))
     t_value = (x_bar - y_bar) / sqrt(d_x + d_y)
-    p = 1 - t.cdf(t_value, df // 1)
+    p_val = 1 - t.cdf(t_value, df // 1)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
-        p *= 2
+        p_val *= 2
     elif alternative.casefold() == "less":
-        p = 1 - p
+        p_val = 1 - p_val
     else:
         pass
-    return t_value, p
+    return float(t_value), float(p_val)
 
 
 def two_sample_f_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """No method in scipy or statsmodels to immediately calculate this.
@@ -385,17 +385,17 @@ def two_sample_f_test(
     var_1, var_2 = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
     f_statistic = var_1 / var_2
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - f.cdf(f_statistic, df_1, df_2))
+        p = 2 * (1 - f.cdf(f_statistic, df_1, df_2))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - f.cdf(f_statistic, df_1, df_2)
+        p = 1 - f.cdf(f_statistic, df_1, df_2)  # type: ignore[no-untyped-call]
     else:
-        p = f.cdf(f_statistic, df_1, df_2)
-    return f_statistic, p
+        p = f.cdf(f_statistic, df_1, df_2)  # type: ignore[no-untyped-call]
+    return float(f_statistic), float(p)
 
 
 def binomial_sign_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
     success_prob: float = 0.5,
 ) -> float:
@@ -434,7 +434,7 @@ def binomial_sign_test(
         raise ValueError("Cannot calculate probability of success, needs to be between 0 and 1")
     data_1, data_2 = _check_table(data_1), _check_table(data_2)
     diff = data_1 - data_2
-    pos_diff, neg_diff = np.sum(diff > 0), np.sum(diff < 0)
+    pos_diff, neg_diff = int(np.sum(diff > 0)), int(np.sum(diff < 0))
     total = pos_diff + neg_diff
     if alternative.casefold() == "greater":
         p = _right_extreme(pos_diff, total, success_prob)
@@ -446,10 +446,10 @@ def binomial_sign_test(
 
 
 def wald_wolfowitz_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    expected: Sequence[Sequence] | np.ndarray | None = None,
+    data_1: Sequence[float] | np.ndarray,
+    expected: Sequence[float] | np.ndarray | None = None,
     cutoff: str = "median",
-):
+) -> tuple[float, float]:
     """Found in statsmodels as runstest_1samp
 
     Used to determine if the elements of a dataset/sequence are mutually independent
@@ -485,6 +485,8 @@ def wald_wolfowitz_test(
             raise AttributeError("Cannot perform Wald-Wolfowitz with unequal array lengths")
         plus_minus = np.greater_equal(data_1, expected)
     runs, _, loc = _rle(plus_minus)
+    if runs is None or loc is None:
+        raise ValueError("Cannot perform Wald-Wolfowitz with empty data")
     n_runs = len(runs)
     runs_length = np.sum(runs)
     run_pos, run_neg = runs[loc], runs[~loc]
@@ -492,13 +494,13 @@ def wald_wolfowitz_test(
     mu = (2 * n_plus * n_minus) / runs_length + 1
     var = 2 * n_plus * n_minus * (2 * n_plus * n_minus - runs_length) / (pow(runs_length, 2) * (runs_length - 1))
     z = (n_runs - mu) / sqrt(var)
-    p = 2 * (1 - norm.cdf(abs(z)))
-    return z, p
+    p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
+    return float(z), float(p)
 
 
 def trinomial_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
@@ -530,17 +532,17 @@ def trinomial_test(
     n = len(data_1)
     diffs = data_1 - data_2
     pos_diff, neg_diff, zero_diff = (
-        np.sum(diffs > 0),
-        np.sum(diffs < 0),
-        np.sum(diffs == 0),
+        int(np.sum(diffs > 0)),
+        int(np.sum(diffs < 0)),
+        int(np.sum(diffs == 0)),
     )
     p_0 = zero_diff / n
     probs = []
 
-    def calculate_probs(n, z, k, p_0):
-        return np.sum(
+    def calculate_probs(n: int, z: int, k: np.ndarray, p_0: float) -> float:
+        return np.sum(  # type: ignore[return-value, no-any-return]
             factorial(n)
-            / (st_factorial(n - z - 2 * k) * st_factorial(k + z) * st_factorial(k))
+            / (st_factorial(n - z - 2 * k) * st_factorial(k + z) * st_factorial(k))  # type: ignore[no-untyped-call]
             * np.power(p_0, n - z - (2 * k))
             * np.power((1 - p_0) / 2, z + 2 * k)
         )
@@ -555,12 +557,12 @@ def trinomial_test(
         p = np.sum(probs[abs(d) :])
     else:
         p = np.sum(probs[: abs(d)])
-    return d, p
+    return float(d), float(p)
 
 
 def fligner_policello_test(
-    data_1: Sequence[Sequence] | np.ndarray,
-    data_2: Sequence[Sequence] | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """Not found in either scipy.stats or statsmodels.
@@ -590,12 +592,12 @@ def fligner_policello_test(
     if m < 12 or n < 12:
         warnings.warn("Datasets may be too small for accurate approximation of p", stacklevel=2)
 
-    def compare_points(x, y):
+    def compare_points(x: np.ndarray, y: np.ndarray) -> np.ndarray:
         z = x - y[:, None]
         z = np.where(z > 0, 1, z)
         z = np.where(z == 0, 0.5, z)
         z = np.where(z < 0, 0, z)
-        return np.sum(z, axis=0)
+        return np.sum(z, axis=0)  # type: ignore[no-any-return]
 
     n_x, n_y = compare_points(data_1, data_2), compare_points(data_2, data_1)
     Nx, Ny = np.sum(n_x), np.sum(n_y)
@@ -603,9 +605,9 @@ def fligner_policello_test(
     ss_x, ss_y = np.sum(np.power(n_x - m_x, 2)), np.sum(np.power(n_y - m_y, 2))
     z = (Ny - Nx) / (2 * np.sqrt(ss_x + ss_y - (m_x * m_y)))
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z)))
+        p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z)
+        p = 1 - norm.cdf(z)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z)
-    return z, p
+        p = norm.cdf(z)  # type: ignore[no-untyped-call]
+    return float(z), float(p)

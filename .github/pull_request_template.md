@@ -25,7 +25,7 @@ Closes #
 
 - [ ] `make format` — code auto-formatted with ruff
 - [ ] `make lint` — no lint errors
-- [ ] `make type-check` — mypy passes with full annotations
+- [ ] `make type-check` — zuban passes with full annotations
 - [ ] `make test` — all tests pass
 - [ ] New or modified behaviour is covered by tests
 - [ ] Docstrings follow NumPy style

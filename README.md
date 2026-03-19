@@ -343,7 +343,7 @@ make check             # Run all checks
 # Or directly with tools
 ruff format .
 ruff check . --fix
-mypy StatsTest --ignore-missing-imports
+zuban check StatsTest
 ```
 
 ### Project Structure

@@ -8,8 +8,8 @@ from StatsTest.utils import _check_table
 
 
 def two_sample_mann_whitney_test(
-    data_1: Sequence | np.ndarray,
-    data_2: Sequence | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """This test can be found in scipy.stats as mannwhitneyu
@@ -54,17 +54,17 @@ def two_sample_mann_whitney_test(
     u_sd = sqrt((data_1_len * data_2_len / 12) * (combined_data_len + 1 - sum_T))
     z_score = (u - u_mean) / u_sd
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return u, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(u), float(p)
 
 
 def two_sample_wilcoxon_test(
-    data_1: Sequence | np.ndarray,
-    data_2: Sequence | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
     handle_zero: str = "wilcox",
 ) -> tuple[float, float]:
@@ -113,15 +113,15 @@ def two_sample_wilcoxon_test(
     std = sqrt(n * (n + 1) * (2 * n + 1) / 6)
     z_score = w_value / std
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(abs(z_score)))
+        p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z_score)
+        p = 1 - norm.cdf(z_score)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z_score)
-    return w_value, p
+        p = norm.cdf(z_score)  # type: ignore[no-untyped-call]
+    return float(w_value), float(p)
 
 
-def friedman_test(*args) -> tuple[float, float]:
+def friedman_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """This can be found in scipy.stats as friedmanchisquare
 
     Used to detect the differences in treatments across multiple test attempts. For example:
@@ -151,11 +151,11 @@ def friedman_test(*args) -> tuple[float, float]:
     r_bar = np.mean(rank, axis=0)
     scalar = (12 * n) / (k * (k + 1))
     q = scalar * np.sum(np.power(r_bar - ((k + 1) / 2), 2))
-    p = 1 - chi2.cdf(q, df)
-    return q, p
+    p = 1 - chi2.cdf(q, df)  # type: ignore[no-untyped-call]
+    return float(q), float(p)
 
 
-def quade_test(*args) -> tuple[float, float]:
+def quade_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
     Used to determine if there is at least one treatment different than the others. Note that it does not tell us which
@@ -186,11 +186,11 @@ def quade_test(*args) -> tuple[float, float]:
     a_2 = np.sum(np.power(s_ij, 2))
     B = np.sum(np.power(s_j, 2)) / b
     q = (b - 1) * B / (a_2 - b)
-    p = 1 - f.cdf(q, k - 1, (b - 1) * (k - 1))
-    return q, p
+    p = 1 - f.cdf(q, k - 1, (b - 1) * (k - 1))  # type: ignore[no-untyped-call]
+    return float(q), float(p)
 
 
-def page_trend_test(*args, **kwargs) -> tuple[float, float]:
+def page_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
     """Not found in either scipy or statsmodels
 
     Used to evaluate whether or not there is a monotonic trend within each treatment/condition. Note that the default
@@ -239,11 +239,11 @@ def page_trend_test(*args, **kwargs) -> tuple[float, float]:
     top = pow(12 * L - (3 * k_subjects * n_conditions * pow(n_conditions + 1, 2)), 2)
     bottom = k_subjects * pow(n_conditions, 2) * (pow(n_conditions, 2) - 1) * (n_conditions + 1)
     x = top / bottom
-    p = (1 - chi2.cdf(x, 1)) / 2
-    return L, p
+    p = (1 - chi2.cdf(x, 1)) / 2  # type: ignore[no-untyped-call]
+    return float(L), float(p)
 
 
-def kruskal_wallis_test(*args) -> tuple[float, float]:
+def kruskal_wallis_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Found in scipy.stats as kruskal
 
     This test is used to determine whether or not two or more samples originate from the same distribution.
@@ -273,14 +273,14 @@ def kruskal_wallis_test(*args) -> tuple[float, float]:
     n = np.sum(n_i)
     rank_data_split = np.split(rank_data, np.cumsum(n_i)[0 : len(n_i) - 1])
     rank_data_s_mean = np.mean(rank_data_split, axis=1)
-    top = np.sum(n_i * np.power(rank_data_s_mean - r_bar, 2))
-    bottom = np.sum(np.power(rank_data_split - r_bar, 2))
+    top = np.sum(np.array(n_i) * np.power(rank_data_s_mean - r_bar, 2))
+    bottom = np.sum(np.power(np.array(rank_data_split) - r_bar, 2))
     H = (n - 1) * top / bottom
-    p = 1 - chi2.cdf(H, g - 1)
-    return H, p
+    p = 1 - chi2.cdf(H, g - 1)  # type: ignore[no-untyped-call]
+    return float(H), float(p)
 
 
-def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
+def fligner_kileen_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
     """Found in scipy.stats as fligner
 
     Used to test the homogeneity of group variances, making no assumptions of the data distribution beforehand
@@ -303,7 +303,10 @@ def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
     if k < 2:
         raise AttributeError("Cannot perform Fligner-Kileen Test with less than 2 groups")
     if "center" in kwargs:
-        center = kwargs.get("center").casefold()
+        center_val = kwargs.get("center")
+        if center_val is None:
+            raise ValueError("Cannot discern how to center the data")
+        center = center_val.casefold()
         if center not in ["median", "mean"]:
             raise ValueError("Cannot discern how to center the data")
     else:
@@ -311,22 +314,22 @@ def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
     m_i = [np.median(arg) for arg in args] if center == "median" else [np.mean(arg) for arg in args]
     n_i = [len(arg) for arg in args]
     n = np.sum(n_i)
-    resids = np.abs([args[i] - m_i[i] for i in range(k)])
+    resids = np.abs([args[i] - m_i[i] for i in range(k)])  # type: ignore[operator]
     all_resids = np.hstack(list(resids))
     rank_all_resids = rankdata(all_resids)
-    normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)
+    normalized_rank = norm.ppf(rank_all_resids / (2 * (n + 1)) + 0.5)  # type: ignore[no-untyped-call]
     normalized_split = np.split(normalized_rank, np.cumsum(n_i)[0 : len(n_i) - 1])
     var_nr = np.var(normalized_rank, ddof=1)
     x_bar = np.mean(normalized_rank)
     x_j = np.mean(normalized_split, axis=1)
-    x = np.sum(n_i * np.power(x_j - x_bar, 2)) / var_nr
-    p = 1 - chi2.cdf(x, k - 1)
-    return x, p
+    x = np.sum(np.array(n_i) * np.power(x_j - x_bar, 2)) / var_nr
+    p = 1 - chi2.cdf(x, k - 1)  # type: ignore[no-untyped-call]
+    return float(x), float(p)
 
 
 # def ansari_bradley_test(
-#     data_1: Sequence | np.ndarray,
-#     data_2: Sequence | np.ndarray,
+#     data_1: Sequence[float] | np.ndarray,
+#     data_2: Sequence[float] | np.ndarray,
 #     alternative: str = "two-sided",
 # ) -> tuple[float, float]:
 #     """Found in scipy.stats as ansari
@@ -440,8 +443,8 @@ def fligner_kileen_test(*args, **kwargs) -> tuple[float, float]:
 
 
 def mood_test(
-    data_1: Sequence | np.ndarray,
-    data_2: Sequence | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """Found in scipy.stats as mood
@@ -480,17 +483,17 @@ def mood_test(
     var_m = len_1 * len_2 * (n_obs + 1) * (n_obs + 2) * (n_obs - 2) / 180
     z = (m - mu_m) / sqrt(var_m)
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - norm.cdf(z)) if z > 0 else 2 * norm.cdf(z)
+        p = 2 * (1 - norm.cdf(z)) if z > 0 else 2 * norm.cdf(z)  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
-        p = 1 - norm.cdf(z)
+        p = 1 - norm.cdf(z)  # type: ignore[no-untyped-call]
     else:
-        p = norm.cdf(z)
-    return z, p
+        p = norm.cdf(z)  # type: ignore[no-untyped-call]
+    return float(z), float(p)
 
 
 def cucconi_test(
-    data_1: Sequence | np.ndarray,
-    data_2: Sequence | np.ndarray,
+    data_1: Sequence[float] | np.ndarray,
+    data_2: Sequence[float] | np.ndarray,
     how: str = "bootstrap",
 ) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels
@@ -519,7 +522,7 @@ def cucconi_test(
     Implementation was based here: http://www.kurims.kyoto-u.ac.jp/EMIS/journals/RCE/V35/v35n3a03.pdf
     """
 
-    def calculate_c(data_1, data_2):
+    def calculate_c(data_1: np.ndarray, data_2: np.ndarray) -> float:
         data_1, data_2 = _check_table(data_1, only_count=False), _check_table(data_2, only_count=False)
         all_data = np.concatenate([data_1, data_2])
         rank_data = rankdata(all_data)
@@ -533,9 +536,9 @@ def cucconi_test(
         )
         rho = 2 * (pow(n, 2) - 4) / ((2 * n + 1) * (8 * n + 11)) - 1
         c = (pow(u, 2) + pow(v, 2) - 2 * rho * u * v) / (2 * (1 - pow(rho, 2)))
-        return c
+        return c  # type: ignore[no-any-return]
 
-    def bootstrap(x, y, reps=1000):
+    def bootstrap(x: np.ndarray, y: np.ndarray, reps: int = 1000) -> np.ndarray:
         m, n = len(x), len(y)
         x_s = (x - np.mean(x)) / np.std(x, ddof=1)
         y_s = (y - np.mean(y)) / np.std(y, ddof=1)
@@ -544,7 +547,7 @@ def cucconi_test(
         reps_list = np.apply_along_axis(calculate_c, 1, xboot, yboot)
         return reps_list
 
-    def permutation(x, y, reps=1000):
+    def permutation(x: np.ndarray, y: np.ndarray, reps: int = 1000) -> np.ndarray:
         m, n = len(x), len(y)
         N = m + n
         all_data = np.concatenate([x, y])
@@ -558,14 +561,14 @@ def cucconi_test(
 
     if how.casefold() not in ["bootstrap", "permutation"]:
         raise ValueError("Cannot identify method for calculating p-value")
-    c = calculate_c(data_1, data_2)
-    reps_list = bootstrap(data_1, data_2) if how.casefold() == "bootstrap" else permutation(data_1, data_2)
+    c = calculate_c(data_1, data_2)  # type: ignore[arg-type]
+    reps_list = bootstrap(data_1, data_2) if how.casefold() == "bootstrap" else permutation(data_1, data_2)  # type: ignore[arg-type]
     p = np.sum(reps_list >= c) / len(reps_list)
-    return c, p
+    return float(c), float(p)
 
 
 # def lepage_test(
-#     data_1: Sequence | np.ndarray, data_2: Sequence | np.ndarray
+#     data_1: Sequence[float] | np.ndarray, data_2: Sequence[float] | np.ndarray
 # ) -> tuple[float, float]:
 #     """Not found in either scipy.stats or statsmodels
 #
@@ -603,7 +606,7 @@ def cucconi_test(
 #     return d, p
 
 
-def conover_test(*args) -> tuple[float, float]:
+def conover_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels.
 
     Used to compare the equality of variances for multiple groups when we cannot assume that they all arise from the same
@@ -629,17 +632,17 @@ def conover_test(*args) -> tuple[float, float]:
     k = len(args)
     n_k = [len(arg) for arg in args]
     N = np.sum(n_k)
-    means = np.mean(args, axis=1)
+    means = np.mean(args, axis=1)  # type: ignore[call-overload]
 
-    def absolute_difference(data, means):
+    def absolute_difference(data: np.ndarray, means: np.ndarray) -> np.ndarray:
         row_means_col_vec = means.reshape((k, 1))
         return np.abs(data - row_means_col_vec)
 
-    z_k = absolute_difference(args, means)
+    z_k = absolute_difference(args, means)  # type: ignore[arg-type]
     r_k = np.apply_along_axis(rankdata, 1, z_k)
     s_k = np.sum(np.power(r_k, 2), axis=1)
     s_bar = np.mean(s_k)
     d_2 = (1 / (N - 1)) * (np.sum(np.power(r_k, 4)) - N * np.power(s_bar, 2))
     T = (1 / d_2) * (np.sum(np.power(s_k, 2) / n_k) - N * np.power(s_bar, 2))
-    p = 1 - chi2.cdf(T, k - 1)
-    return T, p
+    p = 1 - chi2.cdf(T, k - 1)  # type: ignore[no-untyped-call]
+    return float(T), float(p)

@@ -9,7 +9,9 @@ from StatsTest.multi_group_tests import one_way_f_test
 from StatsTest.utils import _sse
 
 
-def dunnett_test(control: Sequence | np.ndarray, alpha: float = 0.05, *args) -> np.ndarray:
+def dunnett_test(
+    control: Sequence[float] | np.ndarray, alpha: float = 0.05, *args: Sequence[float] | np.ndarray
+) -> np.ndarray:
     """Not found in either scipy or statsmodels
 
     This test is used to compare the means of several groups to a control and determine which groups are significant
@@ -35,8 +37,8 @@ def dunnett_test(control: Sequence | np.ndarray, alpha: float = 0.05, *args) -> 
     n = len(control)
     df = k * (n - 1)
     len_data = np.append(n, [len(arg) for arg in args])
-    mean_data = np.append(np.mean(control), np.mean(args, axis=1))
-    all_data = np.append(control, args)
+    mean_data = np.append(np.mean(control), np.mean(args, axis=1))  # type: ignore[call-overload]
+    all_data = np.append(control, args)  # type: ignore[arg-type]
     grand_mean = np.mean(all_data)
     ssb = np.sum(len_data * np.power(mean_data - grand_mean, 2))
     sst = np.sum(np.power(all_data - grand_mean, 2))
@@ -1766,11 +1768,11 @@ def dunnett_test(control: Sequence | np.ndarray, alpha: float = 0.05, *args) -> 
     else:
         raise NotImplementedError("alpha must be one of `0.01`, `0.05` or `0.1`")
     a = t * se
-    group_diffs = np.abs(np.mean(args, axis=1) - np.mean(control)) > a
-    return group_diffs
+    group_diffs = np.abs(np.mean(args, axis=1) - np.mean(control)) > a  # type: ignore[call-overload]
+    return np.array(group_diffs)
 
 
-def duncan_multiple_range_test(alpha: float = 0.05, *args) -> list[tuple]:
+def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.ndarray) -> list[tuple[float, ...]]:
     """Not found in either scipy or statsmodels
 
     This test is used to compare the means of several groups and determine which groups are significant
@@ -1795,7 +1797,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> list[tuple]:
     len_data = [len(arg) for arg in args]
     n = np.max(len_data)
     df = k * (n - 1)
-    means = np.mean(args, axis=1)
+    means = np.mean(args, axis=1)  # type: ignore[call-overload]
     rank = np.argsort(means)
     big_to_small = means[rank[::-1]]
     small_to_big = means[rank]
@@ -3027,10 +3029,11 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> list[tuple]:
             ]
         ),
     ]
-    mean_data = np.mean(args, axis=1)
-    grand_mean = np.mean(args)
+    args_arr = np.array(args)
+    mean_data = np.mean(args_arr, axis=1)
+    grand_mean = np.mean(args_arr)
     ssb = np.sum(len_data * np.power(mean_data - grand_mean, 2))
-    sst = np.sum(np.power(args - grand_mean, 2))
+    sst = np.sum(np.power(args_arr - grand_mean, 2))
     msw = (sst - ssb) / df
     se = sqrt(msw * 2 / n)
     all_sig_diffs = []
@@ -3055,7 +3058,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args) -> list[tuple]:
     return list(chain(*all_sig_diffs))
 
 
-def tukey_range_test(*args) -> list[list]:
+def tukey_range_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
     """Found in statsmodels as pairwise_tukeyhsd
 
     This test compares all possible pairs of means and determines if there are any differences in these pairs.
@@ -3077,11 +3080,11 @@ def tukey_range_test(*args) -> list[list]:
     if k < 2:
         raise AttributeError("Need at least two groups to perform Tukey Range Test")
     results = []
-    mean_i = np.mean(args, axis=1)
+    mean_i = np.mean(args, axis=1)  # type: ignore[call-overload]
     groups = np.arange(len(args))
     n_i = [len(arg) for arg in args]
-    sum_data = np.sum(args, axis=1)
-    square_data = np.power(args, 2)
+    sum_data = np.sum(args, axis=1)  # type: ignore[call-overload]
+    square_data = np.power(args, 2)  # type: ignore[call-overload]
     df = sum(n_i) - k
     sse = _sse(sum_data, square_data, n_i)
     for group in groups:
@@ -3092,12 +3095,12 @@ def tukey_range_test(*args) -> list[list]:
             difference = abs(mean_a - mean_b)
             std_group = sqrt(sse / df / min(n_a, n_b))
             q = difference / std_group
-            p = psturng(q, k, df)
+            p = psturng(q, k, df)  # type: ignore[no-untyped-call]
             results.append([f"group {group} - group {next_group}", q, p])
-    return results
+    return results  # type: ignore[return-value]
 
 
-def scheffe_test(*args) -> list[list]:
+def scheffe_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
     """Not found in scipy or statsmodels
 
     This test compares all possible means and determines which groups are significantly different.
@@ -3116,12 +3119,13 @@ def scheffe_test(*args) -> list[list]:
             3) The difference in means
     """
     results = []
-    means = np.mean(args, axis=1)
-    grand_mean = np.mean(args)
+    args_arr = np.array(args)
+    means = np.mean(args_arr, axis=1)
+    grand_mean = np.mean(args_arr)
     sample_sizes = [len(arg) for arg in args]
     groups = np.arange(len(args))
-    ssb = np.sum(sample_sizes * np.power(means - grand_mean, 2))
-    sst = np.sum(np.power(args - grand_mean, 2))
+    ssb = np.sum(np.array(sample_sizes) * np.power(means - grand_mean, 2))
+    sst = np.sum(np.power(args_arr - grand_mean, 2))
     ssw = sst - ssb
     f_value, _ = one_way_f_test(*args)
     f_prime = (len(args) - 1) * f_value
@@ -3132,4 +3136,4 @@ def scheffe_test(*args) -> list[list]:
             n_a, n_b = sample_sizes[group], sample_sizes[next_group]
             scheffe_val = np.power(mean_a - mean_b, 2) / (ssw * ((1 / n_a) + (1 / n_b)))
             results.append([f"group {group} - group {next_group}", scheffe_val > f_prime])
-    return results
+    return results  # type: ignore[return-value]
