@@ -52,7 +52,9 @@ class TestRankTest:
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
         w, p = two_sample_wilcoxon_test(x1, x2, alternative="two-sided", handle_zero="wilcox")
-        w2, p2 = wilcoxon(x1, x2)
+        # Compare against scipy's normal approximation, since our implementation is approximate
+        # (scipy defaults to the exact distribution for small samples).
+        w2, p2 = wilcoxon(x1, x2, method="approx")
         assert pytest.approx(p2, 0.001) == p
         assert pytest.approx(9) == w
 
@@ -60,7 +62,8 @@ class TestRankTest:
         x1 = [125, 115, 130, 140, 140, 115, 140, 125, 140, 135]
         x2 = [110, 122, 125, 120, 140, 124, 123, 137, 135, 145]
         w, p = two_sample_wilcoxon_test(x1, x2, alternative="two-sided", handle_zero="pratt")
-        w2, p2 = wilcoxon(x1, x2, zero_method="pratt")
+        # Compare against scipy's normal approximation (see note above).
+        w2, p2 = wilcoxon(x1, x2, zero_method="pratt", method="approx")
         assert pytest.approx(p2, 0.01) == p
         assert pytest.approx(10) == w
 
