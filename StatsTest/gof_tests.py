@@ -1,3 +1,5 @@
+"""Goodness-of-fit statistical tests."""
+
 from collections.abc import Sequence
 from math import asinh, log, sqrt
 
@@ -11,7 +13,7 @@ def chi_goodness_of_fit_test(
     observed: Sequence[float] | np.ndarray,
     expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Found in scipy.stats as chisquare
+    """Found in scipy.stats as chisquare.
 
     Used when we cannot divide the data cleanly into a contingency table or when we have actual expected results to
     compare to.
@@ -42,7 +44,7 @@ def g_goodness_of_fit_test(
     observed: Sequence[float] | np.ndarray,
     expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Found in scipy.stats as power_divergence(lambda_="log-likelihood")
+    """Found in scipy.stats as power_divergence(lambda_="log-likelihood").
 
     Similar to chi_goodness_of_fit_test, used when we cannot divide the data cleanly into a contingency table or when we
     have actual expected results to compare to.
@@ -70,7 +72,7 @@ def g_goodness_of_fit_test(
 
 
 def jarque_bera_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as jarque_bera
+    """Found in statsmodels as jarque_bera.
 
     This test is used to evaluate whether the skew and kurtosis of said data follows that of a normal distribution
 
@@ -100,7 +102,7 @@ def ljung_box_test(
     data: Sequence[float] | np.ndarray,
     num_lags: int | Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Found in statsmodels as acorr_ljung(boxpierce=False)
+    """Found in statsmodels as acorr_ljung(boxpierce=False).
 
     Used to determine if any group of autocorrelations in a time series dataset are different from zero
 
@@ -142,7 +144,7 @@ def box_pierce_test(
     data: Sequence[float] | np.ndarray,
     num_lags: int | Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Found in statsmodels as acorr_ljung(boxpierce=True)
+    """Found in statsmodels as acorr_ljung(boxpierce=True).
 
     Used to determine if any group of autocorrelations in a time series dataset are different from zero
 
@@ -247,7 +249,7 @@ def kurtosis_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def k_squared_test(data: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as normaltest
+    """Found in scipy.stats as normaltest.
 
     Used to determine the likelihood that our sample dataset comes from a normal distribution based on its
     skewness and kurtosis.

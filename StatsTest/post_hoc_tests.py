@@ -1,3 +1,5 @@
+"""Post-hoc statistical tests."""
+
 from collections.abc import Sequence
 from itertools import chain
 from math import sqrt
@@ -12,7 +14,7 @@ from StatsTest.utils import _sse
 def dunnett_test(
     control: Sequence[float] | np.ndarray, alpha: float = 0.05, *args: Sequence[float] | np.ndarray
 ) -> np.ndarray:
-    """Not found in either scipy or statsmodels
+    """Not found in either scipy or statsmodels.
 
     This test is used to compare the means of several groups to a control and determine which groups are significant
 
@@ -1773,7 +1775,7 @@ def dunnett_test(
 
 
 def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.ndarray) -> list[tuple[float, ...]]:
-    """Not found in either scipy or statsmodels
+    """Not found in either scipy or statsmodels.
 
     This test is used to compare the means of several groups and determine which groups are significant
 
@@ -3059,7 +3061,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.
 
 
 def tukey_range_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
-    """Found in statsmodels as pairwise_tukeyhsd
+    """Found in statsmodels as pairwise_tukeyhsd.
 
     This test compares all possible pairs of means and determines if there are any differences in these pairs.
 
@@ -3101,7 +3103,7 @@ def tukey_range_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
 
 
 def scheffe_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
-    """Not found in scipy or statsmodels
+    """Not found in scipy or statsmodels.
 
     This test compares all possible means and determines which groups are significantly different.
 

@@ -1,3 +1,5 @@
+"""Statistical tests for comparing multiple groups."""
+
 from collections.abc import Sequence
 from math import sqrt
 
@@ -8,7 +10,7 @@ from StatsTest.utils import _check_table
 
 
 def levene_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as levene(center='mean')
+    """Found in scipy.stats as levene(center='mean').
 
     Used to determine if a variable/observation in multiple groups has equal variances across all groups. In short, does
     each group have equal variance?
@@ -47,7 +49,7 @@ def levene_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def brown_forsythe_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as levene(center='median')
+    """Found in scipy.stats as levene(center='median').
 
     Used instead of general levene test if we believe our data to be non-normal.
 
@@ -85,7 +87,7 @@ def brown_forsythe_test(*args: Sequence[float] | np.ndarray) -> tuple[float, flo
 
 
 def one_way_f_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as f_oneway
+    """Found in scipy.stats as f_oneway.
 
     Used to measure if multiple normal populations have the same mean. Note that this test is very sensitive to
     non-normal data, meaning that it should not be used unless we can verify that the data is normally distributed.
@@ -123,7 +125,7 @@ def one_way_f_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def bartlett_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as bartlett
+    """Found in scipy.stats as bartlett.
 
     This test is used to determine if multiple samples are from a population of equal variances. Note that this test
     is much more sensitive to data that is non-normal compared to Levene or Brown-Forsythe.
@@ -159,7 +161,7 @@ def bartlett_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def cochran_q_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as chochrans_q
+    """Found in statsmodels as chochrans_q.
 
     Used to determine if k treatments in a 2 way randomized block design have identical effects. Note that this test
     requires that there be only two variables encoded: 1 for success and 0 for failure.
@@ -193,9 +195,9 @@ def cochran_q_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def jonckheere_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
-    """This test is not found in scipy or statsmodels
+    """Test whether the population medians of each group follow an a priori ordering.
 
-    This test is used to determine if the population medians for each group have an a priori ordering.
+    This test is not found in scipy or statsmodels.
     Note that the default alternative hypothesis is that median_1 <= median_2 <= median_3 <= ... <= median_k, with at
     least one strict inequality.
 
@@ -258,7 +260,7 @@ def jonckheere_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) ->
 
 
 def mood_median_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
-    """Found in scipy.stats as median_test
+    """Found in scipy.stats as median_test.
 
     This test is used to determine if two or more samples/observations come from a population with the same median.
 

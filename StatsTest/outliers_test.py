@@ -1,3 +1,5 @@
+"""Statistical tests for detecting outliers."""
+
 from collections.abc import Sequence
 from math import sqrt
 
@@ -9,7 +11,7 @@ from StatsTest.utils import _check_table
 
 
 def tukey_fence_test(data: Sequence[float] | np.ndarray, coef: float = 1.5) -> np.ndarray:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Used to determine outliers in a normally distributed dataset.
 
@@ -37,7 +39,7 @@ def grubbs_test(
     alternative: str = "two-sided",
     alpha: float = 0.05,
 ) -> float | int | None:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Used to determine if there exists one outlier in the dataset based on their dispersion from the mean.
     Note that this assumes that the data is normally distributed.
@@ -88,7 +90,7 @@ def grubbs_test(
 def extreme_studentized_deviate_test(
     data: Sequence[float] | np.ndarray, num_outliers: int = 1, alpha: float = 0.05
 ) -> tuple[int, list[float]]:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Used when we think there are at most k outliers, as other tests such as Grubbs or Tietjen-Moore rely on there existing
     exactly k number of outliers. Note that this assumes the data is normally distributed.
@@ -142,7 +144,7 @@ def tietjen_moore_test(
     alternative: str = "two-sided",
     alpha: float = 0.05,
 ) -> list[float] | None:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     An extension of Grubbs where it is used to determine if there exists exactly k outliers in the dataset based on their
     dispersion from the mean. Note that this assumes that the data is normally distributed.
@@ -246,7 +248,7 @@ def peirce_test(
     num_outliers: int = 1,
     num_coef: int = 1,
 ) -> np.ndarray:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Parameters
     ----------
@@ -298,7 +300,7 @@ def peirce_test(
 
 
 def dixon_q_test(data: Sequence[float] | np.ndarray, alpha: float = 0.01) -> np.ndarray:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Parameters
     ----------
@@ -424,7 +426,7 @@ def dixon_q_test(data: Sequence[float] | np.ndarray, alpha: float = 0.01) -> np.
 
 
 def thompson_tau_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> list[float]:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Uses the Thompson-Tau criteria to iteratively identify outliers until no more exist.
 
@@ -459,7 +461,7 @@ def thompson_tau_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -
 
 
 def mad_median_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> list[float]:
-    """Not found in either scipy.stats or statsmodels
+    """Not found in either scipy.stats or statsmodels.
 
     Uses the median absolute deviation rule as a method of outlier detection.
 
