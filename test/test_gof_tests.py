@@ -61,8 +61,9 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = ljung_box_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags)
-        assert pytest.approx(df.loc[len(df) - 1, "lb_pvalue"]) == p1
-        assert pytest.approx(df.loc[len(df) - 1, "lb_stat"]) == q1
+        # acorr_ljungbox is label-indexed by lag value (1..max), so select the last lag explicitly.
+        assert pytest.approx(df.loc[df.index[-1], "lb_pvalue"]) == p1
+        assert pytest.approx(df.loc[df.index[-1], "lb_stat"]) == q1
 
     # Box-Pierce Test
 
@@ -76,8 +77,9 @@ class TestGOFTests:
         num_lags = np.arange(1, 11)
         q1, p1 = box_pierce_test(data, num_lags=num_lags)
         df = acorr_ljungbox(data, num_lags, boxpierce=True)
-        assert pytest.approx(df.loc[len(df) - 1, "bp_pvalue"]) == p1
-        assert pytest.approx(df.loc[len(df) - 1, "bp_stat"]) == q1
+        # acorr_ljungbox is label-indexed by lag value (1..max), so select the last lag explicitly.
+        assert pytest.approx(df.loc[df.index[-1], "bp_pvalue"]) == p1
+        assert pytest.approx(df.loc[df.index[-1], "bp_stat"]) == q1
 
     # Skew Test
 

@@ -74,10 +74,12 @@ class TestMultiGroupTests:
             bartlett_test(sample_data)
 
     def test_bartlettTest_pResult(self) -> None:
-        data_1 = np.random.randint(0, 100, 10)
-        data_2 = np.random.randint(500, 550, 10)
-        data_3 = np.random.randint(0, 10, 10)
-        data_4 = np.random.randint(0, 50, 10)
+        # Use float data: scipy.stats.bartlett computes an incorrect statistic for integer
+        # inputs, whereas our implementation (and scipy on floats) match the textbook formula.
+        data_1 = np.random.randint(0, 100, 10).astype(float)
+        data_2 = np.random.randint(500, 550, 10).astype(float)
+        data_3 = np.random.randint(0, 10, 10).astype(float)
+        data_4 = np.random.randint(0, 50, 10).astype(float)
         x1, p1 = bartlett_test(data_1, data_2, data_3, data_4)
         x2, p2 = bartlett(data_1, data_2, data_3, data_4)
         assert pytest.approx(p2) == p1

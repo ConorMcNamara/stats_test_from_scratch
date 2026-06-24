@@ -1762,11 +1762,11 @@ def dunnett_test(
         ],
     ]
     if alpha == 0.01:
-        t = np.array(q_01)[index][col]
+        t = np.array(q_01, dtype=object)[index][col]
     elif alpha == 0.05:
-        t = np.array(q_05)[index][col]
+        t = np.array(q_05, dtype=object)[index][col]
     elif alpha == 0.1:
-        t = np.array(q_10)[index][col]
+        t = np.array(q_10, dtype=object)[index][col]
     else:
         raise NotImplementedError("alpha must be one of `0.01`, `0.05` or `0.1`")
     a = t * se
@@ -3046,13 +3046,13 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.
         if len(other_vals) == 0:
             break
         if alpha == 0.10:
-            q = np.array(q_10)[index][np.arange(col - idx + 1)]
+            q = np.array(q_10, dtype=object)[index][np.arange(col - idx + 1)]
         elif alpha == 0.05:
-            q = np.array(q_05)[index][np.arange(col - idx + 1)]
+            q = np.array(q_05, dtype=object)[index][np.arange(col - idx + 1)]
         elif alpha == 0.01:
-            q = np.array(q_01)[index][np.arange(col - idx + 1)]
+            q = np.array(q_01, dtype=object)[index][np.arange(col - idx + 1)]
         else:
-            q = np.array(q_10)[index][np.arange(col - idx + 1)]
+            q = np.array(q_10, dtype=object)[index][np.arange(col - idx + 1)]
         r = se * q
         combinations = [(val_rank, o_val_rank) for o_val_rank in other_val_rank]
         diffs = val - other_vals
