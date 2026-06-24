@@ -124,6 +124,7 @@ select = [
     "UP",  # pyupgrade
     "ARG", # flake8-unused-arguments
     "SIM", # flake8-simplify
+    "D",   # pydocstyle (numpy-style docstrings)
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
@@ -133,8 +134,12 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
 [tool.ruff.lint.per-file-ignores]
-"test_*.py" = ["ARG", "S101"]  # Allow assert and unused arguments in tests
+"test_*.py" = ["ARG", "S101", "D"]  # Allow assert/unused args and skip docstrings in tests
+"test/**" = ["ARG", "S101", "D"]    # Skip docstring rules across the whole test directory
 
 [tool.zuban]
 python_version = "3.13"

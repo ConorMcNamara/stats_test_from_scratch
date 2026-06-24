@@ -1,3 +1,5 @@
+"""Statistical tests for categorical data."""
+
 from collections.abc import Sequence
 
 import numpy as np
@@ -37,7 +39,7 @@ def chi_squared_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tupl
 
 
 def g_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as chi2_contingency(lambda_="log-likelihood")
+    """Found in scipy.stats as chi2_contingency(lambda_="log-likelihood").
 
     A likelihood ratio test used for determine if the difference between our observed results and expected results in
     our contingency table are likely to happen due to chance.
@@ -65,7 +67,7 @@ def g_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, f
 
 
 def fisher_test(cont_table: Sequence[Sequence[float]] | np.ndarray, alternative: str = "two-sided") -> float:
-    """Found in scipy.stats as fisher_exact
+    """Found in scipy.stats as fisher_exact.
 
     Used to determine the exact likelihood that we would observe a measurement in our 2x2 contingency table that
     is just as extreme, if not moreso, than our observed results.
@@ -127,7 +129,7 @@ def fisher_test(cont_table: Sequence[Sequence[float]] | np.ndarray, alternative:
 
 
 def mcnemar_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as mcnemar
+    """Found in statsmodels as mcnemar.
 
     Used when we have paired nominal data that is organized in a 2x2 contingency table. It is used to test the
     assumption that the marginal column and row probabilities are equal, i.e., that the probability that b and c
@@ -159,7 +161,7 @@ def mcnemar_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[fl
 
 
 def cmh_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as Stratified Table.test_null_odds()
+    """Found in statsmodels as Stratified Table.test_null_odds().
 
     Used when we want to evaluate the association between a binary predictor/treatment and a binary outcome variable
     with data that is stratified or matched. Our null hypothesis is that the common-odds ratio is 1 while our
@@ -205,7 +207,7 @@ def cmh_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, flo
 
 
 def woolf_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Not found in either scipy or statsmodels
+    """Not found in either scipy or statsmodels.
 
     Used to test the homogeneity of the odds ratio of each contingency table. Unlike Breslow-Day, compares
     the actual results to the expected Mantel-Haenzel odds ratio for each strata.
@@ -243,7 +245,7 @@ def woolf_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, f
 
 
 def breslow_day_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as StratifiedTable.test_equal_odds()
+    """Found in statsmodels as StratifiedTable.test_equal_odds().
 
     Computes the likelihood that the odds ratio for each strata is the same, by comparing the first
     row and column with its expected pooled ratio amount
@@ -302,7 +304,7 @@ def breslow_day_test(tables: Sequence[Sequence[float]] | np.ndarray) -> tuple[fl
 
 
 def bowker_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[float, float]:
-    """Found in statsmodels as TableSymmetry or as bowker_symmetry
+    """Found in statsmodels as TableSymmetry or as bowker_symmetry.
 
     Used to test if a given square table is symmetric about the main diagonal
 

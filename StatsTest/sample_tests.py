@@ -1,3 +1,5 @@
+"""One- and two-sample statistical tests."""
+
 import warnings
 from collections.abc import Sequence
 from math import factorial, sqrt
@@ -21,7 +23,7 @@ def one_sample_z_test(
     pop_mean: float,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """This test can be found in statsmodels as ztest
+    """Perform a one-sample Z-test (statsmodels.ztest).
 
     Determines the likelihood that our sample mean differs from our population mean, assuming that the data follows a
     normal distribution.
@@ -69,7 +71,7 @@ def two_sample_z_test(
     data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """This test can be found in statsmodels as ztest_ind
+    """Perform a two-sample Z-test (statsmodels.ztest_ind).
 
     Determines the likelihood that the distribution of two data points is significantly different, assuming that both
     data points are derived from a normal distribution.
@@ -116,7 +118,7 @@ def one_sample_t_test(
     pop_mean: float,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """This test can be found in scipy.stats as ttest_1samp
+    """Perform a one-sample t-test (scipy.stats.ttest_1samp).
 
     Used when we want to compare our sample mean to that of an expected population mean, and while we assume that the
     data follows a normal distribution, our sample size is too small to reliably use the z-test.
@@ -165,7 +167,7 @@ def two_sample_t_test(
     alternative: str = "two-sided",
     paired: bool = False,
 ) -> tuple[float, float]:
-    """This test can be found in scipy.stats as either ttest_rel or ttest_ind
+    """Perform a two-sample t-test (scipy.stats.ttest_rel or ttest_ind).
 
     Used when we want to compare the distributions of two samples, and while we assume that they both follow a normal
     distribution, their sample size is too small to reliably use a z-test.
@@ -233,6 +235,7 @@ def trimmed_means_test(
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """Not found in scipy.stats or statsmodels.
+
     Used when we wish to perform a two-sample t-test, but suspect that the data is being heavily influenced by outliers,
     i.e., cannot assume normality.
 
@@ -399,7 +402,7 @@ def binomial_sign_test(
     alternative: str = "two-sided",
     success_prob: float = 0.5,
 ) -> float:
-    """Found in scipy as sign_test
+    """Found in scipy as sign_test.
 
     Used to determine whether or not the measured differences between two groups (X and Y) is
     significantly greater and/or less than each other. For instance, we might use this to determine if the weight loss
@@ -450,7 +453,7 @@ def wald_wolfowitz_test(
     expected: Sequence[float] | np.ndarray | None = None,
     cutoff: str = "median",
 ) -> tuple[float, float]:
-    """Found in statsmodels as runstest_1samp
+    """Found in statsmodels as runstest_1samp.
 
     Used to determine if the elements of a dataset/sequence are mutually independent
 
@@ -503,7 +506,7 @@ def trinomial_test(
     data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """Not found in scipy.stats or statsmodels
+    """Not found in scipy.stats or statsmodels.
 
     Used on paired-data when the sign test loses power, that is, when there exists instances of "zero observations" or
     differences of zero between the paired-data.

@@ -1,3 +1,5 @@
+"""Internal helper functions for statistical computations."""
+
 from collections.abc import Sequence
 from math import factorial, sqrt
 from numbers import Number
@@ -8,7 +10,7 @@ from scipy.stats import binom
 
 
 def _standard_error(std: float, n: int) -> float:
-    """Calculates the standard error given the standard deviation and length of data
+    """Calculate the standard error given the standard deviation and length of data.
 
     Parameters
     ----------
@@ -31,7 +33,7 @@ def _standard_error(std: float, n: int) -> float:
 
 
 def _hypergeom_distribution(a: int | float, b: int | float, c: int | float, d: int | float) -> float:
-    """Calculates the hyper-geometric distribution for a given a, b, c and d
+    """Calculate the hyper-geometric distribution for a given a, b, c and d.
 
     Parameters
     ----------
@@ -66,7 +68,7 @@ def _check_table(
     table: Sequence[float] | Sequence[Sequence[float]] | np.ndarray | pd.Series | pd.DataFrame,
     only_count: bool = False,
 ) -> np.ndarray:
-    """Performs checks on our table to ensure that it is suitable for our statistical tests
+    """Perform checks on our table to ensure that it is suitable for our statistical tests.
 
     Parameters
     ----------
@@ -109,7 +111,7 @@ def _sse(
     square_data: Sequence[float] | np.ndarray,
     n_data: Sequence[float] | np.ndarray,
 ) -> float:
-    """Calculates the sum of squares for the errors
+    """Calculate the sum of squares for the errors.
 
     Parameters
     ----------
@@ -142,8 +144,9 @@ def _sse(
 
 
 def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
-    """Used for a binomial problem. Calculates the exact likelihood of finding observations as and more extreme
-    than our observed value
+    """Calculate the exact likelihood of finding observations as and more extreme than our observed value.
+
+    Used for a binomial problem.
 
     Parameters
     ----------
@@ -166,8 +169,9 @@ def _right_extreme(n_instances: int, n_total: int, prob: float) -> float:
 
 
 def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
-    """Used for a binomial problem. Calculates the exact likelihood of finding observations as and less extreme
-    than our observed value
+    """Calculate the exact likelihood of finding observations as and less extreme than our observed value.
+
+    Used for a binomial problem.
 
     Parameters
     ----------
@@ -190,7 +194,7 @@ def _left_extreme(n_instances: int, n_total: int, prob: float) -> float:
 
 
 def _skew(data: Sequence[float] | np.ndarray) -> float:
-    """Calculates the skew (third moment) of the data
+    """Calculate the skew (third moment) of the data.
 
     Parameters
     ----------
@@ -212,7 +216,7 @@ def _skew(data: Sequence[float] | np.ndarray) -> float:
 
 
 def _kurtosis(data: Sequence[float] | np.ndarray) -> float:
-    """Calculates the kurtosis (fourth moment) of the data
+    """Calculate the kurtosis (fourth moment) of the data.
 
     Parameters
     ----------
@@ -234,7 +238,7 @@ def _kurtosis(data: Sequence[float] | np.ndarray) -> float:
 
 
 def _autocorr(data: Sequence[float] | np.ndarray, lags: Sequence[float] | np.ndarray) -> np.ndarray:
-    """Calculates the autocorrelation for a given time series dataset given a set amount of lags
+    """Calculate the autocorrelation for a given time series dataset given a set amount of lags.
 
     Parameters
     ----------

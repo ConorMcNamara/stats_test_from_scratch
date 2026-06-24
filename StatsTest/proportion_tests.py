@@ -1,3 +1,5 @@
+"""Statistical tests for proportions."""
+
 from collections.abc import Sequence
 from math import sqrt
 
@@ -12,7 +14,7 @@ def one_sample_proportion_z_test(
     pop_mean: float,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """Found in statsmodels as proportions_ztest
+    """Found in statsmodels as proportions_ztest.
 
     Used when comparing whether our observed proportion mean is different from the population mean, assuming that the
     proportion mean is normally distributed.
@@ -66,7 +68,7 @@ def two_sample_proportion_z_test(
     data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """Found in statsmodels as proportions_ztest
+    """Found in statsmodels as proportions_ztest.
 
     Used when we are comparing whether or not two proportion means are the same, given that both of them come from a
     normal distribution.
@@ -119,7 +121,7 @@ def binomial_test(
     alternative: str = "two-sided",
     success_prob: float | None = None,
 ) -> float:
-    """The binomial test can be found in scipy.stats as binom_test.
+    """Perform a binomial test (scipy.stats.binom_test).
 
     Used to determine if the likelihood that our observed measurements could occur given that we know the prior probability.
     For example, if we rolled a die 100 times and a 6 appeared 40 times, our test would measure the likelihood this
@@ -185,7 +187,7 @@ def chi_square_proportion_test(
     n_total: Sequence[float] | np.ndarray,
     expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Not found in either statsmodels or scipy.stats
+    """Not found in either statsmodels or scipy.stats.
 
     Used when we are given proportions of success (as well as total participants) instead of
     numbers of success.
@@ -245,7 +247,7 @@ def g_proportion_test(
     n_total: Sequence[float] | np.ndarray,
     expected: Sequence[float] | np.ndarray | None = None,
 ) -> tuple[float, float]:
-    """Not found in either statsmodels or scipy.stats
+    """Not found in either statsmodels or scipy.stats.
 
     Used when we are given proportions of success (as well as total participants) instead of
     numbers of success

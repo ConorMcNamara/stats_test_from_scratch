@@ -1,3 +1,5 @@
+"""Rank-based (non-parametric) statistical tests."""
+
 from collections.abc import Sequence
 from math import sqrt
 
@@ -12,7 +14,8 @@ def two_sample_mann_whitney_test(
     data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """This test can be found in scipy.stats as mannwhitneyu
+    """Perform the Mann-Whitney U test (scipy.stats.mannwhitneyu).
+
     Used when we want to test whether or not the distribution of two ordinal response variables are equal or not,
     assuming that each sample is independent of one another.
 
@@ -68,7 +71,7 @@ def two_sample_wilcoxon_test(
     alternative: str = "two-sided",
     handle_zero: str = "wilcox",
 ) -> tuple[float, float]:
-    """This test can be found in scipy.stats as wilcoxon
+    """Perform the Wilcoxon signed-rank test (scipy.stats.wilcoxon).
 
     Used when we want to compare two related or paired samples, or repeated measurements, and see if their population
     mean ranks differ. Also used when we cannot assume that the samples are normally distributed.
@@ -122,7 +125,7 @@ def two_sample_wilcoxon_test(
 
 
 def friedman_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """This can be found in scipy.stats as friedmanchisquare
+    """Perform the Friedman test (scipy.stats.friedmanchisquare).
 
     Used to detect the differences in treatments across multiple test attempts. For example:
     Suppose there are n wine judges each rate k different wines. Are any of the k wines ranked consistently higher or
@@ -156,7 +159,7 @@ def friedman_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def quade_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Not found in either scipy or statsmodels
+    """Not found in either scipy or statsmodels.
 
     Used to determine if there is at least one treatment different than the others. Note that it does not tell us which
     treatment is different or how many differences there are.
@@ -191,7 +194,7 @@ def quade_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
 
 
 def page_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
-    """Not found in either scipy or statsmodels
+    """Not found in either scipy or statsmodels.
 
     Used to evaluate whether or not there is a monotonic trend within each treatment/condition. Note that the default
     alternative hypothesis is that treatment_1 >= treatment_2 >= treatment_3 >= .... >= treatment_n, with at least
@@ -244,7 +247,7 @@ def page_trend_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple
 
 
 def kruskal_wallis_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as kruskal
+    """Found in scipy.stats as kruskal.
 
     This test is used to determine whether or not two or more samples originate from the same distribution.
     Note that this requires the samples to be independent of one another, and that it only tells us if there is a
@@ -281,7 +284,7 @@ def kruskal_wallis_test(*args: Sequence[float] | np.ndarray) -> tuple[float, flo
 
 
 def fligner_kileen_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tuple[float, float]:
-    """Found in scipy.stats as fligner
+    """Found in scipy.stats as fligner.
 
     Used to test the homogeneity of group variances, making no assumptions of the data distribution beforehand
 
@@ -447,7 +450,7 @@ def mood_test(
     data_2: Sequence[float] | np.ndarray,
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """Found in scipy.stats as mood
+    """Found in scipy.stats as mood.
 
     Used to measure the level of dispersion (difference from median) of the ranks of the two datasets.
 
@@ -496,7 +499,7 @@ def cucconi_test(
     data_2: Sequence[float] | np.ndarray,
     how: str = "bootstrap",
 ) -> tuple[float, float]:
-    """Not found in scipy.stats or statsmodels
+    """Not found in scipy.stats or statsmodels.
 
     Used to compare the central tendency and variability in two samples.
 

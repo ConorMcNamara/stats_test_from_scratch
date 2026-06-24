@@ -1,3 +1,5 @@
+"""Statistical tests for correlation between variables."""
+
 from collections.abc import Sequence
 from math import factorial, sqrt
 
@@ -8,7 +10,7 @@ from StatsTest.utils import _check_table
 
 
 def pearson_test(x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as pearsonr
+    """Found in scipy.stats as pearsonr.
 
     Used to evaluate the pearson correlation between X and Y.
 
@@ -39,7 +41,7 @@ def pearson_test(x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarra
 
 
 def spearman_test(x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray) -> tuple[float, float]:
-    """Found in scipy.stats as spearmanr
+    """Found in scipy.stats as spearmanr.
 
     Used to evaluate the correlation between the ranks of "X" and "Y", that is, if there exists a
     monotonic relationship between X and Y.
@@ -76,7 +78,7 @@ def kendall_tau_test(
     y: Sequence[float] | np.ndarray,
     method: str = "hypothesis",
 ) -> tuple[float, float]:
-    """Found in scipy.stats as kendalltau
+    """Found in scipy.stats as kendalltau.
 
     Used to evaluate if two ordinal variables are correlated to one another.
 
@@ -160,7 +162,7 @@ def kendall_tau_test(
 def point_biserial_correlation_test(
     x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray
 ) -> tuple[float, float]:
-    """Found in scipy.stats as pointbiserialr
+    """Found in scipy.stats as pointbiserialr.
 
     Parameters
     ----------
@@ -195,7 +197,7 @@ def point_biserial_correlation_test(
 def rank_biserial_correlation_test(
     x: Sequence[float] | np.ndarray, y: Sequence[float] | np.ndarray
 ) -> tuple[float, float]:
-    """Not found in scipy.stats or statsmodels
+    """Not found in scipy.stats or statsmodels.
 
     Parameters
     ----------

@@ -1,4 +1,4 @@
-"""Implementing Multiple Statistical Tests in Python"""
+"""Implementing Multiple Statistical Tests in Python."""
 
 __version__ = "0.1.0"
 
