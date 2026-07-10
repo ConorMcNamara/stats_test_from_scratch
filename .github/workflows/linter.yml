@@ -11,9 +11,12 @@ on:
       - master
 
 jobs:
-  lint:
-    name: Lint and Format Check
+  setup:
+    name: Resolve supported Python versions
     runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.get.outputs.versions }}
+      latest: ${{ steps.get.outputs.latest }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,7 +24,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.x"
+
+      - name: Derive versions from pyproject.toml classifiers
+        id: get
+        run: python .github/scripts/supported_pythons.py >> "$GITHUB_OUTPUT"
+
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ needs.setup.outputs.latest }}
           cache: "pip"
 
       - name: Install dependencies
@@ -42,11 +62,12 @@ jobs:
   test:
     name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    needs: setup
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.13", "3.14"]
+        python-version: ${{ fromJson(needs.setup.outputs.versions) }}
 
     steps:
       - name: Checkout code
@@ -68,9 +89,34 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == needs.setup.outputs.latest
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  canary:
+    name: Canary (latest Python, incl. prereleases)
+    runs-on: ubuntu-latest
+    # Informational only: surfaces breakage on not-yet-supported Python
+    # (e.g. 3.15 betas/RCs) without ever blocking a merge.
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up latest Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          allow-prereleases: true
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest --cov=StatsTest --cov-report=term-missing

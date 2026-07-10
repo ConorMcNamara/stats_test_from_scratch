@@ -230,6 +230,9 @@ rsconnect/
 pyvenv.cfg
 pip-selfcheck.json
 
+# The venv [Ss]cripts rule above also matches our CI helper dir; keep it tracked.
+!.github/scripts/
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
