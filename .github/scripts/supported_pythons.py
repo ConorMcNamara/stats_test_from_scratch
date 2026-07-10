@@ -15,6 +15,7 @@ PREFIX = "Programming Language :: Python :: "
 
 
 def main() -> None:
+    """Emit versions/latest step outputs derived from pyproject.toml classifiers."""
     with open("pyproject.toml", "rb") as f:
         classifiers = tomllib.load(f)["project"]["classifiers"]
 
