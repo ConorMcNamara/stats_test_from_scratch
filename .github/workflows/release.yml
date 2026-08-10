@@ -1,0 +1,61 @@
+name: Release
+
+# Publish to PyPI when a version tag is pushed (e.g. v0.1.0), or manually.
+# Uses PyPI Trusted Publishing (OIDC) via uv — no API token stored in secrets.
+#
+# One-time setup on PyPI (https://pypi.org/manage/account/publishing/):
+#   Project name:      stats-test-from-scratch
+#   Owner:             ConorMcNamara
+#   Repository name:   stats_test_from_scratch
+#   Workflow name:     release.yml
+#   Environment name:  pypi
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Check package metadata
+        run: uv tool run twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: pypi
+      url: https://pypi.org/p/stats-test-from-scratch
+    permissions:
+      id-token: write  # required for Trusted Publishing (OIDC)
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Publish to PyPI
+        run: uv publish

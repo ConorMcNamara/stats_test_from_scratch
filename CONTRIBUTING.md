@@ -222,8 +222,11 @@ ruff check --fix .
    def calculate_mean(data: list[float]) -> float:
        return sum(data) / len(data)
 
+
    # Avoid (old style)
    from typing import List
+
+
    def calculate_mean(data: List[float]) -> float:
        return sum(data) / len(data)
    ```

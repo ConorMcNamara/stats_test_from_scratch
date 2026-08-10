@@ -1,6 +1,6 @@
 [project]
 name = "stats-test-from-scratch"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Implementing Statistical Tests through Python from scratch"
 authors = [
     {name = "ConorMcNamara", email = "conor.s.mcnamara@gmail.com"}
@@ -28,9 +28,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.3.5",
+    "pytest>=9.0.3",
     "pytest-cov>=4.1.0",
-    "ruff>=0.3.0",
+    "ruff==0.16.2",
     "zuban>=0.6.0",
     "pre-commit>=3.6.0",
 ]
@@ -44,40 +44,24 @@ Issues = "https://github.com/ConorMcNamara/stats_test_from_scratch/issues"
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+version = {attr = "StatsTest.__version__"}
+
 [tool.setuptools.packages.find]
 include = ["StatsTest*"]
 
-# ============================================================================
-# Poetry Configuration
-# ============================================================================
-# Poetry requires these fields even in PEP 621 mode
-[tool.poetry]
-name = "stats-test-from-scratch"
-version = "0.1.0"
-description = "Implementing Statistical Tests through Python from scratch"
-authors = ["ConorMcNamara <conor.s.mcnamara@gmail.com>"]
-packages = [{include = "StatsTest"}]
-readme = "README.md"
-license = "GPL-3.0-or-later"
-
-# Dependencies are read from [project] and [project.optional-dependencies]
+[tool.setuptools.package-data]
+# Ship the PEP 561 marker so downstream users get StatsTest's type hints
+StatsTest = ["py.typed"]
 
 # ============================================================================
 # uv Configuration
 # ============================================================================
-# uv users can use: uv pip install -e .
-# uv automatically reads the [project] dependencies above
+# Install with: uv sync --extra dev   (or: uv pip install -e ".[dev]")
+# Dependencies are read from [project] and [project.optional-dependencies].
 [tool.uv]
-dev-dependencies = [
-    "pytest>=8.3.5",
-    "pytest-cov>=4.1.0",
-    "ruff>=0.3.0",
-    "zuban>=0.6.0",
-    "pre-commit>=3.6.0",
-]
-
-[tool.uv.sources]
-# Optional: specify index URLs or custom sources
+# Build the project itself as part of `uv sync` so the package is importable.
+package = true
 
 [tool.pytest.ini_options]
 pythonpath = ["StatsTest", "."]
