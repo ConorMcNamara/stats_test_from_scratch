@@ -1,7 +1,7 @@
 # Makefile for StatsTest From Scratch
 # Provides convenient shortcuts for common development tasks
 
-.PHONY: help install install-dev install-poetry install-uv test test-cov lint format type-check clean clean-build clean-pyc clean-test pre-commit-install pre-commit-run all
+.PHONY: help install install-dev install-uv test test-cov lint format type-check clean clean-build clean-pyc clean-test pre-commit-install pre-commit-run lock lock-check build all
 
 # Default target
 .DEFAULT_GOAL := help
@@ -35,11 +35,8 @@ install: ## Install package with pip (production dependencies only)
 install-dev: ## Install package with pip including dev dependencies
 	pip install -e ".[dev]"
 
-install-poetry: ## Install package using Poetry
-	poetry install --with dev
-
-install-uv: ## Install package using uv
-	uv pip install -e ".[dev]"
+install-uv: ## Install package using uv (recommended)
+	uv sync --extra dev
 
 # ============================================================================
 # Testing Targets
@@ -130,21 +127,18 @@ clean-test: ## Remove test and coverage artifacts
 	rm -fr .zuban_cache
 	rm -fr .ruff_cache
 
-lock-poetry: ## Update poetry.lock file
-	poetry lock
+lock: ## Update uv.lock file
+	uv lock
 
-lock-check: ## Verify poetry.lock is up to date
-	poetry check
+lock-check: ## Verify uv.lock is up to date
+	uv lock --check
 
 # ============================================================================
 # Build Targets
 # ============================================================================
 
 build: clean ## Build source and wheel distributions
-	python -m build
-
-build-poetry: clean ## Build using Poetry
-	poetry build
+	uv build
 
 # ============================================================================
 # Documentation Targets
@@ -161,7 +155,6 @@ info: ## Show project information
 	@echo "$(BLUE)Project Information$(NC)"
 	@echo "Python: $$(python --version)"
 	@echo "Pip: $$(pip --version | cut -d' ' -f1-2)"
-	@command -v poetry >/dev/null 2>&1 && echo "Poetry: $$(poetry --version)" || echo "Poetry: not installed"
 	@command -v uv >/dev/null 2>&1 && echo "uv: $$(uv --version)" || echo "uv: not installed"
 	@echo ""
 	@echo "$(BLUE)Installed Packages$(NC)"
