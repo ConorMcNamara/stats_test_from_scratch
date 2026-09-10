@@ -156,7 +156,7 @@ def mcnemar_test(cont_table: Sequence[Sequence[float]] | np.ndarray) -> tuple[fl
         p = 1 - chi2.cdf(chi_squared, 1)  # type: ignore[no-untyped-call]
     else:
         chi_squared = min(b, c)
-        p = 2 * binom.cdf(chi_squared, b + c, 0.5) - binom.pmf(binom.ppf(0.99, b + c, 0.5), b + c, 0.5)  # type: ignore[no-untyped-call]
+        p = min(1.0, 2 * binom.cdf(chi_squared, b + c, 0.5))  # type: ignore[no-untyped-call]
     return float(chi_squared), float(p)
 
 

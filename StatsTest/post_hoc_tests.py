@@ -464,7 +464,7 @@ def dunnett_test(
             3.419,
             3.504,
             3.572,
-            3.360,
+            3.630,
             3.679,
             3.722,
             3.760,
@@ -510,8 +510,8 @@ def dunnett_test(
             3.391,
             3.442,
             3.486,
-            4.524,
-            4.558,
+            3.524,
+            3.558,
             3.589,
             3.616,
             3.641,
@@ -1891,7 +1891,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.
                 2.833,
                 2.835,
             ],
-            np.repeat(2.936, 23),
+            np.repeat(2.836, 23),
         ),
         np.append(
             [
@@ -2008,7 +2008,7 @@ def duncan_multiple_range_test(alpha: float = 0.05, *args: Sequence[float] | np.
                 2.887,
                 2.890,
                 2.894,
-                2897,
+                2.897,
             ],
             np.repeat(2.898, 14),
         ),
@@ -3129,13 +3129,16 @@ def scheffe_test(*args: Sequence[float] | np.ndarray) -> list[list[object]]:
     ssb = np.sum(np.array(sample_sizes) * np.power(means - grand_mean, 2))
     sst = np.sum(np.power(args_arr - grand_mean, 2))
     ssw = sst - ssb
+    k = len(args)
+    df_w = sum(sample_sizes) - k
+    msw = ssw / df_w
     f_value, _ = one_way_f_test(*args)
-    f_prime = (len(args) - 1) * f_value
+    f_prime = (k - 1) * f_value
     for group in groups:
         group = int(group)
         for next_group in range(group + 1, len(groups)):
             mean_a, mean_b = means[group], means[next_group]
             n_a, n_b = sample_sizes[group], sample_sizes[next_group]
-            scheffe_val = np.power(mean_a - mean_b, 2) / (ssw * ((1 / n_a) + (1 / n_b)))
+            scheffe_val = np.power(mean_a - mean_b, 2) / (msw * ((1 / n_a) + (1 / n_b)))
             results.append([f"group {group} - group {next_group}", scheffe_val > f_prime])
     return results  # type: ignore[return-value]

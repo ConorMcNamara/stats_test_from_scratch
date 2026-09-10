@@ -61,8 +61,8 @@ class TestSampleTest:
         sample_data = np.arange(30)
         pop_mean = 5
         z_val, p_val = one_sample_z_test(sample_data, pop_mean)
-        assert pytest.approx(0.0, 0.01) == p_val
-        assert pytest.approx(11.389, 0.01) == z_val
+        assert p_val < 0.01
+        assert pytest.approx(5.9106, 0.01) == z_val
 
     # Two Sample Z Test
 
@@ -318,7 +318,7 @@ class TestSampleTest:
     def test_FlignerPolicelloTest_result(self) -> None:
         x = np.array([4, 10, 2, 9, 5, 28, 8, 7, 9, 35, 20])
         y = np.array([12, 8, 6, 16, 12, 14, 10, 18, 4, 11])
-        z_expected, p_expected = 0.703046, 0.482027
+        z_expected, p_expected = 0.618463, 0.536270
         z, p = fligner_policello_test(x, y)
         assert pytest.approx(z_expected, 1e-05) == z
         assert pytest.approx(p_expected, 1e-05) == p

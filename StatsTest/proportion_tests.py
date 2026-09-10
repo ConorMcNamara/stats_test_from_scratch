@@ -156,7 +156,7 @@ def binomial_test(
         failure_arr = _check_table(failure) if not isinstance(failure, int) else np.array([])
         num_success, num_failure = len(success_arr), len(failure_arr)
     total = num_success + num_failure
-    if not success_prob:
+    if success_prob is None:
         success_prob = num_success / total
     elif not isinstance(success_prob, float):
         raise TypeError("Probability of success needs to be a decimal value")

@@ -327,10 +327,5 @@ def mood_median_test(*args: Sequence[float] | np.ndarray, **kwargs: str) -> tupl
     expected = np.matmul(np.transpose(row_sum[np.newaxis]), col_sum[np.newaxis]) / np.sum(row_sum)
     X = np.sum(pow(cont_table - expected, 2) / expected)
     df = len(args) - 1
-    if alternative == "two-sided":
-        p = 2 * (1 - chi2.cdf(X, df))  # type: ignore[no-untyped-call]
-    elif alternative == "less":
-        p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
-    else:
-        p = chi2.cdf(X, df)  # type: ignore[no-untyped-call]
+    p = 1 - chi2.cdf(X, df)  # type: ignore[no-untyped-call]
     return float(X), float(p)

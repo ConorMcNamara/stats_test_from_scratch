@@ -564,9 +564,10 @@ def lilliefors_test(data: Sequence[float] | np.ndarray, alpha: float = 0.05) -> 
         d_x = q_15[index]
     else:
         d_x = q_20[index]
-    z_table = (data - np.mean(data)) / np.std(data, ddof=1)
+    sorted_data = np.sort(data)
+    z_table = (sorted_data - np.mean(data)) / np.std(data, ddof=1)
     expected = norm.cdf(z_table)  # type: ignore[no-untyped-call]
-    actual = np.cumsum(np.ones(len(data)) / len(data))
+    actual = np.arange(1, len(data) + 1) / len(data)
     diff = np.abs(actual - expected)
     d_max = np.max(diff)
     return d_max, d_max < d_x
