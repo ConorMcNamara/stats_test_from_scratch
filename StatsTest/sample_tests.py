@@ -56,7 +56,7 @@ def one_sample_z_test(
     sample_data = _check_table(sample_data, False)
     sample_mean = np.mean(sample_data)
     sample_std = np.std(sample_data, ddof=1)
-    z_score = sample_mean - pop_mean / _standard_error(float(sample_std), len(sample_data))
+    z_score = (sample_mean - pop_mean) / _standard_error(float(sample_std), len(sample_data))
     if alternative.casefold() == "two-sided":
         p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
@@ -102,7 +102,7 @@ def two_sample_z_test(
     data_1_mean, data_2_mean = np.mean(data_1), np.mean(data_2)
     data_1_std, data_2_std = np.std(data_1, ddof=1), np.std(data_2, ddof=1)
     z_score = (data_1_mean - data_2_mean) / sqrt(
-        _standard_error(float(data_1_std), len(data_1)) + _standard_error(float(data_2_std), len(data_2))
+        _standard_error(float(data_1_std), len(data_1)) ** 2 + _standard_error(float(data_2_std), len(data_2)) ** 2
     )
     if alternative.casefold() == "two-sided":
         p = 2 * (1 - norm.cdf(abs(z_score)))  # type: ignore[no-untyped-call]
@@ -151,13 +151,12 @@ def one_sample_t_test(
     df = n_observations - 1
     sample_std = np.std(sample_data, ddof=1)
     t_value = (sample_mean - pop_mean) / (sample_std / sqrt(n_observations))
-    p = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
-    if alternative.casefold() == "two_sided":
-        p *= 2
-    elif alternative.casefold() == "less":
-        p = 1 - p
+    if alternative.casefold() == "two-sided":
+        p = 2 * (1.0 - t.cdf(abs(t_value), df))  # type: ignore[no-untyped-call]
+    elif alternative.casefold() == "greater":
+        p = 1.0 - t.cdf(t_value, df)  # type: ignore[no-untyped-call]
     else:
-        pass
+        p = float(t.cdf(t_value, df))  # type: ignore[no-untyped-call]
     return float(t_value), float(p)
 
 
@@ -213,18 +212,17 @@ def two_sample_t_test(
         data_1_var, data_2_var = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
         data_1_n, data_2_n = len(data_1), len(data_2)
         df = np.power((data_1_var / data_1_n) + (data_2_var / data_2_n), 2) / (
-            (np.power(data_1_var, 2) / (np.power(data_1_n, 2) * data_1_n - 1))
-            + (np.power(data_2_var, 2) / (np.power(data_2_n, 2) * data_2_n - 1))
+            (np.power(data_1_var, 2) / (np.power(data_1_n, 2) * (data_1_n - 1)))
+            + (np.power(data_2_var, 2) / (np.power(data_2_n, 2) * (data_2_n - 1)))
         )
         standard_error_difference = sqrt((data_1_var / data_1_n) + (data_2_var / data_2_n))
     t_value = (data_1_mean - data_2_mean) / standard_error_difference
-    p = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
-        p *= 2
-    elif alternative.casefold() == "less":
-        p = 1 - p
+        p = 2 * (1.0 - t.cdf(abs(t_value), df))  # type: ignore[no-untyped-call]
+    elif alternative.casefold() == "greater":
+        p = 1.0 - t.cdf(t_value, df)  # type: ignore[no-untyped-call]
     else:
-        pass
+        p = float(t.cdf(t_value, df))  # type: ignore[no-untyped-call]
     return float(t_value), float(p)
 
 
@@ -280,13 +278,12 @@ def trimmed_means_test(
     pooled_var = ((n_x - 1) * s_x + (n_y - 1) * s_y) / ((m_x - 1) + (m_y - 1))
     t_value = (x_bar - y_bar) / np.sqrt(pooled_var * ((1 / m_x) + (1 / m_y)))
     df = m_x + m_y - 2
-    p_val = 1.0 - t.cdf(abs(t_value), df)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
-        p_val *= 2
-    elif alternative.casefold() == "less":
-        p_val = 1 - p_val
+        p_val = 2 * (1.0 - t.cdf(abs(t_value), df))  # type: ignore[no-untyped-call]
+    elif alternative.casefold() == "greater":
+        p_val = 1.0 - t.cdf(t_value, df)  # type: ignore[no-untyped-call]
     else:
-        pass
+        p_val = float(t.cdf(t_value, df))  # type: ignore[no-untyped-call]
     return float(t_value), float(p_val)
 
 
@@ -341,13 +338,12 @@ def yuen_welch_test(
     d_x, d_y = (n_x - 1) * s_x / (m_x * (m_x - 1)), (n_y - 1) * s_y / (m_y * (m_y - 1))
     df = pow(d_x + d_y, 2) / (pow(d_x, 2) / (m_x - 1) + pow(d_y, 2) / (m_y - 1))
     t_value = (x_bar - y_bar) / sqrt(d_x + d_y)
-    p_val = 1 - t.cdf(t_value, df // 1)  # type: ignore[no-untyped-call]
     if alternative.casefold() == "two-sided":
-        p_val *= 2
-    elif alternative.casefold() == "less":
-        p_val = 1 - p_val
+        p_val = 2 * (1 - t.cdf(abs(t_value), df // 1))  # type: ignore[no-untyped-call]
+    elif alternative.casefold() == "greater":
+        p_val = 1 - t.cdf(t_value, df // 1)  # type: ignore[no-untyped-call]
     else:
-        pass
+        p_val = float(t.cdf(t_value, df // 1))  # type: ignore[no-untyped-call]
     return float(t_value), float(p_val)
 
 
@@ -388,7 +384,7 @@ def two_sample_f_test(
     var_1, var_2 = np.var(data_1, ddof=1), np.var(data_2, ddof=1)
     f_statistic = var_1 / var_2
     if alternative.casefold() == "two-sided":
-        p = 2 * (1 - f.cdf(f_statistic, df_1, df_2))  # type: ignore[no-untyped-call]
+        p = 2 * min(f.cdf(f_statistic, df_1, df_2), 1 - f.cdf(f_statistic, df_1, df_2))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":
         p = 1 - f.cdf(f_statistic, df_1, df_2)  # type: ignore[no-untyped-call]
     else:
@@ -606,7 +602,7 @@ def fligner_policello_test(
     Nx, Ny = np.sum(n_x), np.sum(n_y)
     m_x, m_y = np.mean(n_x), np.mean(n_y)
     ss_x, ss_y = np.sum(np.power(n_x - m_x, 2)), np.sum(np.power(n_y - m_y, 2))
-    z = (Ny - Nx) / (2 * np.sqrt(ss_x + ss_y - (m_x * m_y)))
+    z = (Ny - Nx) / (2 * np.sqrt(ss_x + ss_y + (m_x * m_y)))
     if alternative.casefold() == "two-sided":
         p = 2 * (1 - norm.cdf(abs(z)))  # type: ignore[no-untyped-call]
     elif alternative.casefold() == "greater":

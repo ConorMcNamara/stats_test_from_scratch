@@ -52,7 +52,7 @@ def two_sample_mann_whitney_test(
         u = u1
     else:
         u = u2
-    T = np.unique(u, return_counts=True)[1]
+    T = np.unique(combined_data, return_counts=True)[1]
     sum_T = np.sum(np.power(T, 3) - T) / (combined_data_len * (combined_data_len - 1))
     u_sd = sqrt((data_1_len * data_2_len / 12) * (combined_data_len + 1 - sum_T))
     z_score = (u - u_mean) / u_sd
@@ -185,10 +185,10 @@ def quade_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
     rank = np.apply_along_axis(rankdata, 1, all_data)
     rank_range = rankdata(np.ptp(all_data, axis=1))
     s_ij = rank_range.reshape(1, -1).T * rank
-    s_j = np.sum(s_ij, axis=1)
+    s_j = np.sum(s_ij, axis=0)
     a_2 = np.sum(np.power(s_ij, 2))
     B = np.sum(np.power(s_j, 2)) / b
-    q = (b - 1) * B / (a_2 - b)
+    q = (b - 1) * B / (a_2 - B)
     p = 1 - f.cdf(q, k - 1, (b - 1) * (k - 1))  # type: ignore[no-untyped-call]
     return float(q), float(p)
 
@@ -534,7 +534,7 @@ def cucconi_test(
         u = (6 * np.sum(np.power(r_1, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(
             n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5
         )
-        v = (6 * np.sum(np.power(n + 1 - rank_data, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(
+        v = (6 * np.sum(np.power(n + 1 - r_1, 2)) - n_1 * (n + 1) * (2 * n + 1)) / sqrt(
             n_1 * n_2 * (n + 1) * (2 * n + 1) * (8 * n + 11) / 5
         )
         rho = 2 * (pow(n, 2) - 4) / ((2 * n + 1) * (8 * n + 11)) - 1
@@ -642,7 +642,7 @@ def conover_test(*args: Sequence[float] | np.ndarray) -> tuple[float, float]:
         return np.abs(data - row_means_col_vec)
 
     z_k = absolute_difference(args, means)  # type: ignore[arg-type]
-    r_k = np.apply_along_axis(rankdata, 1, z_k)
+    r_k = rankdata(z_k.ravel()).reshape(z_k.shape)
     s_k = np.sum(np.power(r_k, 2), axis=1)
     s_bar = np.mean(s_k)
     d_2 = (1 / (N - 1)) * (np.sum(np.power(r_k, 4)) - N * np.power(s_bar, 2))
